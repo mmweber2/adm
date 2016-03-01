@@ -22,6 +22,13 @@ def test_locate_empty():
   active_dict = dic.Dic()
   assert_raises(KeyError, active_dict.locate, 'a')
 
+def test_locate_multiple_not_present():
+  active_dict = dic.Dic()
+  active_dict.insert('a', 0)
+  active_dict.insert('c', 2)
+  active_dict.insert('b', 1)
+  assert_raises(KeyError, active_dict.locate, 'd')
+
 def test_insert():
   pass
 
