@@ -15,7 +15,6 @@ def test_locate_single():
   assert active_dict.locate('a') == 0
 
 def test_locate_multiple():
-  print "\nTesting locate multiple."
   active_dict = setup()
   active_dict.insert('a', 0)
   active_dict.insert('c', 2)
@@ -39,13 +38,10 @@ def test_insert_empty():
   assert active_dict.locate('a') == 0
 
 def test_insert_multiple():
-  print "\nTesting insert multiple."
   active_dict = setup()
   active_dict.insert('a', 0)
   active_dict.insert('c', 3)
   active_dict.insert('b', 1)
-  print "\n After insert multiple:"
-  print active_dict.items
   assert active_dict.locate('c') == 3
 
 def test_insert_duplicate():
@@ -56,18 +52,14 @@ def test_insert_duplicate():
   assert active_dict.locate('a') == 1
 
 def test_delete_absent():
-  print "Testing delete_absent."
   active_dict = setup()
   active_dict.insert('a', 0)
   assert_raises(KeyError, active_dict.delete, 'd')
 
 def test_delete_present():
-  print "\nTesting delete present."
   active_dict = setup()
   active_dict.insert('a', 0)
   active_dict.delete('a')
-  print "\nAfter deletion:"
-  print active_dict.items
   # Searching for a deleted key should now give a KeyError.
   assert_raises(KeyError, active_dict.locate, 'a')
 
