@@ -41,5 +41,12 @@ def test_insert_multiple():
   active_dict.insert('b', 1)
   assert active_dict.locate('c') == 3
 
+def test_insert_duplicate():
+  active_dict = dic.Dic()
+  active_dict.insert('a', 0)
+  active_dict.insert('c', 3)
+  active_dict.insert('a', 1)
+  assert active_dict.locate('a') == 1
+
 def test_delete():
   pass
