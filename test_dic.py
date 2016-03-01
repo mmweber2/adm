@@ -29,8 +29,17 @@ def test_locate_multiple_not_present():
   active_dict.insert('b', 1)
   assert_raises(KeyError, active_dict.locate, 'd')
 
-def test_insert():
-  pass
+def test_insert_empty():
+  active_dict = dic.Dic()
+  active_dict.insert('a', 0)
+  assert active_dict.locate('a') == 0
+
+def test_insert_multiple():
+  active_dict = dic.Dic()
+  active_dict.insert('a', 0)
+  active_dict.insert('c', 3)
+  active_dict.insert('b', 1)
+  assert active_dict.locate('c') == 3
 
 def test_delete():
   pass
