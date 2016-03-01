@@ -48,5 +48,21 @@ def test_insert_duplicate():
   active_dict.insert('a', 1)
   assert active_dict.locate('a') == 1
 
-def test_delete():
-  pass
+def test_delete_absent():
+  active_dict = dic.Dic()
+  active_dict.insert('a', 0)
+  assert_raises(KeyError, active_dict.delete, 'd')
+
+def test_delete_present():
+  active_dict = dic.Dic()
+  active_dict.insert('a', 0)
+  active_dict.delete('a')
+  # Searching for a deleted key should now give a KeyError.
+  assert_raises(KeyError, active_dict.locate, 'a')
+
+def test_delete_deleted():
+  active_dict = dic.Dic()
+  active_dict.insert('a', 0)
+  active_dict.delete('a')
+  # Trying to delete an already deleted key should give a KeyError.
+  assert_raises(KeyError, active_dict.delete, 'a')
