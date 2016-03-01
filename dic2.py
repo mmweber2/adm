@@ -16,13 +16,13 @@ class Dic(object):
   # Internal function to find key in dictionary.
   def _locate(self, q):
     for i in xrange(len(self.items)):
-      if self.items[i] == q:
+      if self.items[i][0] == q:
         return i
 
   # Locate key q in the dictionary and return its value.
   # Raises a KeyError if q is not in the dictionary.
   def locate(self, q):
-    loc = _locate(q)
+    loc = self._locate(q)
     if loc == None:
       raise KeyError("Key {} not found in dictionary.".format(q))
     return self.items[loc][1]
@@ -30,7 +30,7 @@ class Dic(object):
   # Insert key q with value value.
   # If q is already in the dictionary, its value is overwritten.
   def insert(self, q, value):
-    loc = _locate(q)
+    loc = self._locate(q)
     # q is already in the dictionary; overwrite it.
     if loc is not None:
       self.items[loc][1] = value
@@ -40,8 +40,8 @@ class Dic(object):
 
   # Delete does not return the value associated with the key.
   def delete(self, q):
-    loc = _locate(q)
+    loc = self._locate(q)
     if loc is None:
       raise KeyError("Key {} not found in dictionary".format(q))
-    self.items[loc] == None
+    self.items = self.items[:loc] + self.items[loc+1:]
 
