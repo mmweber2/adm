@@ -14,7 +14,7 @@ class SelfDic(object):
 
   # Move the item with the given index to the front of the list.
   def _move(self, i):
-    self.items[0], self.items[i] = self.items[i], self.items[0]
+    self.items = [self.items[i]] + self.items[:i] + self.items[i+1:]
 
   # Internal function to find key in dictionary.
   def _locate(self, q):
