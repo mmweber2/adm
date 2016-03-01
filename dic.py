@@ -21,7 +21,7 @@ class Dic(object):
   # Raises a KeyError if q is not in the dictionary.
   def locate(self, q):
     # Make sure q is in the set before scanning everything
-     _check_for_key(q)
+    self._check_for_key(q)
     for item in self.items:
       if item[0] == q:
         return item[1]
@@ -40,7 +40,7 @@ class Dic(object):
       self.itemset.add(q)
 
   def delete(self, q):
-    _check_for_key(q)
+    self._check_for_key(q)
     self.itemset.remove(q)
     for i in xrange(len(self.items)):
       if self.items[i][0] == q:
