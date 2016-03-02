@@ -33,7 +33,7 @@ class Table(object):
       return
     # Spot is already full, with dummy or real value
     if self.array[hashval] is not None:
-      hashval = _open_address(key, value, hashval + 1)
+      hashval = self._open_address(hashval + 1)
     # Once a spot is found, the item is going in the bucket and counts increment
     self.array[hashval] = Item(key, value)
     self.spaces_filled += 1
@@ -41,17 +41,36 @@ class Table(object):
     if self.spaces_filled > len(self.array) / 2:
       resize()
 
+  def lookup(self, key, hashval=None):
+    if hashval is None:
+      hashval = hash(key) % len(self.array)
+    while hashval < len(self.array):
+      current_slot = self.array[hashval]
+      if current_slot is None:
+        raise KeyError("Key \"{}\" not found.".format(key))
+      if type(current_slot) is Item:
+        if current_slot.key == key:
+          return current_slot.value
+      # Slot is a Placeholder or has another key in it
+        hashval += 1
+    # Cycle back and check beginning of array.
+    return self.lookup(key, 0)
+
   def _update_key(self, hashval, key, value):
     while hashval < len(self.array):
-      if self.array[hashval] is None:
+      current_bucket = self.array[hashval]
+      if current_bucket is None:
         return False
-      # Key is already in the table, so overwrite it without changing any sizes.
-      if self.array[hashval].key == key:
-        self.array[hashval].value = value
-        return True
+      # Skip over any Placeholder objects.
+      # A valid item is in the bucket
+      if type(current_bucket) is Item:
+        # Key is already in the table, so overwrite it without changing any sizes.
+        if self.array[hashval].key == key:
+          self.array[hashval].value = value
+          return True
       hashval += 1
     # Cycle back and check beginning of array.
-    return _update_key(self, 0, key, value)
+    return self._update_key(0, key, value)
 
   # Bucket already has a dummy or valid key/value pair, so find a new bucket.
   def _open_address(self, hashval):
@@ -63,7 +82,7 @@ class Table(object):
       # Reached end of array before finding an open space; start at the front.
       # It may seem that this would only happen if the hash is very full,
       #   but it's possible for an item to hash near the end of the array.
-      return _open_address(self, 0)
+    return self._open_address(0)
 
 
 # Hash key.
