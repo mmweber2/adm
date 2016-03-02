@@ -3,7 +3,7 @@ from collections import namedtuple
 # Empty object for use when deleting an object from the hash table.
 class Placeholder(object):
   pass
-# These placeholders don't need to be unique, can't I just make one?
+# Instead of Placeholder, let's try using "".
 
 Item = namedtuple('Item', ['key', 'value'])
 
@@ -14,8 +14,6 @@ class Table(object):
   spaces_filled = 0
   array = None
   INIT_SIZE = 10
-
-  # Remember to check for half-full array and resize when adding.
 
   def __init__(self):
     self.array = [None for _ in xrange(self.INIT_SIZE)]
@@ -57,21 +55,39 @@ class Table(object):
     # Cycle back and check beginning of array.
     return self.lookup(key, 0)
 
-  def _update_key(self, hashval, key, val):
-    while hashval < len(self.array):
-      current_bucket = self.array[hashval]
+  # Find the index of a key in array, if it exists.
+  # Returns None if it doesn't exist, or KeyError if the key is invalid.
+  @staticmethod
+  def _get_lookup_index(key, array, hashval=None):
+    if key is None or key is "":
+      raise KeyError("Key {} is invalid.")
+    if hashval is None:
+      hashval = hash(key) % len(array)
+    while hashval < len(array):
+      current_bucket = array[hashval]
+      # Key is not in array.
       if current_bucket is None:
-        return False
-      # Skip over any Placeholder objects.
+        return None
       # A valid item is in the bucket
       if type(current_bucket) is Item:
-        # Key is already in the table, so overwrite it without changing any sizes.
         if current_bucket.key == key:
-          self.array[hashval] = current_bucket._replace(value=val)
-          return True
+          return hashval
       hashval += 1
     # Cycle back and check beginning of array.
-    return self._update_key(0, key, val)
+    return Table._get_lookup_index(key, array, 0)
+
+  def delete(self, key):
+    pass
+
+  def _update_key(self, hashval, key, val):
+    index = Table._get_lookup_index(key, self.array)
+    # Key is not already in dictionary.
+    if index is None:
+      return False
+    # Key's index was found. 
+    # Key is already in the table, so overwrite it without changing any sizes.
+    self.array[hashval] = self.array[hashval]._replace(value=val)
+    return True
 
   def resize(self):
     new_size = len(self.array) * 2
