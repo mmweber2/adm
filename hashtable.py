@@ -1,7 +1,5 @@
 from collections import namedtuple
 
-# Instead of Placeholder, let's try using "".
-
 Item = namedtuple('Item', ['key', 'value'])
 
 class Table(object):
@@ -14,6 +12,12 @@ class Table(object):
     # Non-empty spaces, including placeholders, in the hash table.
     self.spaces_filled = 0
 
+  # I currently use the built in hash(), but I'm moving it here in case
+  #   I want to change the hash function later on.
+  @staticmethod
+  def _hashit(key, array):
+    return hash(key) % len(array)
+
   # If the key hashes to an available value, stores it there.
   # If the key hashes to a previously used value, stores it in the next
   #   available space, looping around the end.
@@ -21,7 +25,7 @@ class Table(object):
   #   (There is no check for whether the value is the same.)
   def insert(self, key, value):
     # The length of the array will start as INIT_SIZE, but grow with the array.
-    hashval = hash(key) % len(self.array)
+    hashval = Table._hashit(key, self.array)
     # First, check whether key already exists.
     # Don't add or change anything else if we just updated an existing key.
     if self._update_key(hashval, key, value):
@@ -83,7 +87,7 @@ class Table(object):
     new_array = [None for _ in xrange(new_size)]
     for bucket in self.array:
       if type(bucket) is Item:
-        hashval = hash(bucket.key) % new_size
+        hashval = Table._hashit(bucket.key, new_array)
         if new_array[hashval] is not None:
           hashval = Table.open_address(hashval, new_array)
         # Don't increment the size, because that was already done for this item
@@ -91,6 +95,7 @@ class Table(object):
       # Placeholder spot
       if bucket == "":
         self.spaces_filled -= 1
+    self.array = new_array
 
   # Bucket already has a dummy or valid key/value pair, so find a new bucket.
   @staticmethod
