@@ -1,16 +1,12 @@
+from collections import namedtuple
+
 # Empty object for use when deleting an object from the hash table.
 class Placeholder(object):
   pass
 # These placeholders don't need to be unique, can't I just make one?
 
-class Item(object):
-  # key = None
-  # value = None
+Item = namedtuple('Item', ['key', 'value'])
 
-  def __init__(self, key, value):
-    self.key = key
-    self.value = value
-  
 class Table(object):
   # Total number of items currently in the hash table.
   items = 0
@@ -61,7 +57,7 @@ class Table(object):
     # Cycle back and check beginning of array.
     return self.lookup(key, 0)
 
-  def _update_key(self, hashval, key, value):
+  def _update_key(self, hashval, key, val):
     while hashval < len(self.array):
       current_bucket = self.array[hashval]
       if current_bucket is None:
@@ -70,12 +66,12 @@ class Table(object):
       # A valid item is in the bucket
       if type(current_bucket) is Item:
         # Key is already in the table, so overwrite it without changing any sizes.
-        if self.array[hashval].key == key:
-          self.array[hashval].value = value
+        if current_bucket.key == key:
+          self.array[hashval] = current_bucket._replace(value=val)
           return True
       hashval += 1
     # Cycle back and check beginning of array.
-    return self._update_key(0, key, value)
+    return self._update_key(0, key, val)
 
   def resize(self):
     new_size = len(self.array) * 2
