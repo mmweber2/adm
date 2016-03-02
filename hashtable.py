@@ -24,6 +24,11 @@ class Table(object):
   def __init__(self):
     self.array = [None for _ in xrange(self.INIT_SIZE)]
 
+  # If the key hashes to an available value, stores it there.
+  # If the key hashes to a previously used value, stores it in the next
+  #   available space, looping around the end.
+  # If the key is already in the dictionary, it's overwritten. 
+  #   (There is no check for whether the value is the same.)
   def insert(self, key, value):
     # The length of the array will start as INIT_SIZE, but grow with the array.
     hashval = hash(key) % len(self.array)
@@ -33,13 +38,13 @@ class Table(object):
       return
     # Spot is already full, with dummy or real value
     if self.array[hashval] is not None:
-      hashval = self._open_address(hashval + 1)
+      hashval = self._open_address(hashval + 1, self.array)
     # Once a spot is found, the item is going in the bucket and counts increment
     self.array[hashval] = Item(key, value)
     self.spaces_filled += 1
     self.items += 1
     if self.spaces_filled > len(self.array) / 2:
-      resize()
+      self.resize()
 
   def lookup(self, key, hashval=None):
     if hashval is None:
@@ -72,18 +77,30 @@ class Table(object):
     # Cycle back and check beginning of array.
     return self._update_key(0, key, value)
 
+  def resize(self):
+    new_size = len(self.array) * 2
+    new_array = [None for _ in xrange(new_size)]
+    for bucket in self.array:
+      if type(bucket) is Item:
+        hashval = hash(bucket.key) % new_size
+        if new_array[hashval] is not None:
+          hashval = self.open_address(hashval, new_array)
+        # Don't increment the size, because that was already done for this item
+        new_array[hashval] = bucket
+      if type(bucket) is Placeholder:
+        self.spaces_filled -= 1
+
   # Bucket already has a dummy or valid key/value pair, so find a new bucket.
-  def _open_address(self, hashval):
-    while hashval < len(self.array):
+  def _open_address(self, hashval, array):
+    while hashval < len(array):
       # New hash value found.
-      if self.array[hashval] is None:
+      if array[hashval] is None:
         return hashval
       hashval += 1
       # Reached end of array before finding an open space; start at the front.
       # It may seem that this would only happen if the hash is very full,
       #   but it's possible for an item to hash near the end of the array.
-    return self._open_address(0)
-
+    return self._open_address(0, array)
 
 # Hash key.
 # Check if bucket is empty: if yes, add it.

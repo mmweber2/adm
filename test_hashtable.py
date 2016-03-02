@@ -34,8 +34,26 @@ def test_insert_last_with_collision():
   assert t.items == 2
   assert t.spaces_filled == 2
 
+def test_insert_replace():
+  t = setup()
+  t.insert(9, 5)
+  t.insert(9, 0)
+  assert t.lookup(9) == 0
+  assert t.items == 1
+  assert t.spaces_filled == 1
+
+def test_insert_resize():
+  t = setup()
+  for i in xrange(6):
+    t.insert(i, 0)
+  assert t.lookup(1) == 0
+  assert t.items == 6
+  assert t.spaces_filled == 6
+
+
 
 # Test insert with resizing
-# Test insert when already exists
+# Test lookup when empty
+# Test lookup when absent
 # Test insert over a placeholder
 
