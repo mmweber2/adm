@@ -64,8 +64,8 @@ class Table(object):
 
   def delete(self, key):
     index = self._get_lookup_index(key)
-    # _get_lookup_index will find if the key is already deleted or
-    #  was never added, so we don't have to check for that here.
+    if index is None:
+      raise KeyError("Key \"{}\" not found.".format(key))
     self.array[index] = ""
     self.items -= 1
 

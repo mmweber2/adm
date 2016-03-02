@@ -1,7 +1,19 @@
 import hashtable
+from nose.tools import assert_raises
 
 def setup():
   return hashtable.Table()
+
+def test_lookup_empty():
+  t = setup()
+  assert_raises(KeyError, t.lookup, 2)
+
+def test_lookup_absent():
+  t = setup()
+  t.insert(2, 0)
+  assert_raises(KeyError, t.lookup, 0)
+
+# Test lookup when deleted
 
 # Also tests lookup, but has been tested separately as well.
 def test_insert_one():
@@ -50,10 +62,39 @@ def test_insert_resize():
   assert t.items == 6
   assert t.spaces_filled == 6
 
+# None and empty strings are allowed as keys because they're part of an Item, 
+#  so it will be different from the None showing a blank space.
+def test_insert_none():
+  t = setup()
+  t.insert(None, 1)
+  assert t.lookup(None) == 1
 
+def test_insert_empty():
+  t = setup()
+  t.insert("", 1)
+  assert t.lookup("") == 1
 
-# Test insert with resizing
-# Test lookup when empty
-# Test lookup when absent
-# Test insert over a placeholder
+def test_delete_absent():
+  t = setup()
+  assert_raises(KeyError, t.delete, None) 
+
+def test_delete_present():
+  t = setup()
+  t.insert(1, 10)
+  assert t.lookup(1) == 10
+  assert t.items == 1
+  assert t.spaces_filled == 1
+  t.delete(1)
+  assert_raises(KeyError, t.lookup, 1)
+  assert t.items == 0
+  assert t.spaces_filled == 1
+
+def test_insert_deleted():
+  t = setup()
+  t.insert(1, 10)
+  t.delete(1)
+  t.insert(1, 15)
+  assert t.lookup(1) == 15
+  assert t.items == 1
+  assert t.spaces_filled == 2
 
