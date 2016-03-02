@@ -61,6 +61,7 @@ def test_insert_resize():
   assert t.lookup(1) == 0
   assert t.items == 6
   assert t.spaces_filled == 6
+  assert len(t.array) == 20
 
 # None and empty strings are allowed as keys because they're part of an Item, 
 #  so it will be different from the None showing a blank space.
@@ -97,4 +98,22 @@ def test_insert_deleted():
   assert t.lookup(1) == 15
   assert t.items == 1
   assert t.spaces_filled == 2
+
+def test_delete_resize():
+  t = setup()
+  for i in xrange(5):
+    t.insert(i, 0)
+  t.delete(2)
+  t.delete(4)
+  # Add 5 items and delete 2.
+  assert t.items == 3
+  assert t.spaces_filled == 5
+  assert len(t.array) == 10
+  # Add 1 more item, pushing it over the resize point.
+  t.insert(6, 1)
+  assert t.lookup(1) == 0
+  assert t.items == 4
+  assert t.spaces_filled == 4
+  assert len(t.array) == 20
+
 
