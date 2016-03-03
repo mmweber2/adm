@@ -4,9 +4,10 @@ Item = namedtuple('Item', ['key', 'value'])
 
 class Table(object):
   INIT_SIZE = 10
+  RESIZE_PERCENT = .50
 
   def __init__(self):
-    self.array = [None for _ in xrange(self.INIT_SIZE)]
+    self.array = [None] * self.INIT_SIZE
     # Total number of items currently in the hash table.
     self.items = 0
     # Non-empty spaces, including placeholders, in the hash table.
@@ -15,8 +16,8 @@ class Table(object):
   # I currently use the built in hash(), but I'm moving it here in case
   #   I want to change the hash function later on.
   @staticmethod
-  def _hashit(key, array):
-    return hash(key) % len(array)
+  def _hashit(key, array_size):
+    return hash(key) % array_size
 
   # If the key hashes to an available value, stores it there.
   # If the key hashes to a previously used value, stores it in the next
@@ -25,7 +26,7 @@ class Table(object):
   #   (There is no check for whether the value is the same.)
   def insert(self, key, value):
     # The length of the array will start as INIT_SIZE, but grow with the array.
-    hashval = Table._hashit(key, self.array)
+    hashval = Table._hashit(key, len(self.array))
     # First, check whether key already exists.
     # Don't add or change anything else if we just updated an existing key.
     if self._update_key(hashval, key, value):
@@ -37,7 +38,7 @@ class Table(object):
     self.array[hashval] = Item(key, value)
     self.spaces_filled += 1
     self.items += 1
-    if self.spaces_filled > len(self.array) / 2:
+    if float(self.spaces_filled)/ len(self.array) > self.RESIZE_PERCENT:
       self.resize()
 
   def lookup(self, key):
@@ -48,10 +49,14 @@ class Table(object):
 
   # Find the index of a key in array, if it exists.
   # Returns None if it doesn't exist.
-  def _get_lookup_index(self, key, hashval=None):
-    if hashval is None:
-      hashval = hash(key) % len(self.array)
-    while hashval < len(self.array):
+  def _get_lookup_index(self, key):
+    hashval = Table._hashit(key, len(self.array))
+    while True:
+      # Cycle back and check beginning of array.
+      # This won't result in a full loop because we'll have to hit a None
+      #   before looping through the array, since it is no more than half full.
+      if hashval == len(self.array):
+        hashval = 0
       current_bucket = self.array[hashval]
       # Key is not in array.
       if current_bucket is None:
@@ -61,10 +66,6 @@ class Table(object):
         if current_bucket.key == key:
           return hashval
       hashval += 1
-    # Cycle back and check beginning of array.
-    # This won't result in a full loop because we'll have to hit a None
-    #   before looping through the array, since it is no more than half full.
-    return self._get_lookup_index(key, 0)
 
   def delete(self, key):
     index = self._get_lookup_index(key)
@@ -84,35 +85,28 @@ class Table(object):
 
   def resize(self):
     new_size = len(self.array) * 2
-    new_array = [None for _ in xrange(new_size)]
+    new_array = [None] * new_size
     for bucket in self.array:
       if type(bucket) is Item:
-        hashval = Table._hashit(bucket.key, new_array)
+        hashval = Table._hashit(bucket.key, new_size)
         if new_array[hashval] is not None:
           hashval = Table.open_address(hashval, new_array)
         # Don't increment the size, because that was already done for this item
         new_array[hashval] = bucket
-      # Placeholder spot
-      if bucket == "":
-        self.spaces_filled -= 1
+    # All placeholders have been removed, so it is now full of real items.
+    self.spaces_filled = self.items
     self.array = new_array
 
   # Bucket already has a dummy or valid key/value pair, so find a new bucket.
   @staticmethod
   def _open_address(hashval, array):
-    while hashval < len(array):
+    while True:
+      # Reached end of array before finding an open space; start at the front.
+      # It may seem that this would only happen if the hash is very full,
+      #   but it's possible for an item to hash near the end of the array.
+      if hashval == len(array):
+        hashval = 0
       # New hash value found.
       if array[hashval] is None:
         return hashval
       hashval += 1
-      # Reached end of array before finding an open space; start at the front.
-      # It may seem that this would only happen if the hash is very full,
-      #   but it's possible for an item to hash near the end of the array.
-    return Table._open_address(0, array)
-
-# Hash key.
-# Check if bucket is empty: if yes, add it.
-# Check next buckets.
-# If bucket has placeholder, keep going to make sure it's not there.
-# Repeat from 2 onward.
-
