@@ -6,12 +6,17 @@ class Table(object):
   INIT_SIZE = 10
   RESIZE_PERCENT = .50
 
-  def __init__(self):
-    self.array = [None] * self.INIT_SIZE
+  def __init__(self, size=INIT_SIZE):
+    self.array = [None] * size
     # Total number of items currently in the hash table.
     self.items = 0
     # Non-empty spaces, including placeholders, in the hash table.
     self.spaces_filled = 0
+
+  # Length of dictionary is considered to be the number of items in it, not
+  #   the number of spaces filled or slots available.
+  def __len__(self):
+    return self.items
 
   # I currently use the built in hash(), but I'm moving it here in case
   #   I want to change the hash function later on.
@@ -34,12 +39,12 @@ class Table(object):
     # Spot is already full, with dummy or real value
     if self.array[hashval] is not None:
       hashval = Table._open_address(hashval + 1, self.array)
-    # Once a spot is found, the item is going in the bucket and counts increment
+    # Once a spot is found, the item is going in the spot and counts increment
     self.array[hashval] = Item(key, value)
     self.spaces_filled += 1
     self.items += 1
     if float(self.spaces_filled)/ len(self.array) > self.RESIZE_PERCENT:
-      self.resize()
+      self._resize()
 
   def lookup(self, key):
     index = self._get_lookup_index(key)
@@ -57,13 +62,13 @@ class Table(object):
       #   before looping through the array, since it is no more than half full.
       if hashval == len(self.array):
         hashval = 0
-      current_bucket = self.array[hashval]
+      current_item = self.array[hashval]
       # Key is not in array.
-      if current_bucket is None:
+      if current_item is None:
         return None
       # A valid item is in the bucket
-      if type(current_bucket) is Item:
-        if current_bucket.key == key:
+      if type(current_item) is Item:
+        if current_item.key == key:
           return hashval
       hashval += 1
 
@@ -83,21 +88,21 @@ class Table(object):
     self.array[hashval] = self.array[hashval]._replace(value=val)
     return True
 
-  def resize(self):
+  def _resize(self):
     new_size = len(self.array) * 2
     new_array = [None] * new_size
-    for bucket in self.array:
-      if type(bucket) is Item:
-        hashval = Table._hashit(bucket.key, new_size)
+    for current_item in self.array:
+      if type(current_item) is Item:
+        hashval = Table._hashit(current_item.key, new_size)
         if new_array[hashval] is not None:
-          hashval = Table.open_address(hashval, new_array)
+          hashval = Table._open_address(hashval, new_array)
         # Don't increment the size, because that was already done for this item
-        new_array[hashval] = bucket
+        new_array[hashval] = current_item
     # All placeholders have been removed, so it is now full of real items.
     self.spaces_filled = self.items
     self.array = new_array
 
-  # Bucket already has a dummy or valid key/value pair, so find a new bucket.
+  # index already has a dummy or valid key/value pair, so find a new index.
   @staticmethod
   def _open_address(hashval, array):
     while True:
