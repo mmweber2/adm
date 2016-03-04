@@ -1,118 +1,148 @@
 import hashtable
+import mock
+import __builtin__
 from nose.tools import assert_raises
 
-def setup():
-  return hashtable.Table()
-
 def test_lookup_empty():
-  t = setup()
+  t = hashtable.Table()
   assert_raises(KeyError, t.lookup, 2)
 
 def test_lookup_absent():
-  t = setup()
-  t.insert(2, 0)
-  assert_raises(KeyError, t.lookup, 0)
+  t = hashtable.Table()
+  t.insert(2, "test")
+  assert_raises(KeyError, t.lookup, "test")
 
-# Test lookup when deleted
-
-# Also tests lookup, but has been tested separately as well.
 def test_insert_one():
-  t = setup()
-  t.insert(5, 0)
-  assert t.lookup(5) == 0
-  assert t.items == 1
+  t = hashtable.Table(10)
+  t.insert(5, "test")
+  assert t.lookup(5) == "test"
+  assert len(t) == 1
   assert t.spaces_filled == 1
+  assert t.array[5].key == 5
+  assert t.array[5].value == "test"
 
-def test_insert_collision():
-  t = setup()
-  t.insert(5, 0)
-  t.insert(105, 2)
-  assert t.items == 2
+def fakehash(value):
+  return 2
+
+@mock.patch('__builtin__.hash', side_effect=fakehash)
+def test_hasher(testhash):
+  assert hash(5) == 2
+  assert hash(2) == 2
+
+# TODO: Fix this up with mocks instead of __builtin__
+@mock.patch('__builtin__.hash', side_effect=fakehash)
+def test_insert_collision(mock_collision):
+  t = hashtable.Table(10)
+  t.insert(5, "test")
+  t.insert(10, "test again")
+  assert len(t) == 2
   assert t.spaces_filled == 2
-  assert t.lookup(105) == 2
+  assert t.lookup(5) == "test"
+  assert t.lookup(10) == "test again"
+  assert t.array[2].key == 5
+  assert t.array[3].key == 10
 
 def test_insert_last():
-  t = setup()
-  t.insert(9, 5)
-  assert t.lookup(9) == 5
-  assert t.items == 1
+  t = hashtable.Table(5)
+  t.insert(4, "test")
+  assert t.lookup(4) == "test"
+  assert len(t) == 1
   assert t.spaces_filled == 1
 
 def test_insert_last_with_collision():
-  t = setup()
-  t.insert(9, 5)
-  t.insert(109, 2)
-  assert t.lookup(109) == 2
-  assert t.items == 2
+  global hash
+  temp_hash = hash
+  hash = fakehash
+  # Fake hash returns 2
+  t = hashtable.Table(3)
+  t.insert(9, "test")
+  t.insert(10, "test again")
+  assert t.lookup(9) == "test"
+  assert t.lookup(10) == "test again"
+  assert len(t) == 2
   assert t.spaces_filled == 2
+  hash = temp_hash
 
 def test_insert_replace():
-  t = setup()
+  t = hashtable.Table()
   t.insert(9, 5)
-  t.insert(9, 0)
-  assert t.lookup(9) == 0
-  assert t.items == 1
+  t.insert(9, "test")
+  assert t.lookup(9) == "test"
+  assert len(t) == 1
   assert t.spaces_filled == 1
 
+def test_insert_replace_with_collision():
+  global hash
+  temp_hash = hash
+  hash = fakehash
+  t = hashtable.Table(5)
+  t.insert(9, "test")
+  t.insert(10, "test again")
+  t.insert(9, "test this instead")
+  assert t.lookup(9) == "test this instead"
+  assert t.lookup(10) == "test again"
+  assert len(t) == 2
+  assert t.spaces_filled == 2
+
 def test_insert_resize():
-  t = setup()
-  for i in xrange(6):
-    t.insert(i, 0)
-  assert t.lookup(1) == 0
-  assert t.items == 6
-  assert t.spaces_filled == 6
-  assert len(t.array) == 20
+  t = hashtable.Table(3)
+  t.insert("cheese", "cake")
+  t.insert("birthday", "party")
+  assert t.lookup("cheese") == "cake"
+  assert len(t) == 2
+  assert t.spaces_filled == 2
+  assert len(t.array) == 6
 
 # None and empty strings are allowed as keys because they're part of an Item, 
 #  so it will be different from the None showing a blank space.
 def test_insert_none():
-  t = setup()
+  t = hashtable.Table()
   t.insert(None, 1)
   assert t.lookup(None) == 1
 
 def test_insert_empty():
-  t = setup()
+  t = hashtable.Table()
   t.insert("", 1)
   assert t.lookup("") == 1
 
 def test_delete_absent():
-  t = setup()
-  assert_raises(KeyError, t.delete, None) 
+  t = hashtable.Table()
+  assert_raises(KeyError, t.delete, "taste") 
 
 def test_delete_present():
-  t = setup()
+  t = hashtable.Table()
   t.insert(1, 10)
   assert t.lookup(1) == 10
-  assert t.items == 1
+  assert len(t) == 1
   assert t.spaces_filled == 1
   t.delete(1)
   assert_raises(KeyError, t.lookup, 1)
-  assert t.items == 0
+  assert len(t) == 0
   assert t.spaces_filled == 1
 
 def test_insert_deleted():
-  t = setup()
+  t = hashtable.Table()
   t.insert(1, 10)
   t.delete(1)
   t.insert(1, 15)
   assert t.lookup(1) == 15
-  assert t.items == 1
+  assert len(t) == 1
   assert t.spaces_filled == 2
 
 def test_delete_resize():
-  t = setup()
+  t = hashtable.Table(10)
   for i in xrange(5):
-    t.insert(i, 0)
+    t.insert(i, "test")
   t.delete(2)
   t.delete(4)
   # Add 5 items and delete 2.
-  assert t.items == 3
+  assert len(t) == 3
   assert t.spaces_filled == 5
   assert len(t.array) == 10
   # Add 1 more item, pushing it over the resize point.
   t.insert(6, 1)
-  assert t.lookup(1) == 0
-  assert t.items == 4
+  assert t.lookup(3) == "test"
+  assert len(t) == 4
   assert t.spaces_filled == 4
   assert len(t.array) == 20
 
