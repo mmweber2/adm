@@ -21,24 +21,17 @@ def test_insert_one():
   assert t.array[5].key == 5
   assert t.array[5].value == "test"
 
-def fakehash(value):
-  return 2
-
-@mock.patch('__builtin__.hash', side_effect=fakehash)
-def test_hasher(testhash):
-  assert hash(5) == 2
-  assert hash(2) == 2
-
-# TODO: Fix this up with mocks instead of __builtin__
-@mock.patch('__builtin__.hash', side_effect=fakehash)
-def test_insert_collision(mock_collision):
+@mock.patch('__builtin__.hash', return_value=2)
+def test_insert_collision(mock_hash):
   t = hashtable.Table(10)
   t.insert(5, "test")
   t.insert(10, "test again")
+  assert mock_hash.call_count == 2
   assert len(t) == 2
   assert t.spaces_filled == 2
   assert t.lookup(5) == "test"
   assert t.lookup(10) == "test again"
+  assert mock_hash.call_count == 4
   assert t.array[2].key == 5
   assert t.array[3].key == 10
 
@@ -49,10 +42,8 @@ def test_insert_last():
   assert len(t) == 1
   assert t.spaces_filled == 1
 
-def test_insert_last_with_collision():
-  global hash
-  temp_hash = hash
-  hash = fakehash
+@mock.patch('__builtin__.hash', return_value=2)
+def test_insert_last_with_collision(mock_collision):
   # Fake hash returns 2
   t = hashtable.Table(3)
   t.insert(9, "test")
@@ -61,7 +52,6 @@ def test_insert_last_with_collision():
   assert t.lookup(10) == "test again"
   assert len(t) == 2
   assert t.spaces_filled == 2
-  hash = temp_hash
 
 def test_insert_replace():
   t = hashtable.Table()
@@ -71,10 +61,8 @@ def test_insert_replace():
   assert len(t) == 1
   assert t.spaces_filled == 1
 
-def test_insert_replace_with_collision():
-  global hash
-  temp_hash = hash
-  hash = fakehash
+@mock.patch('__builtin__.hash', return_value=2)
+def test_insert_replace_with_collision(mock_collision):
   t = hashtable.Table(5)
   t.insert(9, "test")
   t.insert(10, "test again")

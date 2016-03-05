@@ -47,15 +47,15 @@ class Table(object):
       self._resize()
 
   def lookup(self, key):
-    index = self._get_lookup_index(key)
+    hashval = Table._hashit(key, len(self.array))
+    index = self._get_lookup_index(hashval, key)
     if index is None:
       raise KeyError("Key \"{}\" not found.".format(key))
     return self.array[index].value
 
   # Find the index of a key in array, if it exists.
   # Returns None if it doesn't exist.
-  def _get_lookup_index(self, key):
-    hashval = Table._hashit(key, len(self.array))
+  def _get_lookup_index(self, hashval, key):
     while True:
       # Cycle back and check beginning of array.
       # This won't result in a full loop because we'll have to hit a None
@@ -73,14 +73,15 @@ class Table(object):
       hashval += 1
 
   def delete(self, key):
-    index = self._get_lookup_index(key)
+    hashval = Table._hashit(key, len(self.array))
+    index = self._get_lookup_index(hashval, key)
     if index is None:
       raise KeyError("Key \"{}\" not found.".format(key))
     self.array[index] = ""
     self.items -= 1
 
   def _update_key(self, hashval, key, val):
-    index = self._get_lookup_index(key)
+    index = self._get_lookup_index(hashval, key)
     # Key is not already in dictionary.
     if index is None:
       return False
