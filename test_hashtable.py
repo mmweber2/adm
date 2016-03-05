@@ -35,23 +35,26 @@ def test_insert_collision(mock_hash):
   assert t.array[2].key == 5
   assert t.array[3].key == 10
 
-def test_insert_last():
-  t = hashtable.Table(5)
+@mock.patch('__builtin__.hash', return_value=2)
+def test_insert_last(mock_hash):
+  t = hashtable.Table(3)
   t.insert(4, "test")
   assert t.lookup(4) == "test"
   assert len(t) == 1
   assert t.spaces_filled == 1
 
-@mock.patch('__builtin__.hash', return_value=2)
-def test_insert_last_with_collision(mock_collision):
-  # Fake hash returns 2
-  t = hashtable.Table(3)
+@mock.patch('__builtin__.hash', return_value=4)
+def test_insert_last_with_collision(mock_hash):
+  # Fake hash returns 4
+  t = hashtable.Table(5)
   t.insert(9, "test")
   t.insert(10, "test again")
   assert t.lookup(9) == "test"
   assert t.lookup(10) == "test again"
   assert len(t) == 2
   assert t.spaces_filled == 2
+  assert t.array[4].key == 9
+  assert t.array[0].key == 10
 
 def test_insert_replace():
   t = hashtable.Table()
