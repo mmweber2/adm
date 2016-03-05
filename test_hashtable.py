@@ -21,6 +21,15 @@ def test_insert_one():
   assert t.array[5].key == 5
   assert t.array[5].value == "test"
 
+def test_insert_object():
+  t = hashtable.Table()
+  a = object()
+  b = object()
+  t.insert(a, "found it")
+  assert t.lookup(a) == "found it"
+  assert len(t) == 1
+  assert_raises(KeyError, t.lookup, b)
+
 @mock.patch('__builtin__.hash', return_value=2)
 def test_insert_collision(mock_hash):
   t = hashtable.Table(10)
@@ -74,9 +83,14 @@ def test_insert_replace_with_collision(mock_collision):
   assert t.lookup(10) == "test again"
   assert len(t) == 2
   assert t.spaces_filled == 2
+  assert t.array[2].value == "test this instead"
+  assert t.array[3].value == "test again"
 
+# Insert such that the resize function is tested.
 def test_insert_resize():
   t = hashtable.Table(3)
+  # Currently the default.
+  t.RESIZE_PERCENT = .5
   t.insert("cheese", "cake")
   t.insert("birthday", "party")
   assert t.lookup("cheese") == "cake"
@@ -108,8 +122,20 @@ def test_delete_present():
   assert t.spaces_filled == 1
   t.delete(1)
   assert_raises(KeyError, t.lookup, 1)
+  assert_raises(KeyError, t.lookup, '')
   assert len(t) == 0
   assert t.spaces_filled == 1
+
+@mock.patch('__builtin__.hash', return_value=2)
+def test_delete_collisions(mock_hash):
+  t = hashtable.Table(10)
+  t.insert("ready", "set")
+  t.insert("go", "time")
+  t.insert("clean", "water")
+  t.delete("go")
+  assert t.lookup("clean") == "water"
+  assert len(t) == 2
+  assert t.spaces_filled == 3
 
 def test_insert_deleted():
   t = hashtable.Table()
