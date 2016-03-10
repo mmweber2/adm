@@ -4,9 +4,9 @@ Item = namedtuple('Item', ['key', 'value'])
 
 class Table(object):
   INIT_SIZE = 10
-  RESIZE_PERCENT = .50
+  RESIZE_RATIO  = .50
 
-  def __init__(self, size=INIT_SIZE):
+ def __init__(self, size=INIT_SIZE):
     self.array = [None] * size
     # Total number of items currently in the hash table.
     self.items = 0
@@ -43,7 +43,7 @@ class Table(object):
     self.array[hashval] = Item(key, value)
     self.spaces_filled += 1
     self.items += 1
-    if float(self.spaces_filled)/ len(self.array) > self.RESIZE_PERCENT:
+    if float(self.spaces_filled)/ len(self.array) > self.RESIZE_RATIO:
       self._resize()
 
   def lookup(self, key):
