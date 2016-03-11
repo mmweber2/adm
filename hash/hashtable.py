@@ -4,7 +4,7 @@ Item = namedtuple('Item', ['key', 'value'])
 
 class Table(object):
   INIT_SIZE = 10
-  RESIZE_RATIO  = .50
+  RESIZE_RATIO  = .5
 
  def __init__(self, size=INIT_SIZE):
     self.array = [None] * size
@@ -18,19 +18,20 @@ class Table(object):
   def __len__(self):
     return self.items
 
-  # I currently use the built in hash(), but I'm moving it here in case
-  #   I want to change the hash function later on.
   @staticmethod
   def _hashit(key, array_size):
+    # I currently use the built in hash(), but I'm moving it here in case
+    #   I want to change the hash function later on.
     return hash(key) % array_size
 
-  # If the key hashes to an available value, stores it there.
-  # If the key hashes to a previously used value, stores it in the next
-  #   available space, looping around the end.
-  # If the key is already in the dictionary, it's overwritten. 
-  #   (There is no check for whether the value is the same.)
   def insert(self, key, value):
-    # The length of the array will start as INIT_SIZE, but grow with the array.
+    """If the key hashes to an available value, stores it there.
+    If the key hashes the same as a previously used value, stores it in
+    the next available space, looping around the end.
+    If the key is already in the dictionary, it's overwritten.
+    (There is no check for whether the value is the same.)
+    The length of the array will start as INIT_SIZE, but grow with the array.
+    """
     hashval = Table._hashit(key, len(self.array))
     # First, check whether key already exists.
     # Don't add or change anything else if we just updated an existing key.
@@ -53,13 +54,14 @@ class Table(object):
       raise KeyError("Key \"{}\" not found.".format(key))
     return self.array[index].value
 
-  # Find the index of a key in array, if it exists.
-  # Returns None if it doesn't exist.
   def _get_lookup_index(self, hashval, key):
+     """ Find the index of a key in array, if it exists.
+     Returns None if it doesn't exist.
+     """
     while True:
-      # Cycle back and check beginning of array.
-      # This won't result in a full loop because we'll have to hit a None
-      #   before looping through the array, since it is no more than half full.
+      # Cycle back and check beginning of array. This won't result in a full
+      # loop because we'll have to hit a None before looping through
+      # the array, since it is no more than half full.
       if hashval == len(self.array):
         hashval = 0
       current_item = self.array[hashval]
