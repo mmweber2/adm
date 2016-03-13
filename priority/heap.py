@@ -17,10 +17,18 @@ class Heap(object):
         self.size += 1
         self._heap_up(self.size)
 
+    def has_items(self):
+       """Returns True if the Heap has items in it, and False otherwise."""
+       if self.size > 0:
+          return True
+       return False
+
     def _heap_up(self, index):
-        """For push; bring a newly added value up to its proper
-        index, instead of at the end of the array.
+        """For push; move a newly added value from the end of the
+        array up to its proper index.
         """
+        # Checking for index > 0 means that we never alter the
+        #    base 0 at index 0.
         while index / 2 > 0:
             if self.heap_list[index] < self.heap_list[index / 2]:
                 (self.heap_list[index], self.heap_list[index / 2]) = (
@@ -28,7 +36,7 @@ class Heap(object):
             index /= 2
 
     def _heap_down(self):
-        """For pop; bring a newly moved value down from the root to
+        """For pop; move a newly swapped value down from the root to
         its proper index.
         """
         # Always start at the (newly changed) root.
