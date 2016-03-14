@@ -17,6 +17,15 @@ class Heap(object):
         self.size += 1
         self._heap_up(self.size)
 
+    def peek(self):
+        """Returns the smallest item in the Heap without altering it.
+
+        Raises an IndexError if the Heap is empty.
+        """
+        if self.size == 0:
+          raise IndexError("No items to pop.")
+        return self.heap_list[1]
+
     def has_items(self):
        """Returns True if the Heap has items in it, and False otherwise."""
        if self.size > 0:
@@ -59,13 +68,12 @@ class Heap(object):
         return index
 
     def pop(self):
-        """Returns the smallest item in the Heap.
+        """Removes and returns the smallest item in the Heap.
 
         Raises an IndexError if the Heap is empty.
         """
-        if self.size == 0:
-          raise IndexError("No items to pop.")
-        minimum = self.heap_list[1]
+        # Rely on peek() for size checking and getting the element.
+        minimum = self.peek()
         # Position last item as new root
         self.heap_list[1] = self.heap_list[self.size]
         # Remove last list item using list's pop, not this method.
