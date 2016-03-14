@@ -12,6 +12,14 @@ def test_push_first():
     assert a.size == 1
     assert a.heap_list == [0, 2]
 
+def test_peek():
+    """Other functions test the ordering of the elements elsewhere,
+    so I'm only testing peek once.
+    """
+    a = Heap()
+    a.push(3)
+    assert a.peek() == 3
+
 def test_push_increasing():
     a = Heap()
     a.push(2)
