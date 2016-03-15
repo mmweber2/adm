@@ -7,28 +7,28 @@ class Heap(object):
     default sorting rules, and numbers are smaller than strings.
     """
     def __init__(self):
-        self.size = 0
+        self.heap_size = 0
         # Start with 0 as index 0 for easy integer division.
         self.heap_list = [0]
 
     def push(self, value):
         """Add an item to the heap."""
         self.heap_list.append(value)
-        self.size += 1
-        self._heap_up(self.size)
+        self.heap_size += 1
+        self._heap_up(self.heap_size)
 
     def size(self):
         """Returns the number of items in the Heap.
-        A newly created Heap is of size 0.
+        A newly created Heap is of.heap_size 0.
         """
-        return self.size
+        return self.heap_size
 
     def peek(self):
         """Returns the smallest item in the Heap without altering it.
 
         Raises an IndexError if the Heap is empty.
         """
-        if self.size == 0:
+        if self.heap_size == 0:
           raise IndexError("No items to pop.")
         return self.heap_list[1]
 
@@ -51,7 +51,7 @@ class Heap(object):
         # Always start at the (newly changed) root.
         index = 1
         # Move down until the node doesn't have any children.
-        while index * 2 <= self.size:
+        while index * 2 <= self.heap_size:
             smaller_child = self._min_child(index)
             if self.heap_list[index] > self.heap_list[smaller_child]:
                 self.heap_list[index], self.heap_list[smaller_child] = (
@@ -61,8 +61,8 @@ class Heap(object):
     def _min_child(self, index):
         # Return the index of the smallest of a node's children.
         index *= 2
-        # If index now equals self.size, the node only has one child.
-        if index < self.size and (
+        # If index now equals self.heap_size, the node only has one child.
+        if index < self.heap_size and (
             self.heap_list[index] > self.heap_list[index + 1]):
                 index += 1
         return index
@@ -72,12 +72,12 @@ class Heap(object):
 
         Raises an IndexError if the Heap is empty.
         """
-        # Rely on peek() for size checking and getting the element.
+        # Rely on peek() for.heap_size checking and getting the element.
         minimum = self.peek()
         # Position last item as new root
-        self.heap_list[1] = self.heap_list[self.size]
+        self.heap_list[1] = self.heap_list[self.heap_size]
         # Remove last list item using list's pop, not this method.
         self.heap_list.pop()
-        self.size -= 1
+        self.heap_size -= 1
         self._heap_down()
         return minimum
