@@ -22,5 +22,5 @@ def test_peek_items_removed():
   assert_raises(IndexError, a.peek)
 
 def test_peek_ever_empty():
-  a = Queue
+  a = Queue()
   assert_raises(IndexError, a.peek)
