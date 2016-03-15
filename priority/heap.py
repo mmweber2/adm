@@ -17,6 +17,12 @@ class Heap(object):
         self.size += 1
         self._heap_up(self.size)
 
+    def size(self):
+        """Returns the number of items in the Heap.
+        A newly created Heap is of size 0.
+        """
+        return self.size
+
     def peek(self):
         """Returns the smallest item in the Heap without altering it.
 
@@ -25,12 +31,6 @@ class Heap(object):
         if self.size == 0:
           raise IndexError("No items to pop.")
         return self.heap_list[1]
-
-    def has_items(self):
-       """Returns True if the Heap has items in it, and False otherwise."""
-       if self.size > 0:
-          return True
-       return False
 
     def _heap_up(self, index):
         """For push; move a newly added value from the end of the
