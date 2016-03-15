@@ -1,19 +1,33 @@
 from priority import Queue
 from nose.tools import assert_raises
 
+def test_size():
+  a = Queue()
+  assert a.size() == a.heap.heap_size
+
 def test_push_and_peek():
   a = Queue()
+  assert a.size() == 0
   a.push(1, "test")
+  assert a.size() == 1
   assert a.peek() == "test"
+  assert a.size() == 1
   a.push(3, "test again")
-  assert a.peek() == "test again"
+  assert a.peek() == "test"
+  assert a.size() == 2
+  a.push(-1, "keep testing")
+  assert a.peek() == "keep testing"
+  assert a.size() == 3
 
 def test_pop():
   a = Queue()
   a.push("string", "methods")
   a.push("are", "useful")
+  assert a.size() == 2
   assert a.pop() == "useful"
+  assert a.size() == 1
   assert a.pop() == "methods"
+  assert a.size() == 0
 
 def test_peek_items_removed():
   a = Queue()

@@ -19,7 +19,7 @@ class Heap(object):
 
     def size(self):
         """Returns the number of items in the Heap.
-        A newly created Heap is of.heap_size 0.
+        A newly created Heap is of size 0.
         """
         return self.heap_size
 
