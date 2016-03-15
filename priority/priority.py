@@ -1,25 +1,33 @@
 import heap
 
 class Queue(object):
-  """An unbounded priority queue based on a heap."""
-  self.heap = Heap()
+    """An unbounded priority queue based on a heap."""
 
-  # TODO: Implement adding key/item pairs as tuples.
+    # TODO: Implement adding key/item pairs as tuples.
 
-  def pop(self):
-      """Returns the smallest item in the queue.
+    def __init__(self):
+        """Creates a new, empty queue.
 
-      Raises an IndexError if the queue is empty.
-      """
-      return self.heap.pop()
+        Calling pop() or peek() before push() will raise an IndexError.
+        """
+        self.heap = heap.Heap()
 
-  def peek(self):
-      """Returns a copy of the smallest item in the queue.
+    def pop(self):
+        """Returns the value associated with the smallest key in the
+        queue, and removes the key/value pair from the queue.
 
-      Raises an IndexError if the queue is empty.
-      """
-      return self.heap.peek()
+        Raises an IndexError if the queue is empty.
+        """
+        return self.heapq.pop()
 
-  def push(self, value):
-      """Adds an item to the queue."""
-      self.heap.push(value)
+    def peek(self):
+        """Returns the value associated with the smallest key in the
+        queue.
+
+        Raises an IndexError if the queue is empty.
+        """
+        return self.heapq.peek()
+
+    def push(self, value):
+        """Adds an item to the queue."""
+        self.heapq.push(value)
