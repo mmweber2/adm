@@ -23,10 +23,16 @@ def test_insert_first():
     assert node.value == "test"
 
 def test_insert_invalid_int():
-    pass
+    q = BoundedQueue(2)
+    assert_raises(IndexError, q.insert, 3, "test")
 
+def test_insert_zero():
+    q = BoundedQueue(2)
+    assert_raises(IndexError, q.insert, 0, "test")
+    
 def test_insert_not_int():
-    pass
+    q = BoundedQueue(3)
+    assert_raises(TypeError, q.insert, "test", "test now")
 
 def test_insert_None():
     pass
