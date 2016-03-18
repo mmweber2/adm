@@ -34,10 +34,25 @@ class BoundedQueue(object):
          if key is not greater than 0 and less than or equal to limit,
          as defined when the queue was created.
          """
-        # Todo: Test key for validity (int >1 and < limit)
         # When an item is removed, top is incremented until it reaches a
         # non-empty list.
 
+        # This is enclosed in a try/except because some invalid values
+        # will result in different errors; for example, None raises a
+        # TypeError and "test" raises a ValueError.
+        try:
+            # Like limit, key must be converted to an int for indexing.
+            key = int(key)
+        except ValueError:
+            raise TypeError(
+                "Key must be an integer between 1 and limit (inclusive)."
+                )
+        # The array length check is not strictly necessary, but
+        #     it allows for a more specific error message.
+        if key < 1 or key > len(self.array) + 1:
+            raise IndexError(
+                "Key must be an integer between 1 and limit (inclusive)."
+                )
         # Make a new Node for this key.
         if self.array[key] == None:
             self.array[key] = BoundedNode(key, value)
