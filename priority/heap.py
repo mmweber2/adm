@@ -58,7 +58,7 @@ class Heap(object):
             index = smaller_child
 
     def _min_child(self, index):
-        """Return the index of the smallest of a node's children.""":w
+        """Return the index of the smallest of a node's children."""
         index *= 2
         # If index now equals size(), the node only has one child.
         if index < self.size() and (
