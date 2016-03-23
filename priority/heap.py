@@ -34,7 +34,7 @@ class Heap(object):
         array up to its proper index.
         """
         # Always start at the (newly added) last item of the array.
-        index = self.size() - 1
+        index = self.size()
         # Checking for index / 2 > 0 means that we never alter the
         #    base 0 at index 0.
         while index / 2 > 0:
