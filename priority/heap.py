@@ -5,13 +5,14 @@ class Heap(object):
     The default comparator is used.
     """
     def __init__(self):
-        # Start with 0 as index 0 for easy integer division.
+        # Start with a never-used 0 as index 0 for easy integer division,
+        #     multiplication, and indexing.
         self.heap_list = [0]
 
     def push(self, value):
         """Add an item to the heap."""
         self.heap_list.append(value)
-        self._heap_up(self.heap_size)
+        self._heap_up()
 
     def size(self):
         """Returns the number of items in the Heap.
@@ -57,9 +58,9 @@ class Heap(object):
             index = smaller_child
 
     def _min_child(self, index):
-        # Return the index of the smallest of a node's children.
+        """Return the index of the smallest of a node's children.""":w
         index *= 2
-        # If index now equals self.heap_size, the node only has one child.
+        # If index now equals size(), the node only has one child.
         if index < self.size() and (
             self.heap_list[index] > self.heap_list[index + 1]):
                 index += 1
@@ -68,7 +69,7 @@ class Heap(object):
     def pop(self):
         """Removes and returns the smallest item in the Heap.
 
-        Raises an IndexError if the Heap is empty.
+        Raises an IndexError through peek() if the Heap is empty.
         """
         # Rely on peek() for heap size checking and getting the element.
         minimum = self.peek()
