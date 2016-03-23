@@ -4,11 +4,7 @@ class Queue(object):
     """An unbounded priority queue based on a heap."""
 
     def __init__(self):
-        """Creates a new, empty queue.
-
-        Calling pop() or peek() before calling push() will raise an
-        IndexError.
-        """
+        """Creates a new, empty priority queue."""
         self.heap = heap.Heap()
 
     def pop(self):
@@ -17,8 +13,6 @@ class Queue(object):
 
         Raises an IndexError if the queue is empty.
         """
-        # We could just return pop()[1], but this allows us more
-        #     flexibility later on and is easier to read.
         key, value = self.heap.pop()
         return value
 
