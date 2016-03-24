@@ -13,8 +13,11 @@ class BoundedQueue(object):
     """A bounded-height priority queue."""
 
     def __init__(self, limit):
-        """Creates a new BoundedQueue for keys in the range 1
-        to limit, where limit is an integer >= 2.
+        """Creates a new BoundedQueue for keys in the range 1 to limit,
+        where limit is an integer >= 2.
+
+        If limit is a floating point number, it will be rounded down to
+        the nearest integer.
 
         Raises a ValueError if limit is not an integer, or a IndexError
         if limit is less than 2.
@@ -26,6 +29,15 @@ class BoundedQueue(object):
         limit += 1
         self.array = [None] * limit
         self.top = limit
+
+    def size(self):
+        """Returns the maximum allowed key value for this Queue; valid
+        key values range from 1 to this value.
+
+        Note that this is not the same as the number of items (inserted
+        pairs) in the Queue.
+        """
+        return len(self.array) - 1
 
     def insert(self, key, value):
         """Insert a key, value pair into the queue.
@@ -45,7 +57,8 @@ class BoundedQueue(object):
             key = int(key)
         except ValueError:
             raise TypeError(
-                "Key must be an integer between 1 and limit (inclusive)."
+                ("Key must be an integer between 1 and {}" +
+                "(inclusive).".format(self.size))
                 )
         # The array length check is not strictly necessary, but
         #     it allows for a more specific error message.
@@ -53,8 +66,23 @@ class BoundedQueue(object):
             raise IndexError(
                 "Key must be an integer between 1 and limit (inclusive)."
                 )
-        # Make a new Node for this key.
+        # This node is the first for this key.
         if self.array[key] == None:
             self.array[key] = BoundedNode(key, value)
             self.top = min(self.top, key)
-        #TODO: If there's already a node there, child it.
+        # This node is part of a chain for this key.
+        else:
+            current = self.array[key]
+            while current.child is not None:
+                current = current.child
+            current.child = BoundedNode(key, value)
+
+    def find_min(self):
+        """Return the smallest item in the Queue without removing it.
+
+        Raises an IndexError if the Queue is empty.
+        """
+        if self.size == 0:
+            raise IndexError("Queue is empty.")
+        return self.array[self.top].value
+
