@@ -25,10 +25,11 @@ class BoundedQueue(object):
         if limit < 2:
           raise IndexError("limit must be greater than 1.")
         limit = int(limit)
+        self.top = limit
+        self.item_count = 0
         # Allow 1-indexing of the array.
         limit += 1
         self.array = [None] * limit
-        self.top = limit
 
     def size(self):
         """Returns the maximum allowed key value for this Queue; valid
@@ -76,13 +77,20 @@ class BoundedQueue(object):
             while current.child is not None:
                 current = current.child
             current.child = BoundedNode(key, value)
+        self.item_count += 1
 
     def find_min(self):
         """Return the smallest item in the Queue without removing it.
 
         Raises an IndexError if the Queue is empty.
         """
-        if self.size == 0:
+        if self.item_count == 0:
             raise IndexError("Queue is empty.")
         return self.array[self.top].value
 
+    def extract_min(self):
+        """Return and remove the smallest value in the Queue.
+
+        Raises an IndexError if the Queue is empty.
+        """
+        value = self.find_min()
