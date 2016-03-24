@@ -73,7 +73,8 @@ class BoundedQueue(object):
         self.item_count += 1
 
     def find_min(self):
-        """Return the smallest item in the Queue without removing it.
+        """Return the smallest item (the value associated with the
+        smallest key) in the Queue without removing it.
 
         Raises an IndexError if the Queue is empty.
         """
@@ -82,7 +83,8 @@ class BoundedQueue(object):
         return self.array[self.top].value
 
     def extract_min(self):
-        """Return and remove the smallest value in the Queue.
+        """Return and remove the smallest item (the value associated
+        with the smallest key) in the Queue.
 
         Raises an IndexError if the Queue is empty.
         """
@@ -91,7 +93,7 @@ class BoundedQueue(object):
         node = self.array[self.top]
         # Min node has a child, so top is unaffected.
         if node.child is not None:
-            node = node.child
+            self.array[self.top] = node.child
         # Top needs to be incremented to next non-empty key
         else:
             for i in xrange(self.top, len(self.array)):
