@@ -5,10 +5,6 @@ class BoundedNode(object):
         self.value = value
         self.child = None
 
-    def link(self, child):
-        """Link another Node as the child (next node) of this Node."""
-        self.child = child
-
 class BoundedQueue(object):
     """A bounded-height priority queue."""
 
@@ -47,9 +43,6 @@ class BoundedQueue(object):
          if key is not greater than 0 and less than or equal to limit,
          as defined when the queue was created.
          """
-        # When an item is removed, top is incremented until it reaches a
-        # non-empty list.
-
         # This is enclosed in a try/except because some invalid values
         # will result in different errors; for example, None raises a
         # TypeError and "test" raises a ValueError.
@@ -62,7 +55,7 @@ class BoundedQueue(object):
                 "(inclusive).".format(self.size))
                 )
         # The array length check is not strictly necessary, but
-        #     it allows for a more specific error message.
+        # it allows for a more specific error message.
         if key < 1 or key > len(self.array) + 1:
             raise IndexError(
                 "Key must be an integer between 1 and limit (inclusive)."
@@ -93,4 +86,24 @@ class BoundedQueue(object):
 
         Raises an IndexError if the Queue is empty.
         """
+        # Use find_min's error checking and grab the value.
         value = self.find_min()
+        node = self.array[self.top]
+        # Min node has a child, so top is unaffected.
+        if node.child is not None:
+            node = node.child
+        # Top needs to be incremented to next non-empty key
+        else:
+            for i in xrange(self.top, len(self.array)):
+                updated_top = False
+                if self.array[i] is not None:
+                    self.top = i
+                    updated_top = True
+                    break
+            # Removed the last node in the Queue. Set top to the last
+            # possible valid value so that it will be properly updated
+            # if another value is added.
+            if not updated_top:
+                self.top = self.size()
+        self.item_count -= 1
+        return value
