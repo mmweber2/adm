@@ -96,8 +96,8 @@ class BoundedQueue(object):
             self.array[self.top] = node.child
         # Top needs to be incremented to next non-empty key
         else:
-            for i in xrange(self.top, len(self.array)):
-                updated_top = False
+            updated_top = False
+            for i in xrange(self.top + 1, len(self.array)):
                 if self.array[i] is not None:
                     self.top = i
                     updated_top = True
