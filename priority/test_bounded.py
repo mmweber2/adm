@@ -87,13 +87,39 @@ def test_find_min_key_chain():
     q = BoundedQueue(3)
     q.insert(1, "test")
     q.insert(1, "again")
-    value = q.find_min()
-    assert value == "test"
+    assert q.find_min() == "test"
 
 def test_find_min_empty():
     q = BoundedQueue(2)
     assert_raises(IndexError, q.find_min)
 
-def test_extract_min():
-    pass
+def test_extract_min_standard():
+    q = BoundedQueue(2)
+    q.insert(2, "test")
+    assert q.extract_min() == "test"
+    assert q.item_count == 0
+
+def test_extract_min_same_key():
+    q = BoundedQueue(2)
+    q.insert(2, "test")
+    q.insert(2, "test two")
+    assert q.extract_min() == "test"
+    assert q.extract_min() == "test two"
+
+def test_extract_min_different_keys():
+    q = BoundedQueue(4)
+    q.insert(3, "test")
+    q.insert(1, "testing")
+    assert q.extract_min() == "testing"
+    assert q.extract_min() == "test"
+
+def test_extract_min_empty():
+    q = BoundedQueue(2)
+    assert_raises(IndexError, q.extract_min)
+
+def test_extract_min_already_removed():
+    q = BoundedQueue(4)
+    q.insert(3, "test")
+    q.extract_min()
+    assert_raises(IndexError, q.extract_min)
 
