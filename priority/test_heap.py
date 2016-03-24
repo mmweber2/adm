@@ -128,8 +128,10 @@ def test_min_child():
     assert a.heap_list == [0, 9, 11, 18, 14]
 
 def test_push_multiple_types():
+    """Assuming implementation where 2 < 'strings'."""
     a = Heap()
     a.push(2)
-    a.push("strings")
+    a.push('strings')
     assert a.pop() == 2
+    assert a.pop() == 'strings'
 
