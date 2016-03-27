@@ -1,4 +1,4 @@
-from bisect import bisect, bisect_left
+from bisect import bisect_left
 
 class SuffixArray(object):
     """An array that keeps track of suffixes."""
@@ -13,6 +13,11 @@ class SuffixArray(object):
         """
         s = str(s)
         self.array = sorted([s[i:] for i in xrange(len(s))])
+        self.lcp = None #TODO where lcp[i] = LCP(i, i-1)
+
+
+    # The bisect version works, but it might be making more comparisons
+        # than are necessary.
 
     # TODO: Count substrings too?
     def is_substring(self, sub):
