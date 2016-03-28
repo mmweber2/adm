@@ -36,9 +36,15 @@ def test_is_substring_empty():
 
 # White box
 
+# TODO: Test initial lcp list
+# Test find_lcp
 def test_create_string():
     a = SuffixArray("test")
     assert a.array == ['est', 'st', 't', 'test']
+    # Only 't' and 'test' have any prefixes in common
+    assert a.lcp == [0, 0, 0, 1]
+
+    # TODO: Add another more complicated lcp
 
 def test_create_empty():
     a = SuffixArray('')
