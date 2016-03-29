@@ -44,6 +44,13 @@ def test_create_string():
     # Only 't' and 'test' have any prefixes in common
     assert a.lcp == [0, 0, 0, 1]
 
+def test_create_longer_string_for_lcp():
+    a = SuffixArray("cheesechase")
+    # Prefixes should be:
+    # "ase, chase, cheesechase, e, echase, eesechase, esechase, hase,
+    # heesechase, se, sechase"
+    assert a.lcp == [0, 0, 2, 0, 1, 1, 1, 0, 1, 0, 2]
+
     # TODO: Add another more complicated lcp
 
 def test_create_empty():
