@@ -13,8 +13,32 @@ class SuffixArray(object):
         """
         s = str(s)
         self.array = sorted([s[i:] for i in xrange(len(s))])
-        self.lcp = None #TODO where lcp[i] = LCP(i, i-1)
+        # First item will have no common prefix with its predecessor.
+        self.lcp = [0]
+        for i in xrange(1, len(self.array)):
+            self.lcp.append(SuffixArray._find_lcp(self.array[i], self.array[i-1]))
 
+    @staticmethod
+    def _find_lcp(s1, s2):
+        """Returns the length of the longest common prefix
+        of strings s1 and s2.
+
+        Returns 0 if there are no elements in common.
+        Raises a TypeError if either or both elements are not strings.
+        """
+        # Comparisons and/or iterations might work with other types,
+        # so check the types first.
+        if not (isinstance(s1, str) and isinstance(s2, str)):
+            raise TypeError
+        # Put the shorter string first for ease of iteration.
+        if len(s2) < len(s1):
+            s1, s2 = s2, s1
+        count = 0
+        for i in xrange(len(s1)):
+            if s1[i] == s2[i]:
+              count += 1
+            else: break
+        return count
 
     # The bisect version works, but it might be making more comparisons
         # than are necessary.
@@ -37,6 +61,19 @@ class SuffixArray(object):
         # If start < end, there is at least one suffix in s that
         # has sub as a prefix, which means that sub is a substring.
         return start < end
+
+    def longest_repeating(self):
+        """Returns a list of all of the longest repeating substrings
+        in this SuffixArray.
+
+        If there are multiple repeating substrings that are all the
+        maximum size, all are returned in a list. Otherwise, the list
+        consists of the single longest repeating substring.
+
+        Returns an empty list if the SuffixArray contains no repeating
+        substrings.
+        """
+        return []
 
 
     # TODO: Add more strings?

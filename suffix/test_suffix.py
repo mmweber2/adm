@@ -36,7 +36,6 @@ def test_is_substring_empty():
 
 # White box
 
-# TODO: Test initial lcp list
 # Test find_lcp
 def test_create_string():
     a = SuffixArray("test")
@@ -51,7 +50,22 @@ def test_create_longer_string_for_lcp():
     # heesechase, se, sechase"
     assert a.lcp == [0, 0, 2, 0, 1, 1, 1, 0, 1, 0, 2]
 
-    # TODO: Add another more complicated lcp
+def test_find_lcp_first_empty():
+    assert SuffixArray._find_lcp("", "test") == 0
+
+def test_find_lcp_second_empty():
+    assert SuffixArray._find_lcp("test", "") == 0
+
+def test_find_lcp_first_shorter():
+    assert SuffixArray._find_lcp("test", "testing") == 4
+
+def test_find_lcp_second_shorter():
+    assert SuffixArray._find_lcp("extraneous", "extra") == 5
+
+def test_find_lcp_not_string():
+    assert_raises(TypeError, SuffixArray._find_lcp, None, "test")
+
+# TODO: Test the normal case(s) of find_lcp.
 
 def test_create_empty():
     a = SuffixArray('')
