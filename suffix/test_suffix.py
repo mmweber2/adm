@@ -36,7 +36,6 @@ def test_is_substring_empty():
 
 # White box
 
-# Test find_lcp
 def test_create_string():
     a = SuffixArray("test")
     assert a.array == ['est', 'st', 't', 'test']
@@ -57,6 +56,7 @@ def test_find_lcp_second_empty():
     assert SuffixArray._find_lcp("test", "") == 0
 
 def test_find_lcp_first_shorter():
+    # Also covers the case where they are both the same length.
     assert SuffixArray._find_lcp("test", "testing") == 4
 
 def test_find_lcp_second_shorter():
@@ -65,11 +65,13 @@ def test_find_lcp_second_shorter():
 def test_find_lcp_not_string():
     assert_raises(TypeError, SuffixArray._find_lcp, None, "test")
 
-# TODO: Test the normal case(s) of find_lcp.
+def test_find_lcp_no_common():
+    assert SuffixArray._find_lcp("test", "case") == 0
 
 def test_create_empty():
     a = SuffixArray('')
     assert a.array == []
+    assert a.lcp == [0]
 
 def test_create_non_string():
     a = SuffixArray(None)

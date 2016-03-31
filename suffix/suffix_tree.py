@@ -8,15 +8,16 @@ class SuffixArray(object):
         Suffixes are sorted using sorted(), so they are case sensitive:
         "None" is less than "none".
 
-        If s is not a string, it will be converted to one with
-        str().
+        If s is not a string, it will be converted to one with str().
         """
         s = str(s)
         self.array = sorted([s[i:] for i in xrange(len(s))])
-        # First item will have no common prefix with its predecessor.
+        # Determine LCPs for each pair of (sorted) consecutive prefixes.
+        # First item will have no common prefix because it has no predecessor.
         self.lcp = [0]
         for i in xrange(1, len(self.array)):
-            self.lcp.append(SuffixArray._find_lcp(self.array[i], self.array[i-1]))
+            prefix = SuffixArray._find_lcp(self.array[i], self.array[i-1])
+            self.lcp.append(prefix)
 
     @staticmethod
     def _find_lcp(s1, s2):
@@ -62,6 +63,8 @@ class SuffixArray(object):
         # has sub as a prefix, which means that sub is a substring.
         return start < end
 
+
+    # TODO
     def longest_repeating(self):
         """Returns a list of all of the longest repeating substrings
         in this SuffixArray.
@@ -76,5 +79,4 @@ class SuffixArray(object):
         return []
 
 
-    # TODO: Add more strings?
     # Track Longest Common Prefix?
