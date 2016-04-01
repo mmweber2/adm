@@ -76,7 +76,8 @@ class SuffixArray(object):
         Returns an empty list if the SuffixArray contains no repeating
         substrings.
         """
+        max_pair = []
+        max_size = 0
+        for pair in self.lcp:
+          # Go through and collect all of the pairs with the highest lcp.
         return []
-
-
-    # Track Longest Common Prefix?
