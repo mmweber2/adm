@@ -78,6 +78,17 @@ class SuffixArray(object):
         """
         max_pair = []
         max_size = 0
-        for pair in self.lcp:
-          # Go through and collect all of the pairs with the highest lcp.
-        return []
+        for i in xrange(1, len(self.lcp)):
+            pairs = self.lcp[i]
+            if pairs > max_size:
+                max_size = pairs
+                # Reset max_pair, since a new size was found
+                # We don't have to worry about i-1 at 0 because i's
+                # value will always be 0 at index 0.
+                max_pair = [self.array[i-1], self.array[i]]
+            elif pairs == max_size:
+                max_pair.append([self.array[i-1], self.array[i]])
+           # Now that we have these pairs, figure out the longest repeating
+           # Does this just mean taking the shorter of these?
+        print "Max size is ", max_size
+        return max_pair
