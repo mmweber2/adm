@@ -77,3 +77,14 @@ def test_create_non_string():
     a = SuffixArray(None)
     assert a.array == ['None', 'e', 'ne', 'one']
 
+def test_longest_repeating_substrings():
+    a = SuffixArray("Taketakingpartaking")
+    assert a.longest_repeating() == "taking"
+
+def test_longest_repeating_spaces():
+    s = ("This is a pretty long string. It is so long that it wraps " +
+            "over multiple lines.")
+    a = SuffixArray(s)
+    print "Answer was [{}]".format(a.longest_repeating())
+    assert a.longest_repeating() == " long "
+

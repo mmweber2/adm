@@ -76,8 +76,10 @@ class SuffixArray(object):
         Returns an empty list if the SuffixArray contains no repeating
         substrings.
         """
+        # List of tuples of all max pairs
         max_pair = []
         max_size = 0
+        # Get pair starting with the longest repeating string.
         for i in xrange(1, len(self.lcp)):
             pairs = self.lcp[i]
             if pairs > max_size:
@@ -87,8 +89,19 @@ class SuffixArray(object):
                 # value will always be 0 at index 0.
                 max_pair = [self.array[i-1], self.array[i]]
             elif pairs == max_size:
-                max_pair.append([self.array[i-1], self.array[i]])
-           # Now that we have these pairs, figure out the longest repeating
-           # Does this just mean taking the shorter of these?
-        print "Max size is ", max_size
-        return max_pair
+                max_pair.append((self.array[i-1], self.array[i]))
+        # Now that we have these pairs, figure out the longest repeating
+        # List of all max-size repeating substrings (not tuples)
+        all_max = []
+        for pair in max_pair:
+            print "Max size is ", max_size
+            print "Max pair is ", max_pair
+            shorter = pair[0]
+            longer = pair[1]
+            if len(pair[1]) < len(pair[0]):
+                shorter = pair[1]
+                longer = pair[0]
+            for i in xrange(len(shorter)):
+                if shorter[i] != longer[i]:
+                all_max.append(shorter[:i])
+        return all_max
