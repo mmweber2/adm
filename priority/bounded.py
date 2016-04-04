@@ -7,7 +7,6 @@ class BoundedNode(object):
 
 class BoundedQueue(object):
     """A bounded-height priority queue."""
-
     def __init__(self, limit):
         """Creates a new BoundedQueue for priorities in the range 1 to
         limit, where limit is an integer >= 2.
