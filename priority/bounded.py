@@ -12,11 +12,11 @@ class BoundedQueue(object):
         """Creates a new BoundedQueue for priorities in the range 1 to
         limit, where limit is an integer >= 2.
 
-        Raises a dataError if limit is not an integer, or a IndexError
+        Raises a ValueError if limit is not an integer, or a IndexError
         if limit is less than 2.
         """
         if not isinstance(limit, int):
-            raise dataError("limit must be an integer.")
+            raise ValueError("limit must be an integer.")
         if limit < 2:
           raise IndexError("limit must be greater than 1.")
         self._top = limit
