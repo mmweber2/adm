@@ -38,16 +38,16 @@ def test_is_substring_empty():
 
 def test_create_string():
     a = SuffixArray("test")
-    assert a.array == ['est', 'st', 't', 'test']
+    assert a._array == ['est', 'st', 't', 'test']
     # Only 't' and 'test' have any prefixes in common
-    assert a.lcp == [0, 0, 0, 1]
+    assert a._lcp == [0, 0, 0, 1]
 
 def test_create_longer_string_for_lcp():
     a = SuffixArray("cheesechase")
     # Prefixes should be:
     # "ase, chase, cheesechase, e, echase, eesechase, esechase, hase,
     # heesechase, se, sechase"
-    assert a.lcp == [0, 0, 2, 0, 1, 1, 1, 0, 1, 0, 2]
+    assert a._lcp == [0, 0, 2, 0, 1, 1, 1, 0, 1, 0, 2]
 
 def test_find_lcp_first_empty():
     assert SuffixArray._find_lcp("", "test") == 0
@@ -70,21 +70,27 @@ def test_find_lcp_no_common():
 
 def test_create_empty():
     a = SuffixArray('')
-    assert a.array == []
-    assert a.lcp == [0]
+    assert a._array == []
+    assert a._lcp == [0]
 
 def test_create_non_string():
     a = SuffixArray(None)
-    assert a.array == ['None', 'e', 'ne', 'one']
+    assert a._array == ['None', 'e', 'ne', 'one']
 
-def test_longest_repeating_substrings():
+def test_longest_repeating_no_terminal():
+    """Substrings match, but not at the end of either substring."""
+
+def test_longest_repeating_two_terminal():
+    """Substrings match at the end of both substrings."""
     a = SuffixArray("Taketakingpartaking")
-    assert a.longest_repeating() == "taking"
+    assert a.longest_repeating() == ["taking"]
+
+def test_longest_repeating_one_terminal():
+    """Substrings match at the end of one of the strings."""
 
 def test_longest_repeating_spaces():
     s = ("This is a pretty long string. It is so long that it wraps " +
             "over multiple lines.")
     a = SuffixArray(s)
-    print "Answer was [{}]".format(a.longest_repeating())
-    assert a.longest_repeating() == " long "
+    assert a.longest_repeating() == [" long "]
 
