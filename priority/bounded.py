@@ -1,114 +1,116 @@
 class BoundedNode(object):
     """A Node to represent a single data point in the Queue."""
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-        self.child = None
+    def __init__(self, priority, data):
+        self.priority = priority
+        self.data = data
+        self.next_item = None
 
 class BoundedQueue(object):
     """A bounded-height priority queue."""
 
     def __init__(self, limit):
-        """Creates a new BoundedQueue for keys in the range 1 to limit,
-        where limit is an integer >= 2.
+        """Creates a new BoundedQueue for priorities in the range 1 to
+        limit, where limit is an integer >= 2.
 
-        If limit is a floating point number, it will be rounded down to
-        the nearest integer.
-
-        Raises a ValueError if limit is not an integer, or a IndexError
+        Raises a dataError if limit is not an integer, or a IndexError
         if limit is less than 2.
         """
+        if not isinstance(limit, int):
+            raise dataError("limit must be an integer.")
         if limit < 2:
           raise IndexError("limit must be greater than 1.")
-        limit = int(limit)
-        self.top = limit
-        self.item_count = 0
-        # Allow 1-indexing of the array.
-        limit += 1
-        self.array = [None] * limit
+        self._top = limit
+        self._item_count = 0
+        # Add an extra (blank) element to allow for 1-indexing.
+        self.array = [None] * (limit + 1)
 
     def size(self):
-        """Returns the maximum allowed key value for this Queue; valid
-        key values range from 1 to this value.
+        """Returns the maximum allowed priority for this Queue; valid
+        priorities range from 1 to this number.
 
-        Note that this is not the same as the number of items (inserted
-        pairs) in the Queue.
+        Note that this is not the same as the number of items in
+        the Queue; len() should be used for that.
         """
         return len(self.array) - 1
 
-    def insert(self, key, value):
-        """Insert a key, value pair into the queue.
+    def __len__(self):
+        """Returns the number of items currently in the Queue."""
+        return self._item_count
 
-         Raises a TypeError if key is not an integer, or a IndexError
-         if key is not greater than 0 and less than or equal to limit,
-         as defined when the queue was created.
-         """
-        # This is enclosed in a try/except because some invalid values
-        # will result in different errors; for example, None raises a
-        # TypeError and "test" raises a ValueError.
-        try:
-            # Like limit, key must be converted to an int for indexing.
-            key = int(key)
-        except ValueError:
-            raise TypeError(
-                ("Key must be an integer between 1 and {}" +
-                "(inclusive).".format(self.size))
-                )
+    def insert(self, priority, data):
+        """Insert a piece of data into the queue with the given
+        priority.
+
+        Raises a TypeError if priority is not an integer, or an
+        IndexError if 0 >= priority > limit. This limit was defined
+        when the Queue was created.
+        """
+        if not isinstance(priority, int):
+            raise TypeError(("priority is not an integer; it must be an" +
+                " integer between 1 and limit."))
         # The array length check is not strictly necessary, but
         # it allows for a more specific error message.
-        if key < 1 or key > len(self.array) + 1:
-            raise IndexError(
-                "Key must be an integer between 1 and limit (inclusive)."
-                )
-        # This node is the first for this key.
-        if self.array[key] == None:
-            self.array[key] = BoundedNode(key, value)
-            self.top = min(self.top, key)
-        # This node is part of a chain for this key.
+        if not len(self.array) + 1 > priority >= 1:
+            raise IndexError(("priority must be an integer between 1" +
+                " and limit (inclusive)."
+                ))
+        # This node is the first for this priority.
+        if self.array[priority] == None:
+            self.array[priority] = BoundedNode(priority, data)
+            self._top = min(self._top, priority)
+        # This node is part of a chain for this priority.
         else:
-            current = self.array[key]
-            while current.child is not None:
-                current = current.child
-            current.child = BoundedNode(key, value)
-        self.item_count += 1
+            current = self.array[priority]
+            # Add the new node to the top of the chain.
+            self.array[priority] = BoundedNode(priority, data)
+            self.array[priority].next_item = current
+        self._item_count += 1
 
     def find_min(self):
-        """Return the smallest item (the value associated with the
-        smallest key) in the Queue without removing it.
+        """Return the smallest item (the data associated with the
+        smallest priority) in the Queue without removing it.
+
+        If there are multiple items with the minimum priority, an
+        unspecified item of that priority will be returned.
 
         Raises an IndexError if the Queue is empty.
         """
-        if self.item_count == 0:
+        if len(self) == 0:
             raise IndexError("Queue is empty.")
-        return self.array[self.top].value
+        return self.array[self._top].data
 
     def extract_min(self):
-        """Returns and removes the smallest item (the value associated
-        with the smallest key) in the Queue.
+        """Returns and removes the smallest item (the data associated
+        with the smallest priority) in the Queue.
+
+        If there are multiple items with the minimum priority, the
+        items will be returned in unspecified order.
 
         Raises an IndexError if the Queue is empty.
         """
-        # Use find_min's error checking and get the value.
-        value = self.find_min()
-        node = self.array[self.top]
-        # Min node has a child, so top is unaffected.
-        if node.child is not None:
-            self.array[self.top] = node.child
-        # Top needs to be incremented to next non-empty key
+        # Use find_min's error checking and get the data.
+        data = self.find_min()
+        node = self.array[self._top]
+        # Min node has a next_item, so _top is unaffected.
+        if node.next_item is not None:
+            self.array[self._top] = node.next_item
+        #_top needs to be incremented to next non-empty priority
         else:
-            previous_top = self.top
-            # Check for another non-empty key location. There cannot
-            # be another node before this one, because top is always
-            # compared to the new key when inserting.
-            for i in xrange(previous_top + 1, len(self.array)):
+            previous_top = self._top
+            # Check for another non-empty priority location. There cannot
+            # be another node before this one, because _top is always
+            # compared to the new priority when inserting.
+            # TODO: Use a stack to keep track of minimums so we do
+            # not have to traverse up the full queue each removal.
+            for i in xrange(previous_top + 1, self.size()):
                 if self.array[i] is not None:
-                    self.top = i
+                    self._top = i
                     break
-            # We did not find a successor to top, so the last node in
-            # the Queue was removed. Set top to the last possible valid
-            # value so that it will be properly updated if another value
+            # We did not find a successor to _top, so the last node in
+            # the Queue was removed. Set._top to the last possible valid
+            # data so that it will be properly updated if another data
             # is added.
-            if self.top == previous_top:
-                self.top = self.size()
-        self.item_count -= 1
-        return value
+            if self._top == previous_top:
+                self._top = self.size()
+        self._item_count -= 1
+        return data
