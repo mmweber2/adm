@@ -84,7 +84,7 @@ def test_longest_repeating_no_terminal():
 
 def test_longest_repeating_no_repeat():
     a = SuffixArray("abcdefg")
-    assert a.longest_repeating() == []
+    assert a.longest_repeating() == [""]
 
 def test_longest_repeating_multiple_repeats():
     a = SuffixArray("raccoon@cat%bear$dog!cat*dog^fish")
@@ -92,6 +92,7 @@ def test_longest_repeating_multiple_repeats():
 
 def test_longest_repeating_same_word_more_than_twice():
     a = SuffixArray("our great times are going to be greatly great")
+    print "Answer was ", a.longest_repeating()
     assert a.longest_repeating() == [" great"]
 
 def test_longest_repeating_two_terminal():
