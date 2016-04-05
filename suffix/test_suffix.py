@@ -78,7 +78,21 @@ def test_create_non_string():
     assert a._array == ['None', 'e', 'ne', 'one']
 
 def test_longest_repeating_no_terminal():
-    """Substrings match, but not at the end of either substring."""
+    """Prefixes match, but not at the end of either substring."""
+    a = SuffixArray("chase chasing")
+    assert a.longest_repeating() == ["chas"]
+
+def test_longest_repeating_no_repeat():
+    a = SuffixArray("abcdefg")
+    assert a.longest_repeating() == []
+
+def test_longest_repeating_multiple_repeats():
+    a = SuffixArray("raccoon@cat%bear$dog!cat*dog^fish")
+    assert a.longest_repeating() == ["cat", "dog"]
+
+def test_longest_repeating_same_word_more_than_twice():
+    a = SuffixArray("our great times are going to be greatly great")
+    assert a.longest_repeating() == [" great"]
 
 def test_longest_repeating_two_terminal():
     """Substrings match at the end of both substrings."""
@@ -87,9 +101,11 @@ def test_longest_repeating_two_terminal():
 
 def test_longest_repeating_one_terminal():
     """Substrings match at the end of one of the strings."""
+    a = SuffixArray("cake and more cake")
+    assert a.longest_repeating() == ["cake"]
 
 def test_longest_repeating_spaces():
-    s = ("This is a pretty long string. It is so long that it wraps " +
+    s = ("This is a long string. It is so long that it wraps " +
             "over multiple lines.")
     a = SuffixArray(s)
     assert a.longest_repeating() == [" long "]
