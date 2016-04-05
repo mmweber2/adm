@@ -52,7 +52,6 @@ class SuffixArray(object):
             else: break
         return count
 
-    # TODO: Count how many of the substrings too?
     def is_substring(self, sub):
         """Checks for a substring in this string.
 
@@ -79,10 +78,6 @@ class SuffixArray(object):
         return start < end
 
 
-    # TODO: Number of occurrences of x in string?
-        # Find place in sort where suffixes start with x
-        # Count number of these
-    # TODO
     def longest_repeating(self):
         """Find the longest repeating substring.
 
@@ -95,14 +90,16 @@ class SuffixArray(object):
             Otherwise, the list consists of the single longest repeating
             substring.
             To compare characters, the default comparator is used and
-            whitespace and punctuation are not ignored.
+            whitespace and punctuation are considered.
 
             Returns an empty list if the SuffixArray contains no repeating
             substrings.
         """
-        # List of tuples of all max pairs
+        # Consider strings in pairs because we already have pair data
+        # from lcp.
+        # List of tuples of all maximum-match pairs
         max_pair = []
-        max_size = 0
+        max_size = 1    # Don't consider pairs where lcp = 0
         # Get the pairs that start with the longest repeating string.
         # Start at 1 because lcp[0] is always 0.
         for i in xrange(1, len(self._lcp)):
@@ -112,16 +109,15 @@ class SuffixArray(object):
                 # Reset max_pair because a new size was found.
                 # lcp[i] reflects the size of the shared prefix
                 # between array[i] and array[i-1], so track both
-                # of those.
+                # of those suffixes.
                 max_pair = [(self._array[i-1], self._array[i])]
             elif prefix_size == max_size:
                 max_pair.append((self._array[i-1], self._array[i]))
         # Now that we have these pairs, figure out the longest repeating
         # part of each of them.
-        # List of all max-size repeating substrings (not tuples)
-        all_max = []
+        all_max = []    # List of all max-size repeating substrings (not tuples)
+        seen_substrings = set()
         for pair in max_pair:
-            # TODO: Remove print statements
             # Iterate through the shorter string
             shorter = pair[0]
             longer = pair[1]
@@ -133,5 +129,9 @@ class SuffixArray(object):
                 if shorter[i] == longer[i]:
                     common_substring += shorter[i]
                 else: break
-            all_max.append(common_substring)
+            # If the longest repeating string occurs more than twice,
+            # it should only be in the final list once.
+            if common_substring not in seen_substrings:
+                all_max.append(common_substring)
+                seen_substrings.add(common_substring)
         return all_max
