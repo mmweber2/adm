@@ -111,3 +111,6 @@ def test_longest_repeating_spaces():
     a = SuffixArray(s)
     assert a.longest_repeating() == [" long "]
 
+def test_sort():
+    pass
+

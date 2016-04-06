@@ -78,6 +78,26 @@ class SuffixArray(object):
         return start < end
 
 
+    # TODO: Figure out key indexed counting sort.
+    @classmethod
+    def sort(cls, array):
+        """Sort a suffix array in O(n) time.
+
+        If array is a list, modifies the original list to be in sorted
+        order. Otherwise, creates a new, sorted list. O(n) efficiency
+        is not guaranteed if array is not an iterable of suffixes.
+
+        Args:
+            array: The array of suffixes to sort.
+
+        Returns:
+            A list of the items in array, in sorted order. If array
+            is a list, it will be modified.
+
+        Raises:
+            TypeError: array is not an iterable.
+        """
+
     def longest_repeating(self):
         """Find the longest repeating substring.
 
