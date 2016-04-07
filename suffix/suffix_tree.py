@@ -88,15 +88,43 @@ class SuffixArray(object):
         is not guaranteed if array is not an iterable of suffixes.
 
         Args:
-            array: The array of suffixes to sort.
+            array: The array of suffixes to sort. Must be comprised of
+            ASCII characters.
 
         Returns:
             A list of the items in array, in sorted order. If array
             is a list, it will be modified.
 
         Raises:
-            TypeError: array is not an iterable.
+            TypeError: array is not an iterable, or contains values
+            outside of the ASCII character set.
         """
+        # Array is 1 larger than number of keys
+        # Go through and count instances of first character using key as index
+        # Turn it into a cumulative array: [2] = sum < [2], [4] = [sum(3)], etc
+        #  the smallest item will be 0 since there is nothing less than it
+        # This array tells us where to put the items in the new array:
+        #  if d has 6 items less than it, they will start in spot 7
+        # Make an aux array and go through the original array, using the
+        # cumulative array to tell us where to put them.
+
+        # Count items
+        cumulative = [0] * (256 + 1)
+        for item in array:
+            index = ord(item[0]) + 1
+            cumulative[index] += 1
+        # Find elements less than each index-element
+        # There will never be any elements less than smallest element.
+        for i in xrange(1, cumulative + 1):
+            cumulative[i] += cumulative[i-1]
+        # Using the sorted information, reassemble original array
+        # by first character
+        aux = [""] * len(array)
+        for item in array:
+            index = cumulative[ord(item[0])]
+            aux[index] = item
+            cumulative[ord(item[0])] += 1
+        return aux
 
     def longest_repeating(self):
         """Find the longest repeating substring.
