@@ -1,3 +1,5 @@
+#!/usr/local/bin/python
+# coding: utf-8
 from suffix_tree import SuffixArray
 from nose.tools import assert_raises
 
@@ -92,7 +94,6 @@ def test_longest_repeating_multiple_repeats():
 
 def test_longest_repeating_same_word_more_than_twice():
     a = SuffixArray("our great times are going to be greatly great")
-    print "Answer was ", a.longest_repeating()
     assert a.longest_repeating() == [" great"]
 
 def test_longest_repeating_two_terminal():
@@ -111,6 +112,32 @@ def test_longest_repeating_spaces():
     a = SuffixArray(s)
     assert a.longest_repeating() == [" long "]
 
-def test_sort():
+# TODO: Once sort is fully implemented, allow the constructor to call
+# sort and check the finished array instead of calling sort() directly.
+def test_sort_first_char():
+    s = SuffixArray('fish')
+    assert SuffixArray.sort(s._array) == ['fish', 'h', 'ish', 'sh']
+
+def test_sort_single_char():
+    assert SuffixArray.sort(['c', 'a', 'b']) == ['a', 'b', 'c']
+
+def test_sort_multiple_char():
+    s = SuffixArray('cheesecake')
+    print "Answer was ", SuffixArray.sort(s._array)
     pass
+
+def test_sort_non_ASCII():
+    s = SuffixArray("違う")
+    assert_raises(TypeError, SuffixArray.sort, s._array)
+
+def test_sort_non_string_iterable():
+    assert_raises(TypeError, SuffixArray.sort, [2, 1])
+
+def test_sort_non_suffix_array_iterable():
+    """This should still work, but performance will be worse."""
+    s = "test string"
+    pass
+
+def test_sort_non_iterable():
+    assert_raises(TypeError, SuffixArray.sort, 2)
 

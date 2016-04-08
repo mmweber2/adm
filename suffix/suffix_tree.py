@@ -89,15 +89,16 @@ class SuffixArray(object):
 
         Args:
             array: The array of suffixes to sort. Must be comprised of
-            ASCII characters.
+            ASCII strings.
 
         Returns:
             A list of the items in array, in sorted order. If array
             is a list, it will be modified.
 
         Raises:
-            TypeError: array is not an iterable, or contains values
-            outside of the ASCII character set.
+            TypeError: array is not an iterable, contains values other
+            than strings, or contains values outside of the ASCII
+            character set.
         """
         # Array is 1 larger than number of keys
         # Go through and count instances of first character using key as index
@@ -111,11 +112,19 @@ class SuffixArray(object):
         # Count items
         cumulative = [0] * (256 + 1)
         for item in array:
+            try:
+                item.decode('ascii')
+            except UnicodeDecodeError:
+                raise TypeError("array must contain only ASCII characters.")
+            # item.decode(int) will raise an exception, so check for
+            # any non-string items here.
+            except AttributeError:
+                raise TypeError("array must contain only strings.")
             index = ord(item[0]) + 1
             cumulative[index] += 1
         # Find elements less than each index-element
         # There will never be any elements less than smallest element.
-        for i in xrange(1, cumulative + 1):
+        for i in xrange(1, len(cumulative)):
             cumulative[i] += cumulative[i-1]
         # Using the sorted information, reassemble original array
         # by first character
