@@ -7,9 +7,13 @@ class Vertex(object):
         """Create a new Vertex with the given name.
 
         By default, a new Vertex has no values associated with it.
+
+        Args:
+            name: The name of the Vertex, as it would appear on
+            a graph. Used to identify this Vertex.
         """
         self.name = name
-        self.edges = None
+        self.edges = []
 
 class AdjacencyList(object):
     """Represents a graph as an adjacency list."""
@@ -30,7 +34,7 @@ class AdjacencyList(object):
             Number of vertices as an integer
             Names of vertices (may contain spaces)
             Links between vertices, shown as both names separated by
-                a space
+                a pipe
 
             For example:
             5
@@ -39,29 +43,41 @@ class AdjacencyList(object):
             San Francisco
             Madison
             Beijing
-            Tokyo Chicago
-            Tokyo Beijing
-            Tokyo San Francisco
-            Chicago Tokyo
-            Chicago Madison
-            San Francisco Tokyo
-            Madison Chicago
-            Beijing Tokyo
+            Tokyo|Chicago
+            Tokyo|Beijing
+            Tokyo|San Francisco
+            Chicago|Tokyo
+            Chicago|Madison
+            San Francisco|Tokyo
+            Madison|Chicago
+            Beijing|Tokyo
 
         Raises:
             IOError: input_data does not exist.
+
+            ValueError: input_data is not formatted correctly.
+            Either the number of vertices is not a valid integer,
+            the list of vertices does not match the number provided,
+            or the list of edges contains at least one line that is not
+            two vertices separated by a pipe.
         """
         input_file = []
-        vertices = []
+        vertices = dict()
         with open(input_data, 'r') as filename:
             input_file = filename.readlines()
         # Strip all trailing newlines
         input_file = [line.strip() for line in input_file]
         vertex_count = int(input_file.pop(0))
-        # Gather vertex names
-        for line in input_file[:vertex_count]:
-            vertices.append(line)
-        # Gather edges
-        for line in input_file[vertex_count:]:
-            pass
+        # Gather vertex names and assign indices
+        for i in xrange(len(input_file[:vertex_count])):
+            vertices[i] = []
+        # Gather edges; look at remaining indices
+        for i in xrange(vertex_count, len(input_file)):
+            line = input_file[i].split('|')
+            if len(line) != 2:
+                error = (
+                    "Line {} does not consist of two vertex names" +
+                    " separated by a pipe").format(i)
+                raise ValueError(error)
+            # TODO: Break into vertex names
 
