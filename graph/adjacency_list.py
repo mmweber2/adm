@@ -79,5 +79,10 @@ class AdjacencyList(object):
                     "Line {} does not consist of two vertex names" +
                     " separated by a pipe").format(i)
                 raise ValueError(error)
-            # TODO: Break into vertex names
+        # TODO: Needs testing.
+            vertex, edge = line[0], line[1]
+            if vertices[vertex]:
+                vertices[vertex].append(edge)
+            else:
+                vertices[vertex] = [edge]
 
