@@ -10,8 +10,14 @@ class Vertex(object):
 
         Args:
             name: The name of the Vertex, as it would appear on
-            a graph. Used to identify this Vertex.
+            a graph. Used to identify this Vertex. May not be an
+            empty string.
+
+        Raises:
+            ValueError: name is an empty string.
         """
+        if name == "":
+            raise ValueError("name may not be an empty string.")
         self.name = name
         self.edges = []
 
@@ -21,6 +27,7 @@ class AdjacencyList(object):
     # TODO: Support weights.
     # TODO: Determine exceptions
     # TODO: Is the graph static once created?
+    # TODO: Split file parsing into a new function
     def __init__(self, input_data):
         """Creates a new adjacency list.
 
@@ -63,23 +70,38 @@ class AdjacencyList(object):
             KeyError: input_data contains at least one vertex name
             not provided in the vertex list.
         """
+        self.vertices = self._parse_file(input_data)
+
+    def _parse_file(self, input_data):
+        """Parse a file from which to create a new Adjacency List.
+
+        For use by the AdjacencyList constructor.
+        """
         input_file = []
         vertices = dict()
         with open(input_data, 'r') as filename:
             input_file = filename.readlines()
+            print "Input file is now:"
+            print input_file
         # Strip all trailing newlines
         input_file = [line.strip() for line in input_file]
         vertex_count = int(input_file.pop(0))
         if vertex_count < 2:
             raise ValueError("Number of vertexes must be > 1.")
+        # Vertex count might still be incorrect, but we won't know
+        # for sure until we check the edge data.
         if vertex_count > len(input_file):
             raise ValueError(
-                    "Number of vertexes must not be greater than the
-                     number of lines following it in the file."
+                    "Number of vertexes must not be greater than the" +
+                     " number of lines following it in the file."
                     )
         # Gather vertex names
         for vertex_name in input_file[:vertex_count]:
+            if '|' in vertex_name:
+                raise ValueError("Vertex names may not contain pipes.")
             vertices[vertex_name] = Vertex(vertex_name)
+        print "Here are the vertices:"
+        print vertices
         # Gather edges; look at remaining indices
         for i in xrange(vertex_count, len(input_file)):
             line = input_file[i].split('|')
@@ -90,4 +112,6 @@ class AdjacencyList(object):
                 raise ValueError(error)
             vertex, edge = line[0], line[1]
             vertices[vertex].edges.append(edge)
+        return vertices
+
 

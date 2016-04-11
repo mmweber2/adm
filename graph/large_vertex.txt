@@ -1,6 +1,5 @@
-2
+5
 Tory
 Thomas
-Samuel
 Tory|Thomas
 Thomas|Tory
