@@ -16,10 +16,11 @@ class Vertex(object):
         Raises:
             ValueError: name is an empty string.
         """
+        # Empty strings would make file parsing messy.
         if name == "":
             raise ValueError("name may not be an empty string.")
         self.name = name
-        self.edges = []
+        self.edges = set()
 
 class AdjacencyList(object):
     """Represents a graph as an adjacency list."""
@@ -27,12 +28,11 @@ class AdjacencyList(object):
     # TODO: Support weights.
     # TODO: Determine exceptions
     # TODO: Is the graph static once created?
-    # TODO: Split file parsing into a new function
     def __init__(self, input_data):
         """Creates a new adjacency list.
 
-        Creates an adjacency list for the data provided. Data may be
-        directed or undirected, but cannot be weighted.
+        Creates an adjacency list for the data provided. Data is
+        assumed to be directed and cannot be weighted.
 
         Args:
             input_data: The filename of the data to read in to create
@@ -81,8 +81,6 @@ class AdjacencyList(object):
         vertices = dict()
         with open(input_data, 'r') as filename:
             input_file = filename.readlines()
-            print "Input file is now:"
-            print input_file
         # Strip all trailing newlines
         input_file = [line.strip() for line in input_file]
         vertex_count = int(input_file.pop(0))
@@ -100,18 +98,15 @@ class AdjacencyList(object):
             if '|' in vertex_name:
                 raise ValueError("Vertex names may not contain pipes.")
             vertices[vertex_name] = Vertex(vertex_name)
-        print "Here are the vertices:"
-        print vertices
         # Gather edges; look at remaining indices
         for i in xrange(vertex_count, len(input_file)):
             line = input_file[i].split('|')
             if len(line) != 2:
+                # Use i + 1 because we removed the vertex count line
                 error = (
                     "Line {} does not consist of two vertex names" +
-                    " separated by a pipe").format(i)
+                    " separated by a pipe").format(i + 1)
                 raise ValueError(error)
             vertex, edge = line[0], line[1]
-            vertices[vertex].edges.append(edge)
+            vertices[vertex].edges.add(edge)
         return vertices
-
-

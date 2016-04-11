@@ -5,7 +5,7 @@ from nose.tools import assert_raises
 def test_vertex_create():
     a = Vertex("Chicago")
     assert a.name == "Chicago"
-    assert a.edges == []
+    assert a.edges == set()
 
 def test_vertex_create_empty_string():
     assert_raises(ValueError, Vertex, "")
@@ -32,7 +32,7 @@ def test_list_creates_vertex():
     vert1 = a.vertices["Tory"]
     assert isinstance(vert1, Vertex)
     assert vert1.name == "Tory"
-    assert vert1.edges == []
+    assert vert1.edges == set()
 
 def test_no_edges():
     """Tests if a graph can be created without any edges."""
@@ -40,7 +40,16 @@ def test_no_edges():
     assert len(a.vertices) == 3
 
 def test_vertex_name_with_pipe():
-    pass
+    assert_raises(ValueError, AdjacencyList, "with_pipe.txt")
 
 def test_invalid_edge_format():
-    pass
+    assert_raises(ValueError, AdjacencyList, "edge_no_pipe.txt")
+
+def test_valid_edge_directed():
+    a = AdjacencyList("valid_edge.txt")
+    chicago = a.vertices["Chicago"]
+    assert "Tokyo" in chicago.edges
+    assert "Boston" in chicago.edges
+    boston = a.vertices["Boston"]
+    assert "Tokyo" in boston.edges
+    assert "Chicago" not in boston.edges

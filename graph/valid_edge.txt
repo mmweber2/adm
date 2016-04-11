@@ -1,0 +1,7 @@
+3
+Chicago
+Boston
+Tokyo
+Chicago|Boston
+Chicago|Tokyo
+Boston|Tokyo
