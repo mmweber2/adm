@@ -31,10 +31,10 @@ class AdjacencyList(object):
             input_data: The filename of the data to read in to create
             the graph. Data should be in the following format:
 
-            Number of vertices as an integer
-            Names of vertices (may contain spaces)
+            Number of vertices as an integer. Must be greater than 0.
+            Names of vertices. May contain spaces, but no pipes.
             Links between vertices, shown as both names separated by
-                a pipe
+                a pipe.
 
             For example:
             5
@@ -60,6 +60,8 @@ class AdjacencyList(object):
             the list of vertices does not match the number provided,
             or the list of edges contains at least one line that is not
             two vertices separated by a pipe.
+            KeyError: input_data contains at least one vertex name
+            not provided in the vertex list.
         """
         input_file = []
         vertices = dict()
@@ -68,9 +70,16 @@ class AdjacencyList(object):
         # Strip all trailing newlines
         input_file = [line.strip() for line in input_file]
         vertex_count = int(input_file.pop(0))
-        # Gather vertex names and assign indices
-        for i in xrange(len(input_file[:vertex_count])):
-            vertices[i] = []
+        if vertex_count < 2:
+            raise ValueError("Number of vertexes must be > 1.")
+        if vertex_count > len(input_file):
+            raise ValueError(
+                    "Number of vertexes must not be greater than the
+                     number of lines following it in the file."
+                    )
+        # Gather vertex names
+        for vertex_name in input_file[:vertex_count]:
+            vertices[vertex_name] = Vertex(vertex_name)
         # Gather edges; look at remaining indices
         for i in xrange(vertex_count, len(input_file)):
             line = input_file[i].split('|')
@@ -79,10 +88,6 @@ class AdjacencyList(object):
                     "Line {} does not consist of two vertex names" +
                     " separated by a pipe").format(i)
                 raise ValueError(error)
-        # TODO: Needs testing.
             vertex, edge = line[0], line[1]
-            if vertices[vertex]:
-                vertices[vertex].append(edge)
-            else:
-                vertices[vertex] = [edge]
+            vertices[vertex].edges.append(edge)
 

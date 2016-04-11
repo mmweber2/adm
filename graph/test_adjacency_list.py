@@ -14,11 +14,14 @@ def test_small_vertex_count():
     """
     assert_raises(ValueError, AdjacencyList, "wrong_vertex.txt")
 
-def test_invalid_vertex_count():
-    pass
+def test_negative_vertex_count():
+    assert_raises(ValueError, AdjacencyList, "invalid_vertex.txt")
 
 def test_large_vertex_count():
     """Tests if the vertex count > remaining lines."""
+    pass
+
+def test_vertex_name_with_pipe():
     pass
 
 def test_invalid_edge_format():
