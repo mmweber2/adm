@@ -57,9 +57,21 @@ def test_valid_edge_directed():
 def test_valid_edge_all_weighted():
     a = AdjacencyList("all_weighted_edges.txt")
     assert a.vertices["Sam"].edges["Sally"].weight == "100"
+    assert a.vertices["Sally"].edges["Sam"].weight == "2"
+    assert a.vertices["Mike"].edges["Sam"].weight == "15"
 
 def test_valid_edge_start_weights():
-    pass
+    a = AdjacencyList("start_edges.txt")
+    assert a.vertices["Sam"].edges["Sally"].weight == "10"
+    assert a.vertices["Sally"].edges["Sam"].weight == "1"
 
 def test_valid_edge_end_weights():
+    a = AdjacencyList("end_edges.txt")
+    assert a.vertices["Sam"].edges["Sally"].weight == "1"
+    assert a.vertices["Sally"].edges["Sam"].weight == "2"
+
+def test_extra_pipes():
+    pass
+
+def test_duplicate_edges():
     pass

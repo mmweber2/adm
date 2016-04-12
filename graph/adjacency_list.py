@@ -44,6 +44,16 @@ class AdjacencyList(object):
         Creates an adjacency list for the data provided. Data is
         assumed to be directed and weighted.
 
+        Any edges without explicit weights will be assigned a
+        weight of 1. Edges are assumed to be strings.
+
+        Each edge may only have one weight; if more than two pipes
+        are used in a line, any data after the third pipe will be
+        ignored.
+
+        Multiedges are not supported; if the same edge is listed
+        multiple times, the last such edge's weight will be used.
+
         Args:
             input_data: The filename of the data to read in to create
             the graph. Data should be in the following format:
@@ -53,10 +63,6 @@ class AdjacencyList(object):
             Edges between vertices, in the format of both vertex names
                 separated by a pipe. If the edges are weighted,
                 a second pipe should be used before the weight.
-                Any edges without explicit weights will be assigned
-                a weight of 1. Each edge may only have one weight;
-                if more than two pipes are used in a line, any data
-                after the third pipe will be ignored.
 
             For example:
             5
@@ -129,7 +135,8 @@ class AdjacencyList(object):
                 raise ValueError(error)
             vertex, edge = line[0], line[1]
             if len(line) == 3:
-                vertices[vertex].edges[edge] = Edge(edge, line[2])
+                new_edge = Edge(edge, line[2])
             else:
-                vertices[vertex].edges[edge] = Edge(edge, 1)
+                new_edge = Edge(edge, "1")
+            vertices[vertex].edges[edge] = new_edge
         return vertices
