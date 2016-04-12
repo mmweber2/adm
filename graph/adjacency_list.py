@@ -24,7 +24,7 @@ class Edge(object):
     """Represents an edge of a vertex."""
 
 
-    def __init__(self, name, weight=1):
+    def __init__(self, name, weight="1"):
         """Creates a new edge.
 
         Args:
@@ -137,6 +137,6 @@ class AdjacencyList(object):
             if len(line) == 3:
                 new_edge = Edge(edge, line[2])
             else:
-                new_edge = Edge(edge, "1")
+                new_edge = Edge(edge)
             vertices[vertex].edges[edge] = new_edge
         return vertices
