@@ -1,0 +1,7 @@
+3
+Sam
+Sally
+Mike
+Sam|Sally|100
+Sally|Sam|2
+Mike|Sam|15

@@ -18,31 +18,45 @@ class Vertex(object):
         if name == "":
             raise ValueError("name may not be an empty string.")
         self.name = name
-        self.edges = set()
+        self.edges = dict()
+
+class Edge(object):
+    """Represents an edge of a vertex."""
+
+
+    def __init__(self, name, weight=1):
+        """Creates a new edge.
+
+        Args:
+            name: The name of the vertex this edge points to.
+            weight: The weight associated with this edge. Defaults to 1.
+        """
+        self.name = name
+        self.weight = weight
 
 class AdjacencyList(object):
     """Represents a graph as an adjacency list."""
 
-    # TODO: Support weights.
-    # TODO: Determine exceptions
     # TODO: Is the graph static once created?
     def __init__(self, input_data):
         """Creates a new adjacency list.
 
         Creates an adjacency list for the data provided. Data is
-        assumed to be directed and cannot be weighted.
+        assumed to be directed and weighted.
 
         Args:
             input_data: The filename of the data to read in to create
             the graph. Data should be in the following format:
 
-            Number of vertices as an integer. Must be greater than 0.
+            Number of vertices as an integer. Must be greater than 1.
             Names of vertices. May contain spaces, but no pipes.
             Edges between vertices, in the format of both vertex names
                 separated by a pipe. If the edges are weighted,
                 a second pipe should be used before the weight.
-                If edge weights are provided for only some edges, the
-                other edges will be assigned a weight of None.
+                Any edges without explicit weights will be assigned
+                a weight of 1. Each edge may only have one weight;
+                if more than two pipes are used in a line, any data
+                after the third pipe will be ignored.
 
             For example:
             5
@@ -55,10 +69,17 @@ class AdjacencyList(object):
             Tokyo|Beijing|2
             Tokyo|San Francisco|20
             Chicago|Tokyo|35
-            Chicago|Madison|5
+            Chicago|Madison
             San Francisco|Tokyo|6
             Madison|Chicago|5
-            Beijing|Tokyo|15
+            Beijing|Tokyo
+
+            Or:
+
+            2
+            Sam
+            Paul
+            Sam|Paul
 
         Raises:
             IOError: input_data does not exist.
@@ -66,8 +87,8 @@ class AdjacencyList(object):
             ValueError: input_data is not formatted correctly.
             Either the number of vertices is not a valid integer,
             the list of vertices does not match the number provided,
-            or the list of edges contains at least one line that is not
-            two vertices separated by a pipe.
+            or the list of edges contains at least one line without
+            a pipe.
             KeyError: input_data contains at least one vertex name
             not provided in the vertex list.
         """
@@ -100,26 +121,15 @@ class AdjacencyList(object):
                 raise ValueError("Vertex names may not contain pipes.")
             vertices[vertex_name] = Vertex(vertex_name)
         # Gather edges; look at remaining indices
-        weighted = False
         for i in xrange(vertex_count, len(input_file)):
             line = input_file[i].split('|')
-            if len(line) == 3:
-                weighted = True
-                # We'd like to know if a graph will be weighted from
-                # the first edge entry, but if we don't get weights
-                # until later, go back and fill in the others as None.
-                if i > vertex_count:
-                    edges = dict()
-                    for vertex in vertices[:i]:
-                        edges[vertex] = None
-                        vertex.edges = edges
             if len(line) < 2:
                 # Use i + 1 because we removed the vertex count line
                 error = ("Line {} does not contain a pipe").format(i + 1)
                 raise ValueError(error)
             vertex, edge = line[0], line[1]
-            if weighted:
-                vertices[vertex].edges[edge] = line[2]
+            if len(line) == 3:
+                vertices[vertex].edges[edge] = Edge(edge, line[2])
             else:
-                vertices[vertex].edges.add(edge)
+                vertices[vertex].edges[edge] = Edge(edge, 1)
         return vertices
