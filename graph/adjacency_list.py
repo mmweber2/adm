@@ -1,5 +1,3 @@
-import sys
-
 class Vertex(object):
     """Represents a vertex."""
 
@@ -40,8 +38,11 @@ class AdjacencyList(object):
 
             Number of vertices as an integer. Must be greater than 0.
             Names of vertices. May contain spaces, but no pipes.
-            Links between vertices, shown as both names separated by
-                a pipe.
+            Edges between vertices, in the format of both vertex names
+                separated by a pipe. If the edges are weighted,
+                a second pipe should be used before the weight.
+                If edge weights are provided for only some edges, the
+                other edges will be assigned a weight of None.
 
             For example:
             5
@@ -50,14 +51,14 @@ class AdjacencyList(object):
             San Francisco
             Madison
             Beijing
-            Tokyo|Chicago
-            Tokyo|Beijing
-            Tokyo|San Francisco
-            Chicago|Tokyo
-            Chicago|Madison
-            San Francisco|Tokyo
-            Madison|Chicago
-            Beijing|Tokyo
+            Tokyo|Chicago|15
+            Tokyo|Beijing|2
+            Tokyo|San Francisco|20
+            Chicago|Tokyo|35
+            Chicago|Madison|5
+            San Francisco|Tokyo|6
+            Madison|Chicago|5
+            Beijing|Tokyo|15
 
         Raises:
             IOError: input_data does not exist.
@@ -99,14 +100,26 @@ class AdjacencyList(object):
                 raise ValueError("Vertex names may not contain pipes.")
             vertices[vertex_name] = Vertex(vertex_name)
         # Gather edges; look at remaining indices
+        weighted = False
         for i in xrange(vertex_count, len(input_file)):
             line = input_file[i].split('|')
-            if len(line) != 2:
+            if len(line) == 3:
+                weighted = True
+                # We'd like to know if a graph will be weighted from
+                # the first edge entry, but if we don't get weights
+                # until later, go back and fill in the others as None.
+                if i > vertex_count:
+                    edges = dict()
+                    for vertex in vertices[:i]:
+                        edges[vertex] = None
+                        vertex.edges = edges
+            if len(line) < 2:
                 # Use i + 1 because we removed the vertex count line
-                error = (
-                    "Line {} does not consist of two vertex names" +
-                    " separated by a pipe").format(i + 1)
+                error = ("Line {} does not contain a pipe").format(i + 1)
                 raise ValueError(error)
             vertex, edge = line[0], line[1]
-            vertices[vertex].edges.add(edge)
+            if weighted:
+                vertices[vertex].edges[edge] = line[2]
+            else:
+                vertices[vertex].edges.add(edge)
         return vertices

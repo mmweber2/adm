@@ -53,3 +53,12 @@ def test_valid_edge_directed():
     boston = a.vertices["Boston"]
     assert "Tokyo" in boston.edges
     assert "Chicago" not in boston.edges
+
+def test_valid_edge_all_weighted():
+    pass
+
+def test_valid_edge_start_weights():
+    pass
+
+def test_valid_edge_end_weights():
+    pass
