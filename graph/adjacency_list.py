@@ -134,9 +134,12 @@ class AdjacencyList(object):
                 error = ("Line {} does not contain a pipe").format(i + 1)
                 raise ValueError(error)
             vertex, edge = line[0], line[1]
-            if len(line) == 3:
+            # Ignore any data that might be after a third pipe
+            if len(line) > 2:
                 new_edge = Edge(edge, line[2])
             else:
                 new_edge = Edge(edge)
             vertices[vertex].edges[edge] = new_edge
         return vertices
+
+        # TODO: Graph traversal

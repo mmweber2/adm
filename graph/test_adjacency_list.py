@@ -71,7 +71,12 @@ def test_valid_edge_end_weights():
     assert a.vertices["Sally"].edges["Sam"].weight == "2"
 
 def test_extra_pipes():
-    pass
+    a = AdjacencyList("extra_pipes.txt")
+    assert a.vertices["Sam"].edges["Sally"].weight == "10"
+    assert a.vertices["Sally"].edges["Sam"].weight == "2"
 
 def test_duplicate_edges():
-    pass
+    a = AdjacencyList("duplicate_edges.txt")
+    assert len(a.vertices) == 2
+    print a.vertices["Sam"].edges["Sally"].weight
+    assert a.vertices["Sam"].edges["Sally"].weight == "15"
