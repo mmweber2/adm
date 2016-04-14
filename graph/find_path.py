@@ -22,24 +22,28 @@ def find_path(graph, start, end):
         KeyError: start and/or end do not match vertex names in
         this graph.
     """
-    # Before checking the whole graph for end, make sure it exists
+    # Make sure end exists before traversing the full graph
     if not end in graph.vertices:
         raise KeyError
     queue = [start]
-    # TODO: Make parent table, then back up through it from end.
+    # How we reached each node
     parent = dict()
-    # TODO: Special case start = end?
     while queue != []:
         current = queue.pop(0)
-        print "Current is {} and end is {}".format(current, end)
+        # If we have a match, we don't need current's edges, so check
+        # for a match first.
         if current == end:
             path = [end]
             while current != start:
                 path.append(parent[current])
-                current = graph.vertices[parent[current]]
-            return [v for v in path[::-1]]
+                # Hold onto the name of the vertex rather than
+                # the vertex itself to allow for easy match checking,
+                # as well as simplifying the resulting list.
+                current = graph.vertices[parent[current]].name
+            # Path is from end to start, so reverse it.
+            return path[::-1]
         for edge in graph.vertices[current].edges:
-            queue.append(graph.vertices[edge])
+            queue.append(edge)
             parent[edge] = current
     # No path found
     return []
