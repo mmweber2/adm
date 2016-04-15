@@ -55,6 +55,7 @@ def find_path(graph, start, end):
         processed.add(current)
     # No path found
     return []
+    # TODO: Check discovered and processed before doing anything
 
     # TODO: Is connected?
 
