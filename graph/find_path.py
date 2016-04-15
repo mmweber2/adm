@@ -1,5 +1,6 @@
 from adjacency_list import AdjacencyList
 
+#TODO: Loops infinitely if there are cycles.
 def find_path(graph, start, end):
     """Attempts to find a path between start and end.
 
@@ -28,6 +29,11 @@ def find_path(graph, start, end):
     queue = [start]
     # How we reached each node
     parent = dict()
+    # We could avoid getting stuck in a cycle with just one set,
+    # but two will allow us to avoid trying the same paths
+    # multiple times.
+    discovered = set()
+    processed = set()
     while queue != []:
         current = queue.pop(0)
         # If we have a match, we don't need current's edges, so check
@@ -45,5 +51,10 @@ def find_path(graph, start, end):
         for edge in graph.vertices[current].edges:
             queue.append(edge)
             parent[edge] = current
+            discovered.add(edge)
+        processed.add(current)
     # No path found
     return []
+
+    # TODO: Is connected?
+
