@@ -36,4 +36,5 @@ def test_cycle():
     assert find_path(a, "A", "D") == []
 
 def test_ignores_weights():
-    pass
+    a = AdjacencyList("weights.txt")
+    assert find_path(a, "A", "D") == ["A", "D"]

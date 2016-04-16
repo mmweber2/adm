@@ -1,6 +1,5 @@
 from adjacency_list import AdjacencyList
 
-#TODO: Loops infinitely if there are cycles.
 def find_path(graph, start, end):
     """Attempts to find a path between start and end.
 
@@ -58,7 +57,6 @@ def find_path(graph, start, end):
         processed.add(current)
     # No path found
     return []
-    # TODO: Are both discovered and processed necessary?
 
     # TODO: Is connected?
 
