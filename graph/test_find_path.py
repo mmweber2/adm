@@ -31,7 +31,6 @@ def test_one_away():
     a = AdjacencyList("chain.txt")
     assert find_path(a, "Jade", "Edane") == ["Jade", "Janine", "Edane"]
 
-# TODO: Current loop
 def test_cycle():
     a = AdjacencyList("cycle.txt")
     assert find_path(a, "A", "D") == []

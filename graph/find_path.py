@@ -36,6 +36,8 @@ def find_path(graph, start, end):
     processed = set()
     while queue != []:
         current = queue.pop(0)
+        if current in processed:
+            continue
         # If we have a match, we don't need current's edges, so check
         # for a match first.
         if current == end:
@@ -49,13 +51,14 @@ def find_path(graph, start, end):
             # Path is from end to start, so reverse it.
             return path[::-1]
         for edge in graph.vertices[current].edges:
-            queue.append(edge)
-            parent[edge] = current
-            discovered.add(edge)
+            if edge not in discovered:
+                queue.append(edge)
+                parent[edge] = current
+                discovered.add(edge)
         processed.add(current)
     # No path found
     return []
-    # TODO: Check discovered and processed before doing anything
+    # TODO: Are both discovered and processed necessary?
 
     # TODO: Is connected?
 
