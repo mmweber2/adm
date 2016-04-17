@@ -100,6 +100,10 @@ class AdjacencyList(object):
         """
         self.vertices = self._parse_file(input_data)
 
+    def size(self):
+        """The number of vertices in the AdjacencyList."""
+        return len(self.vertices)
+
     def _parse_file(self, input_data):
         """Parse a file from which to create a new Adjacency List.
 
@@ -141,5 +145,3 @@ class AdjacencyList(object):
                 new_edge = Edge(edge)
             vertices[vertex].edges[edge] = new_edge
         return vertices
-
-        # TODO: Implement: find path
