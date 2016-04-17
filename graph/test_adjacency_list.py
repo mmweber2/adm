@@ -77,7 +77,7 @@ def test_extra_pipes():
 
 def test_duplicate_edges():
     a = AdjacencyList("duplicate_edges.txt")
-    assert len(a.vertices) == 2
+    assert a.size() == 2
     assert a.vertices["Sam"].edges["Sally"].weight == "15"
 
 def test_size():
