@@ -111,36 +111,3 @@ def test_longest_repeating_spaces():
             "over multiple lines.")
     a = SuffixArray(s)
     assert a.longest_repeating() == [" long "]
-
-# TODO: Once sort is fully implemented, allow the constructor to call
-# sort and check the finished array instead of calling sort() directly.
-def test_sort_first_char():
-    s = SuffixArray('fish')
-    assert SuffixArray.sort(s._array) == ['fish', 'h', 'ish', 'sh']
-
-def test_sort_single_char():
-    assert SuffixArray.sort(['c', 'a', 'b']) == ['a', 'b', 'c']
-
-def test_sort_multiple_char():
-    s = SuffixArray('cheesecake')
-    expected = ['ake', 'cake', 'cheesecake', 'e', 'ecake', 'eesecake',
-        'esecake', 'heesecake', 'ke', 'secake']
-    assert SuffixArray.sort(s._array) == expected
-
-def test_sort_more_than_two_shared():
-    pass
-
-def test_sort_non_ASCII():
-    assert_raises(TypeError, SuffixArray.sort, SuffixArray("違う")._array)
-
-def test_sort_non_string_iterable():
-    assert_raises(TypeError, SuffixArray.sort, [2, 1])
-
-def test_sort_non_suffix_array_iterable():
-    """This should still work, but performance will be worse."""
-    s = "test string"
-    pass
-
-def test_sort_non_iterable():
-    assert_raises(TypeError, SuffixArray.sort, 2)
-

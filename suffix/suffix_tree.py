@@ -18,8 +18,6 @@ class SuffixArray(object):
         """
         s = str(s)
         self._array = sorted([s[i:] for i in xrange(len(s))])
-        # TODO: Should modify original array, right?
-#        self._array = SuffixArray.sort(self._array)
         # Determine LCPs (longest common prefixes) for each pair of
         # (sorted) consecutive prefixes.
         # The first item will have no common prefix because it has no
@@ -82,86 +80,6 @@ class SuffixArray(object):
         # If start < end, there is at least one suffix in s that
         # has sub as a prefix, which means that sub is a substring.
         return start < end
-
-
-    @classmethod
-    def sort(cls, array):
-        """Sort a suffix array in O(n) time.
-
-        If array is a list, modifies the original list to be in sorted
-        order. Otherwise, creates a new, sorted list. O(n) efficiency
-        is not guaranteed if array is not an iterable of suffixes.
-
-        Args:
-            array: The array of suffixes to sort. Must be comprised of
-            ASCII strings.
-
-        Returns:
-            A list of the items in array, in sorted order. If array
-            is a list, it will be modified.
-
-        Raises:
-            TypeError: array is not an iterable, contains values other
-            than strings, or contains values outside of the ASCII
-            character set.
-        """
-        # Go through and count instances of first character using key as index
-        # Turn it into a cumulative array: [2] = sum < [2], [4] = [sum(3)], etc
-        #  the smallest item will be 0 since there is nothing less than it
-        # This array tells us where to put the items in the new array:
-        #  if d has 6 items less than it, they will start in spot 7
-        # Make an aux array and go through the original array, using the
-        # cumulative array to tell us where to put them.
-
-        # Pass for error checking
-        for item in array:
-            try:
-                item.decode('ascii')
-            except UnicodeDecodeError:
-                raise TypeError("array must contain only ASCII characters.")
-            # item.decode(int) will raise a different exception than others,
-            # so check for any non-string items here.
-            except AttributeError:
-                raise TypeError("array must contain only strings.")
-        # Using the sorted information, reassemble original array
-        # by first character
-        aux = SuffixArray._sort_by_index(array, 0)
-        # Sort again by second character (keep it stable)
-        aux = SuffixArray._sort_by_index(array, 1)
-        # TODO: Now double to sort the rest of it
-        print "Array was: {}".format(array)
-        print "Aux was: {}".format(aux)
-        return aux
-
-    @classmethod
-    def _sort_by_index(cls, array, index):
-        """Helper method for sort(); sort by a given index."""
-        # Count items
-        cumulative = [0] * (256 + 1)
-        for item in array:
-            # Some suffixes will be less than 2 characters.
-            if (index + 1) > len(item):
-                sort_index = 1
-            else:
-                # Add 1 to all indecis for later manipulation
-                sort_index = ord(item[index]) + 1
-            cumulative[sort_index] += 1
-        # Find elements less than each index-element
-        # There will never be any elements less than smallest element.
-        for i in xrange(1, len(cumulative)):
-            cumulative[i] += cumulative[i-1]
-        # Using the sorted information, reassemble original array
-        # by index character
-        aux = [""] * len(array)
-        for item in array:
-            if (index + 1) > len(item):
-                sort_index = cumulative[0]
-                cumulative[0] += 1
-            else:
-                sort_index = cumulative[ord(item[index])]
-                cumulative[ord(item[index])] += 1
-            aux[sort_index] = item
-        return aux
 
     def longest_repeating(self):
         """Find the longest repeating substring.
