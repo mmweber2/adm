@@ -58,5 +58,25 @@ def find_path(graph, start, end):
     # No path found
     return []
 
-    # TODO: Is connected?
+def connected(graph):
+    """Tells whether the graph is connected.
 
+    Connectivity is defined as follows: for every vertex a, b
+    in the graph, there exists a path from a to b. If there is
+    only a path from b to a, the graph is not considered connected.
+
+    Args:
+        graph: The AdjacencyList to check for connectivity.
+    Returns:
+        True if every vertex in the graph can be reached from every
+        other vertex in the graph, and False otherwise.
+    Raises:
+        AttributeError: graph is not a valid AdjacencyList object.
+    """
+    all_vertices = graph.vertices
+    for start in all_vertices.iterkeys():
+        for end in all_vertices.iterkeys():
+            path = find_path(graph, start, end)
+            if path == []:
+                return False
+    return True

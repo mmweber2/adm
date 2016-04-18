@@ -1,5 +1,6 @@
 from adjacency_list import AdjacencyList
 from find_path import find_path
+from find_path import connected
 from nose.tools import assert_raises
 
 def test_no_start():
@@ -38,3 +39,22 @@ def test_cycle():
 def test_ignores_weights():
     a = AdjacencyList("weights.txt")
     assert find_path(a, "A", "D") == ["A", "D"]
+
+# Cannot test an empty graph or single vertex because AdjacencyList
+# does not allow us to create those.
+
+def test_connected_singles():
+    a = AdjacencyList("no_edges.txt")
+    assert not connected(a)
+
+def test_connected_two_single_direction():
+    a = AdjacencyList("simple_graph.txt")
+    assert not connected(a)
+
+def test_connected_two_double_directions():
+    a = AdjacencyList("doubly_connected.txt")
+    assert connected(a)
+
+def test_connected_broken_three():
+    a = AdjacencyList("no_path.txt")
+
