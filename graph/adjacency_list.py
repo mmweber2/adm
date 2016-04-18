@@ -37,7 +37,6 @@ class Edge(object):
 class AdjacencyList(object):
     """Represents a graph as an adjacency list."""
 
-    # TODO: Is the graph static once created?
     def __init__(self, input_data):
         """Creates a new adjacency list.
 
