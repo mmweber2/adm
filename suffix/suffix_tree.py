@@ -3,18 +3,23 @@ from bisect import bisect_left
 class SuffixArray(object):
     """An array that keeps track of suffixes."""
     def __init__(self, s):
-        """Creates a new, sorted SuffixArray of string s.
+        """Creates a new, sorted SuffixArray of the suffixes for string s.
 
-        Suffixes are sorted using sorted(), so they are case sensitive:
-        "None" is less than "none".
+        Suffixes are case sensitive.
 
         Args:
             s: The string from which to form the SuffixArray.
                If s is not a string, it will be converted to one with
-               str().
+               str(). Must be comprised of ASCII characters.
+
+        Raises:
+            TypeError: array is not an iterable, contains values other
+            than strings, or contains values outside of the ASCII
         """
         s = str(s)
         self._array = sorted([s[i:] for i in xrange(len(s))])
+        # TODO: Should modify original array, right?
+#        self._array = SuffixArray.sort(self._array)
         # Determine LCPs (longest common prefixes) for each pair of
         # (sorted) consecutive prefixes.
         # The first item will have no common prefix because it has no
@@ -62,7 +67,8 @@ class SuffixArray(object):
 
         Returns:
             True iff sub is a substring of the string used to create
-            this SuffixArray.
+            this SuffixArray. An empty string is considered a substring
+            of any other string.
         """
         if sub == "":
             return True
@@ -78,7 +84,6 @@ class SuffixArray(object):
         return start < end
 
 
-    # TODO: Figure out key indexed counting sort.
     @classmethod
     def sort(cls, array):
         """Sort a suffix array in O(n) time.
@@ -100,7 +105,6 @@ class SuffixArray(object):
             than strings, or contains values outside of the ASCII
             character set.
         """
-        # Array is 1 larger than number of keys
         # Go through and count instances of first character using key as index
         # Turn it into a cumulative array: [2] = sum < [2], [4] = [sum(3)], etc
         #  the smallest item will be 0 since there is nothing less than it
@@ -109,30 +113,54 @@ class SuffixArray(object):
         # Make an aux array and go through the original array, using the
         # cumulative array to tell us where to put them.
 
-        # Count items
-        cumulative = [0] * (256 + 1)
+        # Pass for error checking
         for item in array:
             try:
                 item.decode('ascii')
             except UnicodeDecodeError:
                 raise TypeError("array must contain only ASCII characters.")
-            # item.decode(int) will raise an exception, so check for
-            # any non-string items here.
+            # item.decode(int) will raise a different exception than others,
+            # so check for any non-string items here.
             except AttributeError:
                 raise TypeError("array must contain only strings.")
-            index = ord(item[0]) + 1
-            cumulative[index] += 1
+        # Using the sorted information, reassemble original array
+        # by first character
+        aux = SuffixArray._sort_by_index(array, 0)
+        # Sort again by second character (keep it stable)
+        aux = SuffixArray._sort_by_index(array, 1)
+        # TODO: Now double to sort the rest of it
+        print "Array was: {}".format(array)
+        print "Aux was: {}".format(aux)
+        return aux
+
+    @classmethod
+    def _sort_by_index(cls, array, index):
+        """Helper method for sort(); sort by a given index."""
+        # Count items
+        cumulative = [0] * (256 + 1)
+        for item in array:
+            # Some suffixes will be less than 2 characters.
+            if (index + 1) > len(item):
+                sort_index = 1
+            else:
+                # Add 1 to all indecis for later manipulation
+                sort_index = ord(item[index]) + 1
+            cumulative[sort_index] += 1
         # Find elements less than each index-element
         # There will never be any elements less than smallest element.
         for i in xrange(1, len(cumulative)):
             cumulative[i] += cumulative[i-1]
         # Using the sorted information, reassemble original array
-        # by first character
+        # by index character
         aux = [""] * len(array)
         for item in array:
-            index = cumulative[ord(item[0])]
-            aux[index] = item
-            cumulative[ord(item[0])] += 1
+            if (index + 1) > len(item):
+                sort_index = cumulative[0]
+                cumulative[0] += 1
+            else:
+                sort_index = cumulative[ord(item[index])]
+                cumulative[ord(item[index])] += 1
+            aux[sort_index] = item
         return aux
 
     def longest_repeating(self):

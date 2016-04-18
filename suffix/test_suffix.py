@@ -123,12 +123,15 @@ def test_sort_single_char():
 
 def test_sort_multiple_char():
     s = SuffixArray('cheesecake')
-    print "Answer was ", SuffixArray.sort(s._array)
+    expected = ['ake', 'cake', 'cheesecake', 'e', 'ecake', 'eesecake',
+        'esecake', 'heesecake', 'ke', 'secake']
+    assert SuffixArray.sort(s._array) == expected
+
+def test_sort_more_than_two_shared():
     pass
 
 def test_sort_non_ASCII():
-    s = SuffixArray("違う")
-    assert_raises(TypeError, SuffixArray.sort, s._array)
+    assert_raises(TypeError, SuffixArray.sort, SuffixArray("違う")._array)
 
 def test_sort_non_string_iterable():
     assert_raises(TypeError, SuffixArray.sort, [2, 1])
