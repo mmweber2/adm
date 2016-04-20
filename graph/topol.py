@@ -37,6 +37,7 @@ def _process_edge(vertices, edge, discovered, processed):
     discovered.add(edge)
     for y in edge.edges.iterkeys():
         _process_edge(vertices, vertices[y], discovered, processed)
-    processed.append(edge.name)
+    if edge.name not in processed:
+        processed.append(edge.name)
 
 
