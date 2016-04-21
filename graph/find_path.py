@@ -3,6 +3,8 @@ from adjacency_list import AdjacencyList
 def find_path(graph, start, end):
     """Attempts to find a path between start and end.
 
+    Searches the graph from start to end using breadth-first search.
+
     Args:
         graph: The AdjacencyList to search.
         start: The name of the start vertex.
@@ -80,3 +82,59 @@ def connected(graph):
             if path == []:
                 return False
     return True
+
+def dfs(graph, start, end, finished=False, path=[], processed=None):
+    """Search for a node in the graph using depth-first search.
+
+        Args:
+            graph: The AdjacencyList to search.
+            start: The name of the start vertex.
+            end: The name of the end vertex to which the path leads.
+            finished: True if the graph has already found the end vertex.
+                Defaults to False.
+            path: The path taken to find the end vertex. Defaults to [].
+            processed: The set of nodes traversed so far. Defaults to
+                None.
+
+        Returns:
+            A list of edge names beginning with start and ending with
+            end, showing a path from start to end.
+            Returns an empty list if there are no valid paths from
+            start to end.
+
+        Raises:
+            KeyError: start and/or end do not match vertex names in
+            this graph.
+    """
+    if not end in graph.vertices:
+        raise KeyError
+    if processed == None:
+        processed = set()
+    if start == end:
+        finished = True
+    if finished:
+        path += start
+        return path[::-1]
+    if start in processed:
+        return path
+    else:
+        print "Start is ", start
+        print "End is ", end
+        for edge in graph.vertices[start].edges.iterkeys():
+            print "Looking at edge ", edge
+            if edge not in processed:
+                dfs(graph, edge, end, finished, path, processed)
+    processed.add(start)
+    return path
+
+     # If match: do something
+     # If edges: search the edges
+     # Go back
+     # TODO
+# Articulation vertices: Tree edges, back edges, forward edge, cross edge
+
+def has_cycle(graph):
+    """Determines whether graph contains one or more cycles."""
+
+def is_bipartite(graph):
+    """Determines whether the graph is bipartite."""

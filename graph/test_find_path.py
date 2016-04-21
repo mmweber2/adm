@@ -1,6 +1,7 @@
 from adjacency_list import AdjacencyList
 from find_path import find_path
 from find_path import connected
+from find_path import dfs
 from nose.tools import assert_raises
 
 def test_no_start():
@@ -57,4 +58,31 @@ def test_connected_two_double_directions():
 
 def test_connected_broken_three():
     a = AdjacencyList("no_path.txt")
+    assert not connected(a)
 
+def test_dfs_no_edges():
+    assert dfs(AdjacencyList("no_edges.txt"), "Tory", "Samuel") == []
+
+def test_dfs_no_path():
+    a = AdjacencyList("no_path.txt")
+    assert dfs(a, "Janine", "Edane") == []
+
+def test_dfs_one_edge():
+    a = AdjacencyList("simple_graph.txt")
+    assert dfs(a, "Carrot", "Onion") == ["Carrot", "Onion"]
+
+    # Redo
+def test_dfs_multiple_paths():
+    a = AdjacencyList("multiple_paths.txt")
+    result = dfs(a, "A", "D")
+    assert ["A", "B", "C", "D"] in result
+    assert ["A", "C", "D"] in result
+
+def test_dfs_chain():
+    a = AdjacencyList("chain.txt")
+    print "Answer was ", dfs(a, "Jade", "Edane")
+    assert dfs(a, "Jade", "Edane") == ["Jade", "Janine", "Edane"]
+
+def test_dfs_cycle():
+    a = AdjacencyList("cycle.txt")
+    #assert dfs(a, "A", "D") == []
