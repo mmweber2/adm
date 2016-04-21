@@ -71,12 +71,10 @@ def test_dfs_one_edge():
     a = AdjacencyList("simple_graph.txt")
     assert dfs(a, "Carrot", "Onion") == ["Carrot", "Onion"]
 
-    # Redo
 def test_dfs_multiple_paths():
     a = AdjacencyList("multiple_paths.txt")
     result = dfs(a, "A", "D")
-    assert ["A", "B", "C", "D"] in result
-    assert ["A", "C", "D"] in result
+    assert result in [["A", "B", "C", "D"], ["A", "C", "D"]]
 
 def test_dfs_chain():
     a = AdjacencyList("chain.txt")

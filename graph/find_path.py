@@ -83,18 +83,13 @@ def connected(graph):
                 return False
     return True
 
-def dfs(graph, start, end, finished=False, path=[], processed=None):
+def dfs(graph, start, end):
     """Search for a node in the graph using depth-first search.
 
         Args:
             graph: The AdjacencyList to search.
             start: The name of the start vertex.
-            end: The name of the end vertex to which the path leads.
-            finished: True if the graph has already found the end vertex.
-                Defaults to False.
-            path: The path taken to find the end vertex. Defaults to [].
-            processed: The set of nodes traversed so far. Defaults to
-                None.
+            end: The name of the end vertex for which to search.
 
         Returns:
             A list of edge names beginning with start and ending with
@@ -108,30 +103,24 @@ def dfs(graph, start, end, finished=False, path=[], processed=None):
     """
     if not end in graph.vertices:
         raise KeyError
-    if processed == None:
-        processed = set()
+    return _dfs_inner(graph, start, end, [], set())
+
+def _dfs_inner(graph, start, end, path, processed):
+    """Recursive helper method for dfs."""
     if start == end:
-        finished = True
-    if finished:
-        path += start
-        return path[::-1]
-    if start in processed:
+        path.insert(0, start)
         return path
     else:
-        print "Start is ", start
-        print "End is ", end
         for edge in graph.vertices[start].edges.iterkeys():
-            print "Looking at edge ", edge
             if edge not in processed:
-                dfs(graph, edge, end, finished, path, processed)
+                path = _dfs_inner(graph, edge, end, path, processed)
     processed.add(start)
+    # End has been found, so we are on our way 'back up'
+    if len(path) > 0:
+        path.insert(0, start)
     return path
 
-     # If match: do something
-     # If edges: search the edges
-     # Go back
-     # TODO
-# Articulation vertices: Tree edges, back edges, forward edge, cross edge
+# TODO: Articulation vertices: Tree edges, back edges, forward edge, cross edge
 
 def has_cycle(graph):
     """Determines whether graph contains one or more cycles."""
