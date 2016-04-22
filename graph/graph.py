@@ -27,6 +27,11 @@ class Vertex(object):
                 raise TypeError("edges attribute must be a list")
             self.edges = edges
 
+    def __repr__(self):
+        """Provides a string representation for this Vertex."""
+        return "Vertex: {}".format(self.name)
+
+
     def add_edge(self, edge):
         """Adds a new Edge to this Vertex.
 
@@ -48,6 +53,9 @@ class Edge(object):
     def __init__(self, vertex, weight=0):
         """Create a new Edge.
 
+        Edges are assumed to be directed. If an undirected edge is
+        required, one edge should be created for each direction.
+
         Args:
             vertex: The Vertex this Edge points to.
             weight: The weight of this Edge. If provided, must be
@@ -55,4 +63,56 @@ class Edge(object):
         """
         self.vertex = vertex
         self.weight = weight
+
+class Graph(object):
+
+    def __init__(self, vertices):
+        """Create a new Graph with the given vertices.
+
+        Args:
+            vertices: An iterable of Vertex objects.
+        """
+        self.vertices = vertices
+
+def find_path(start, end):
+    """Returns a path from start to end.
+       
+    Determines the shortest path (by number of vertices) between the
+    two vertices. If the edges are weighted, the weights are disregarded.
+    If there are multiple paths with the minimum length, one such path
+    is returned arbitrarily.
+
+    Args:
+        start, end: Vertex objects between which to find a path.
+
+    Returns:
+        Returns a list of Vertex objects representing the shortest path
+        (by number of vertices) between the two vertices. If no such path
+        exists, returns [].
+
+    Raises:
+        AttributeError: start is not a valid Vertex object.
+    """
+    # Start may be end to begin with, so don't overlook it
+    queue = [start]
+    # Track how we got to each Vertex
+    parent = {start:None}
+    while queue != []:
+        current = queue.pop(0)
+        if current == end:
+            path = []
+            while current != None:
+                path.insert(0, current)
+                current = parent[current]
+            return path
+        # Only add edges we haven't already looked at
+        new_edges = []
+        for edge in current.edges:
+            if edge.vertex not in parent:
+                new_edges.append(edge.vertex)
+                parent[edge.vertex] = current
+        queue.extend(new_edges)
+    # Ran out of queue; no path exists
+    return []
+
 

@@ -1,5 +1,6 @@
 from graph import Vertex
 from graph import Edge
+from graph import find_path
 from nose.tools import assert_raises
 
 def test_new_vertex():
@@ -42,3 +43,21 @@ def test_add_edge_duplicate():
 def test_add_edge_invalid():
     a = Vertex("AC")
     assert_raises(TypeError, a.add_edge, "B")
+
+def test_find_path_no_path():
+    a = Vertex("Start")
+    b = Vertex("End")
+    assert find_path(a, b) == []
+
+def test_find_path_start_is_end():
+    a = Vertex("A3")
+    assert find_path(a, a) == [a]
+
+def test_find_path_direct_connection():
+    a = Vertex("A1")
+    b = Vertex("A2")
+    a.add_edge(Edge(b))
+    ans = find_path(a, b)
+    assert find_path(a, b) == [a, b]
+
+
