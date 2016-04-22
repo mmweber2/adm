@@ -1,7 +1,10 @@
 class Vertex(object):
     """Represents a vertex node in a graph."""
 
+    # Vertex names used so far
     existing = set()
+    # For use by _test_vertex
+    _count = 1
 
     def __init__(self, name, edges=None):
         """Creates a new Vertex.
@@ -26,6 +29,24 @@ class Vertex(object):
             if not isinstance(edges, list):
                 raise TypeError("edges attribute must be a list")
             self.edges = edges
+
+    @staticmethod
+    def _make_test_vertex():
+        """Test method for creating new vertices.
+
+        Vertex names must be unique, so this method provides a way
+        of generating unique Vertex names without having to manually
+        keep track of them.
+
+        Returns:
+            A string in the format "Test1", where 1 is the class
+            variable count.
+        """
+        while "Test" + str(Vertex._count) in Vertex.existing:
+            Vertex._count += 1
+        Vertex._count += 1
+        return "Test" + str(Vertex._count)
+
 
     def __repr__(self):
         """Provides a string representation for this Vertex."""
@@ -59,24 +80,31 @@ class Edge(object):
         Args:
             vertex: The Vertex this Edge points to.
             weight: The weight of this Edge. If provided, must be
-                an integer or a float. Defaults to 0.
+                an integer or a floating point value. Defaults to 0.
+
+        Raises:
+            ValueError: weight is not an integer or floating point value.
         """
         self.vertex = vertex
-        self.weight = weight
+        self.weight = float(weight)
 
 class Graph(object):
 
     def __init__(self, vertices):
-        """Create a new Graph with the given vertices.
+        """Creates a new Graph with the given vertices.
 
         Args:
             vertices: An iterable of Vertex objects.
         """
         self.vertices = vertices
 
+    def size(self):
+        """Returns the number of vertices in the Graph."""
+        return len(self.vertices)
+
 def find_path(start, end):
     """Returns a path from start to end.
-       
+
     Determines the shortest path (by number of vertices) between the
     two vertices. If the edges are weighted, the weights are disregarded.
     If there are multiple paths with the minimum length, one such path

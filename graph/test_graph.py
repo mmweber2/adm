@@ -15,14 +15,35 @@ def test_duplicate_vertex_name():
     a = Vertex("A2")
     assert_raises(ValueError, Vertex, "A2")
 
+def test_new_vertex_empty_string():
+    a = Vertex("")
+    assert a.name == ""
+
 def test_vertex_invalid_edges():
     assert_raises(TypeError, Vertex, "A3", "A2")
+
+def test_make_test_vertex():
+    s = Vertex._make_test_vertex()
+    a = Vertex(s)
+    assert a.name == s
+
+# Test for creating a vertex with existing edges can be found
+# after the other Edge tests.
 
 def test_edge_default():
     b = Vertex("A4")
     a = Edge(b)
     assert a.vertex.name == "A4"
     assert a.weight == 0
+
+def test_edge_weight():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Edge(a, 10)
+    assert b.weight == 10
+
+def test_edge_invalid_weight():
+    a = Vertex(Vertex._make_test_vertex())
+    assert_raises(ValueError, Edge, a, "test")
 
 def test_add_edge_normal():
     a = Vertex("A5")
@@ -46,6 +67,27 @@ def test_add_edge_duplicate():
 def test_add_edge_invalid():
     a = Vertex("A9")
     assert_raises(TypeError, a.add_edge, "B")
+
+def test_vertex_valid_edges():
+    """Test Vertex creation with a list of already-existing Edges."""
+    b = Vertex(Vertex._make_test_vertex())
+    c = Vertex(Vertex._make_test_vertex())
+    d = Edge(b)
+    e = Edge(c)
+    a = Vertex(Vertex._make_test_vertex(), [d, e])
+    assert a.edges == [d, e]
+
+def test_graph_empty():
+    pass
+
+def test_graph_single_vertex():
+    pass
+
+def test_graph_normal_set():
+    pass
+
+def test_graph_duplicate_vertex():
+    pass
 
 def test_find_path_no_path():
     a = Vertex("A10")
