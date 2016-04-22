@@ -45,13 +45,14 @@ class Vertex(object):
 
 class Edge(object):
 
-    def __init__(self, name, weight=None):
+    def __init__(self, vertex, weight=0):
         """Create a new Edge.
 
         Args:
-            name: The name of the Vertex this Edge points to.
-            weight: The weight of this Edge. Defaults to None.
+            vertex: The Vertex this Edge points to.
+            weight: The weight of this Edge. If provided, must be
+                an integer or a float. Defaults to 0.
         """
-        self.name = name
+        self.vertex = vertex
         self.weight = weight
 

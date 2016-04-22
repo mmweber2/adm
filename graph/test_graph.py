@@ -15,25 +15,28 @@ def test_vertex_invalid_edges():
     assert_raises(TypeError, Vertex, "C", "B")
 
 def test_edge_default():
-    a = Edge("X")
-    assert a.name == "X"
-    assert a.weight == None
+    b = Vertex("X")
+    a = Edge(b)
+    assert a.vertex.name == "X"
+    assert a.weight == 0
 
 def test_add_edge_normal():
     a = Vertex("Test")
-    b = Edge("Test 2")
-    a.add_edge(b)
+    b = Vertex("Test 2")
+    c = Edge(b)
+    a.add_edge(c)
     assert len(a.edges) == 1
-    assert b in a.edges
+    assert c in a.edges
 
 def test_add_edge_duplicate():
     a = Vertex("AB")
-    b = Edge("ABC")
-    c = Edge("ABC")
-    a.add_edge(b)
+    b = Vertex("ABC")
+    c = Edge(b)
+    d = Edge(b)
+    a.add_edge(d)
     a.add_edge(c)
     assert len(a.edges) == 2
-    assert b in a.edges
+    assert d in a.edges
     assert c in a.edges
 
 def test_add_edge_invalid():
