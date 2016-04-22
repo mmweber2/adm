@@ -115,4 +115,30 @@ def find_path(start, end):
     # Ran out of queue; no path exists
     return []
 
+def dfs(start, goal):
+    """Search for goal using depth first search.
+
+    In order for dfs to find the goal node, there must exist a path
+    from start to goal.
+
+    Args:
+        start: The starting Vertex from which to search.
+        goal: The Vertex for which to search.
+    Returns:
+        True if goal was found, or False otherwise.
+    """
+    discovered = set()
+    stack = [start]
+    while stack != []:
+        current = stack.pop()
+        if current == goal:
+            return True
+        for edge in current.edges:
+            if edge.vertex not in discovered:
+                discovered.add(edge.vertex)
+                stack.append(edge.vertex)
+    # Ran out of edges; no such path
+    return False
+
+
 

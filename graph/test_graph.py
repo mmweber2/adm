@@ -60,4 +60,7 @@ def test_find_path_direct_connection():
     ans = find_path(a, b)
     assert find_path(a, b) == [a, b]
 
+def test_dfs_start_node():
+    pass
+
 
