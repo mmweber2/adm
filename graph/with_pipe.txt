@@ -1,4 +1,0 @@
-2
-San|Francisco
-New Orleans
-San|Francisco|New Orleans

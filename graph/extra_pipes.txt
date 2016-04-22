@@ -1,5 +1,0 @@
-2
-Sam
-Sally
-Sam|Sally|10|
-Sally|Sam|2|15

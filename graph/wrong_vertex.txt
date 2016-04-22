@@ -1,6 +1,0 @@
-2
-Tory
-Thomas
-Samuel
-Tory|Thomas
-Thomas|Tory

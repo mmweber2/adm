@@ -1,5 +1,0 @@
-5
-Tory
-Thomas
-Tory|Thomas
-Thomas|Tory
