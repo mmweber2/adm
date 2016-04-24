@@ -2,6 +2,7 @@ from graph import Vertex
 from graph import Edge
 from graph import find_path
 from graph import dfs
+from graph import Graph
 from nose.tools import assert_raises
 
 # Since each Vertex needs a unique name, I need to either give them all
@@ -78,15 +79,35 @@ def test_vertex_valid_edges():
     assert a.edges == [d, e]
 
 def test_graph_empty():
-    pass
+    a = Graph([])
+    assert a.size() == 0
 
 def test_graph_single_vertex():
-    pass
+    a = Vertex(Vertex._make_test_vertex())
+    b = Graph([a])
+    assert b.size() == 1
 
 def test_graph_normal_set():
-    pass
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    g = Graph([a, b])
+    assert g.size() == 2
 
 def test_graph_duplicate_vertex():
+    a = Vertex(Vertex._make_test_vertex())
+    g = Graph([a, a])
+    assert g.size() == 1
+
+def test_graph_add_new_vertex_exists():
+    a = Vertex(Vertex._make_test_vertex())
+    g = Graph([a])
+    g.add_new_vertex(a)
+    assert g.size() == 1
+
+def test_graph_add_new_vertex_new():
+    pass
+
+def test_graph_add_invalid_vertex():
     pass
 
 def test_find_path_no_path():
