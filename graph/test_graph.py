@@ -67,6 +67,12 @@ def test_add_edge_duplicate():
     assert d in a.edges
     assert c in a.edges
 
+def test_add_edge_self_loop():
+    a = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(a))
+    assert len(a.edges) == 1
+    assert a in [e.vertex for e in a.edges]
+
 def test_add_edge_invalid():
     a = Vertex("A9")
     assert_raises(TypeError, a.add_edge, "B")
@@ -158,6 +164,9 @@ def test_is_connected_three_vert_two_connections():
     c.add_edge(Edge(a))
     g = Graph([a, b, c])
     assert g.is_connected()
+
+def test_has_cycle_single():
+    pass
 
 def test_find_path_no_path():
     a = Vertex("A10")

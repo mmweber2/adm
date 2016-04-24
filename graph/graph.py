@@ -58,6 +58,8 @@ class Vertex(object):
 
         Multiedges are supported, so Edges with the same name may
             be added multiple times.
+        Self-loops are also supported, so an Edge may point to the
+            same Vertex that it originates from.
 
         Args:
             edge: The Edge to add. May or may not have a weight.
@@ -144,6 +146,27 @@ class Graph(object):
                 if find_path(self.vertices[i], self.vertices[j]) == []:
                     return False
         return True
+
+    def has_cycle(self):
+        """Determines whether this Graph contains a cycle.
+
+        Returns:
+            True if the Graph contains at least one cycle, and False
+            otherwise.
+        """
+        for vertex in self.vertices:
+            # processed is unique to each start vertex because we want to
+            # know what can be reached from the same starting point
+            processed = set()
+            stack = [vertex]
+            while len(stack) > 0:
+                current = stack.pop()
+                for edge in current.edges:
+                    if edge.vertex in processed:
+                        return True
+                    stack.append(edge.vertex)
+                processed.add(current)
+        return False
 
 def find_path(start, end):
     """Returns a path from start to end.
