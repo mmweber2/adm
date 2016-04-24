@@ -165,8 +165,45 @@ def test_is_connected_three_vert_two_connections():
     g = Graph([a, b, c])
     assert g.is_connected()
 
-def test_has_cycle_single():
-    pass
+def test_has_cycle_self_loop():
+    a = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(a))
+    g = Graph([a])
+    assert g.has_cycle()
+
+def test_has_cycle_single_no_loop():
+    a = Vertex(Vertex._make_test_vertex())
+    g = Graph([a])
+    assert not g.has_cycle()
+
+def test_has_cycle_two_vertices_linked():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b))
+    b.add_edge(Edge(a))
+    g = Graph([a, b])
+    assert g.has_cycle()
+
+def test_has_cycle_indirect():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    c = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b))
+    b.add_edge(Edge(c))
+    c.add_edge(Edge(a))
+    g = Graph([a, b, c])
+    assert g.has_cycle()
+
+def test_has_cycle_implicit():
+    """A Vertex is accessible to the Graph but not explicitly part of it."""
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    c = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b))
+    b.add_edge(Edge(c))
+    c.add_edge(Edge(a))
+    g = Graph([a, b])
+    assert g.has_cycle()
 
 def test_find_path_no_path():
     a = Vertex("A10")

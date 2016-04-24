@@ -150,6 +150,14 @@ class Graph(object):
     def has_cycle(self):
         """Determines whether this Graph contains a cycle.
 
+        If a Vertex is linked to by another Vertex in the Graph, but is
+        not explicitly included in the Graph, it will be considered part
+        of the Graph for this function.
+        For example: A has an edge to B, B has an edge to C, and C has an
+        edge to A, but only A and B are given as vertices to the graph,
+        the graph will be considered to have a cycle because of the edge
+        to C.
+
         Returns:
             True if the Graph contains at least one cycle, and False
             otherwise.
