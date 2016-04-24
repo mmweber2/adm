@@ -101,14 +101,18 @@ def test_graph_duplicate_vertex():
 def test_graph_add_new_vertex_exists():
     a = Vertex(Vertex._make_test_vertex())
     g = Graph([a])
-    g.add_new_vertex(a)
+    g.add_vertex(a)
     assert g.size() == 1
 
 def test_graph_add_new_vertex_new():
-    pass
+    a = Vertex(Vertex._make_test_vertex())
+    g = Graph([a])
+    g.add_vertex(Vertex(Vertex._make_test_vertex()))
+    assert g.size() == 2
 
 def test_graph_add_invalid_vertex():
-    pass
+    g = Graph([Vertex(Vertex._make_test_vertex())])
+    assert_raises(TypeError, g.add_vertex, "String name")
 
 def test_find_path_no_path():
     a = Vertex("A10")

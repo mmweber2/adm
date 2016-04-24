@@ -114,7 +114,12 @@ class Graph(object):
         Args:
             vertex: The new Vertex object to add. If vertex is already
             part of the graph, it will not be added again.
+
+        Raises:
+            TypeError: vertex is not a Vertex object.
         """
+        if not isinstance(vertex, Vertex):
+            raise TypeError("vertex to add must be a Vertex object")
         if vertex not in self.unique:
             self.vertices.append(vertex)
             self.unique.add(vertex)
