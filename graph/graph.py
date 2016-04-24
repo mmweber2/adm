@@ -1,3 +1,4 @@
+from collections import Counter
 class Vertex(object):
     """Represents a vertex node in a graph."""
 
@@ -175,6 +176,37 @@ class Graph(object):
                     stack.append(edge.vertex)
                 processed.add(current)
         return False
+
+    def top_sort(self):
+        """Returns a topological sort of this Graph.
+
+        The Graph must be acyclic in order to use this function.
+
+        Returns:
+            A list of the vertices of this graph (as Vertex objects)
+                in topological ordering.
+        Raises:
+            ValueError: Graph contains at least one cycle.
+        """
+        in_edges = []
+        for vertex in self.vertices:
+            for edge in vertex.edges:
+                in_edges.append(edge.vertex)
+        in_degrees = Counter(in_edges)
+        # Start with vertices with no incoming edges
+        queue = [vertex for vertex in self.vertices if in_degrees[vertex] == 0]
+        visited_vertices = []
+        while len(queue) > 0:
+            current = queue.pop(0)
+            visited_vertices.append(current)
+            for edge in current.edges:
+                in_degrees[edge.vertex] -= 1
+                # Enqueue nodes that only have this Vertex leading to them
+                if in_degrees[edge.vertex] == 0:
+                    queue.append(edge.vertex)
+        if len(visited_vertices) != len(self.vertices):
+            raise ValueError("Graph may not contain a cycle")
+        return visited_vertices
 
 def find_path(start, end):
     """Returns a path from start to end.
