@@ -3,7 +3,7 @@ class Vertex(object):
 
     # Vertex names used so far
     existing = set()
-    # For use by _test_vertex
+    # For use by _make_test_vertex
     _count = 1
 
     def __init__(self, name, edges=None):
@@ -94,13 +94,30 @@ class Graph(object):
         """Creates a new Graph with the given vertices.
 
         Args:
-            vertices: An iterable of Vertex objects.
+            vertices: An iterable of Vertex objects. If it contains
+            duplicate vertices, only one of each will be added.
         """
-        self.vertices = vertices
+        self.unique = set()
+        self.vertices = []
+        for vertex in vertices:
+            if vertex not in self.unique:
+                self.unique.add(vertex)
+                self.vertices.append(vertex)
 
     def size(self):
         """Returns the number of vertices in the Graph."""
         return len(self.vertices)
+
+    def add_vertex(self, vertex):
+        """Add a new Vertex to the Graph.
+
+        Args:
+            vertex: The new Vertex object to add. If vertex is already
+            part of the graph, it will not be added again.
+        """
+        if vertex not in self.unique:
+            self.vertices.append(vertex)
+            self.unique.add(vertex)
 
 def find_path(start, end):
     """Returns a path from start to end.
