@@ -71,7 +71,7 @@ class Vertex(object):
 
 class Edge(object):
 
-    def __init__(self, vertex, weight=0):
+    def __init__(self, vertex, weight=0.0):
         """Create a new Edge.
 
         Edges are assumed to be directed. If an undirected edge is
@@ -109,7 +109,7 @@ class Graph(object):
         return len(self.vertices)
 
     def add_vertex(self, vertex):
-        """Add a new Vertex to the Graph.
+        """Adds a new Vertex to the Graph.
 
         Args:
             vertex: The new Vertex object to add. If vertex is already
@@ -124,6 +124,27 @@ class Graph(object):
             self.vertices.append(vertex)
             self.unique.add(vertex)
 
+    def is_connected(self):
+        """Determines whether the Graph is connected.
+
+        A Graph is considered connected if for each Vertex x, y, there
+        exists a path from x to y, which also means that there is a path
+        from y to x.
+        If the Graph has less than two nodes in it, it is also considered
+        connected.
+        As more Vertices and Edges are added to a graph, its connectivity
+        may change.
+
+        Returns:
+            True if the Graph is connected, or False otherwise.
+        """
+        # Check paths in both directions, x to y and y to x
+        for i in xrange(len(self.vertices)):
+            for j in xrange(len(self.vertices)):
+                if find_path(self.vertices[i], self.vertices[j]) == []:
+                    return False
+        return True
+
 def find_path(start, end):
     """Returns a path from start to end.
 
@@ -131,6 +152,8 @@ def find_path(start, end):
     two vertices. If the edges are weighted, the weights are disregarded.
     If there are multiple paths with the minimum length, one such path
     is returned arbitrarily.
+    If start and end are the same Vertex, returns a list containing one
+    element, start.
 
     Args:
         start, end: Vertex objects between which to find a path.
@@ -189,6 +212,3 @@ def dfs(start, goal):
                 stack.append(edge.vertex)
     # Ran out of edges; no such path
     return False
-
-
-

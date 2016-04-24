@@ -7,6 +7,8 @@ from nose.tools import assert_raises
 
 # Since each Vertex needs a unique name, I need to either give them all
 # unique names in these tests or break the tests into more files.
+# For this purpose, I created Vertex._make_test_vertex(), but the older
+# tests still use manual test names.
 def test_new_vertex():
     a = Vertex("A1")
     assert a.name == "A1"
@@ -78,6 +80,10 @@ def test_vertex_valid_edges():
     a = Vertex(Vertex._make_test_vertex(), [d, e])
     assert a.edges == [d, e]
 
+def test_size():
+    g = Graph([Vertex(Vertex._make_test_vertex())])
+    assert g.size() == len(g.vertices)
+
 def test_graph_empty():
     a = Graph([])
     assert a.size() == 0
@@ -114,6 +120,45 @@ def test_graph_add_invalid_vertex():
     g = Graph([Vertex(Vertex._make_test_vertex())])
     assert_raises(TypeError, g.add_vertex, "String name")
 
+def test_is_connected_empty():
+    g = Graph([])
+    assert g.is_connected()
+
+def test_is_connected_single():
+    g = Graph([Vertex(Vertex._make_test_vertex())])
+    assert g.is_connected()
+
+def test_is_connected_two_single():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    g = Graph([a, b])
+    assert not g.is_connected()
+
+def test_is_connected_two_vert_one_edge():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b))
+    g = Graph([a, b])
+    assert not g.is_connected()
+
+def test_is_connected_two_doubly_connected():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b))
+    b.add_edge(Edge(a))
+    g = Graph([a, b])
+    assert g.is_connected()
+
+def test_is_connected_three_vert_two_connections():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    c = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b))
+    b.add_edge(Edge(c))
+    c.add_edge(Edge(a))
+    g = Graph([a, b, c])
+    assert g.is_connected()
+
 def test_find_path_no_path():
     a = Vertex("A10")
     b = Vertex("A11")
@@ -128,6 +173,17 @@ def test_find_path_direct_connection():
     b = Vertex("A14")
     a.add_edge(Edge(b))
     assert find_path(a, b) == [a, b]
+    # Path is only in one direction
+    assert find_path(b, a) == []
+
+def test_find_path_ignores_weights():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b, 1))
+    c = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(c, 100))
+    b.add_edge(Edge(c, 1))
+    assert find_path(a, c) == [a, c]
 
 def test_find_path_chain():
     a = Vertex("A15")
