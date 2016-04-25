@@ -30,6 +30,11 @@ def test_make_test_vertex():
     a = Vertex(s)
     assert a.name == s
 
+def test_vertex_repr():
+    s = Vertex._make_test_vertex()
+    a = Vertex(s)
+    assert a.__repr__() == "Vertex: {}".format(s)
+
 # Test for creating a vertex with existing edges can be found
 # after the other Edge tests.
 
@@ -204,6 +209,45 @@ def test_has_cycle_implicit():
     c.add_edge(Edge(a))
     g = Graph([a, b])
     assert g.has_cycle()
+
+def test_top_sort_empty():
+    g = Graph([])
+    assert g.top_sort() == []
+
+def test_top_sort_single():
+    a = Vertex(Vertex._make_test_vertex())
+    g = Graph([a])
+    assert g.top_sort() == [a]
+
+def test_top_sort_two_single_vertices():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    g = Graph([a, b])
+    assert g.top_sort() in [[a, b], [b, a]]
+
+def test_top_sort_two_linked_vertices():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b))
+    g = Graph([a, b])
+    assert g.top_sort() == [a, b]
+
+def test_top_sort_chain():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    c = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b))
+    b.add_edge(Edge(c))
+    g = Graph([a, b, c])
+    assert g.top_sort() == [a, b, c]
+
+def test_top_sort_cycle():
+    a = Vertex(Vertex._make_test_vertex())
+    b = Vertex(Vertex._make_test_vertex())
+    a.add_edge(Edge(b))
+    b.add_edge(Edge(a))
+    g = Graph([a, b])
+    assert_raises(ValueError, g.top_sort)
 
 def test_find_path_no_path():
     a = Vertex("A10")

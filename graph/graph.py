@@ -184,10 +184,12 @@ class Graph(object):
 
         Returns:
             A list of the vertices of this graph (as Vertex objects)
-                in topological ordering.
+            in topological ordering. If the Graph has no vertices,
+            returns an empty list.
         Raises:
             ValueError: Graph contains at least one cycle.
         """
+        # Get count of incoming edges for each Vertex
         in_edges = []
         for vertex in self.vertices:
             for edge in vertex.edges:
@@ -204,6 +206,8 @@ class Graph(object):
                 # Enqueue nodes that only have this Vertex leading to them
                 if in_degrees[edge.vertex] == 0:
                     queue.append(edge.vertex)
+        # If the Graph contains a cycle, we will run out of vertices with
+        # 0 in-degrees before we run out of vertices.
         if len(visited_vertices) != len(self.vertices):
             raise ValueError("Graph may not contain a cycle")
         return visited_vertices
