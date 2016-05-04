@@ -35,3 +35,12 @@ def test_subsets_three_items():
     result = subsets([1, 2, 3])
     for subset in [[], [1], [2], [3], [1, 2], [2, 3], [1, 2, 3]]:
         assert subset in result
+
+def test_ten_items():
+    result = subsets([x for x in xrange(10)])
+    assert_equals(len(result), 1024)
+    tuples = []
+    for subset in result:
+        subset.sort()
+        tuples.append(tuple(subset))
+    assert_equals(len(set(tuples)), 1024)
