@@ -8,23 +8,24 @@ def subsets(array):
     Args:
         array: The iterable of items from which to create subsets.
 
-        remaining; The remaining items from which to create subsets.
+    Returns:
+        A list of lists, where each list is a subset of array.
+        If array is an empty iterable, returns an empty list.
 
     Raises:
         TypeError: array is not an iterable.
     """
+    # Just return empty list for empty array
+    if len(array) == 0:
+        return []
     sets = []
     # Create subsets of one element
-    #print "Calling with array ", array
-    if len(array) == 0:
-        return sets
     if len(array) == 1:
         sets.extend([[], [array[0]]])
-        return sets
     else:
         smaller_sets = subsets(array[1:])
         sets.extend(smaller_sets)
         for subset in smaller_sets:
             sets.append([array[0]] + subset)
-        return sets
+    return sets
 

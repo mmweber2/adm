@@ -24,3 +24,14 @@ def test_subsets_two_repeating_items():
         assert subset in result
     # Duplicate item should appear by itself twice
     assert result.count([2]) == 2
+
+# Test a non-list input
+def test_subsets_strings():
+    result = subsets("ab")
+    for subset in [[], ["a"], ["b"], ["a", "b"]]:
+        assert subset in result
+
+def test_subsets_three_items():
+    result = subsets([1, 2, 3])
+    for subset in [[], [1], [2], [3], [1, 2], [2, 3], [1, 2, 3]]:
+        assert subset in result
