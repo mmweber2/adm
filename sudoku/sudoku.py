@@ -10,7 +10,7 @@ class Board(object):
 
         Args:
             board_array: A 9x9 2D list containing the initial board setup.
-            Blank spaces are represented by None, and filled spaces are
+            Blank spaces are represented by zeroes, and filled spaces are
             represented by integers 1-9.
 
         Raises:
@@ -40,7 +40,7 @@ class Board(object):
         """
         is_valid = True
         error = ""
-        if not (type(board_array)) == list:
+        if not type(board_array) == list:
             is_valid = False
             error = "board_array must be a 2D list"
         elif not len(board_array) == 9:
@@ -55,9 +55,13 @@ class Board(object):
                     is_valid = False
                     error = "board_array grids must be 9x9"
                 else:
-                    is_int = [True for x in sublist if type(x) in (int, None)]
-                    if not all(is_int):
-                        is_valid = False
-                        error = "All elements in board_array must be integers"
+                    for item in sublist:
+                        if type(item) != int:
+                          is_valid = False
+                          error = "All elements in board_array must" +
+                                  " be None or integers"
+                        elif not 0 <= item < 10:
+                            is_valid = False
+                            error = "All numbers must be >= 0 and <= 9"
         # TODO: Call function that says whether board has duplicates
         return (is_valid, error)
