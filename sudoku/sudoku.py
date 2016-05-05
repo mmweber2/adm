@@ -16,13 +16,13 @@ class Board(object):
         Raises:
             ValueError: board_array is not a valid board configuration.
         """
-        is_valid, error = Board._is_valid_board(board_array):
+        is_valid, error = _is_valid_board(Board, board_array)
         if not is_valid:
             raise ValueError(error)
         self.board = board_array
 
     @staticmethod
-    def _is_valid_start_board(cls, board_array):
+    def _is_valid_start_board(board_array):
         """Confirms that board_array is in valid Sudoku format.
 
         Does not confirm whether it is possible to solve this board.
@@ -40,7 +40,7 @@ class Board(object):
         """
         is_valid = True
         error = ""
-        if not (type(board_array) == list:
+        if not (type(board_array)) == list:
             is_valid = False
             error = "board_array must be a 2D list"
         elif not len(board_array) == 9:
@@ -55,7 +55,7 @@ class Board(object):
                     is_valid = False
                     error = "board_array grids must be 9x9"
                 else:
-                    is_int = [True for item in sublist if type(item) == int]
+                    is_int = [True for x in sublist if type(x) in (int, None)]
                     if not all(is_int):
                         is_valid = False
                         error = "All elements in board_array must be integers"
