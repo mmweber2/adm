@@ -5,7 +5,7 @@ from nose.tools import assert_raises
 def test_subsets_empty():
     assert_equals([], subsets([]))
 
-def test_subsets_non_iterable():
+def test_subsets_non_allowed_type():
     assert_raises(TypeError, subsets, 25)
 
 def test_subsets_single_item():
@@ -18,18 +18,17 @@ def test_subsets_two_items():
     for subset in [[], [1], [2], [1, 2]]:
         assert subset in result
 
+def test_subsets_tuple():
+    result = subsets((1, 2))
+    for subset in [[], [1], [2], [1, 2]]:
+        assert subset in result
+
 def test_subsets_two_repeating_items():
     result = subsets([2, 2])
     for subset in [[], [2], [2, 2]]:
         assert subset in result
     # Duplicate item should appear by itself twice
     assert result.count([2]) == 2
-
-# Test a non-list input
-def test_subsets_strings():
-    result = subsets("ab")
-    for subset in [[], ["a"], ["b"], ["a", "b"]]:
-        assert subset in result
 
 def test_subsets_three_items():
     result = subsets([1, 2, 3])

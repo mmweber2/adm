@@ -1,31 +1,32 @@
-def subsets(array):
+def subsets(input_list):
     """
-    Generates all of the subsets of array.
+    Generates all of the subsets of input_list.
 
-    If the elements in array are not unique, duplicate elements will
-    be included the same number of times that they appear in array.
+    If the elements in input_list are not unique, duplicate elements will
+    be included the same number of times that they appear in input_list.
 
     Args:
-        array: The iterable of items from which to create subsets.
+        input_list: The list or tuple of items from which to create subsets.
 
     Returns:
-        A list of lists, where each list is a subset of array.
-        If array is an empty iterable, returns an empty list.
+        A list of lists, where each list is a subset of input_list.
+        If input_list is an empty list, returns an empty list.
 
     Raises:
-        TypeError: array is not an iterable.
+        TypeError: input_list is not a list.
     """
-    # Just return empty list for empty array
-    if len(array) == 0:
+    # Just return empty list for empty input_list
+    if len(input_list) == 0:
         return []
+    if type(input_list) not in (list, tuple):
+        raise TypeError("input_list must be a list or tuple")
     sets = []
     # Create subsets of one element
-    if len(array) == 1:
-        sets.extend([[], [array[0]]])
+    if len(input_list) == 1:
+        sets.extend([[], [input_list[0]]])
     else:
-        smaller_sets = subsets(array[1:])
+        smaller_sets = subsets(input_list[1:])
         sets.extend(smaller_sets)
         for subset in smaller_sets:
-            sets.append([array[0]] + subset)
+            sets.append([input_list[0]] + subset)
     return sets
-
