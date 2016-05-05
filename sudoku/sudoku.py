@@ -47,6 +47,8 @@ class Board(object):
                 if type(item) != int:
                   raise ValueError("board_array must contain only integers")
                 if not 0 <= item <= 9:
-                  raise ValueError("All numbers must be in range 0 <= x <= 9")
+                  raise ValueError(
+                      "board_array numbers must be in range 0 <= x <= 9"
+                                  )
         # TODO: Call function that says whether board has duplicates
         return True
