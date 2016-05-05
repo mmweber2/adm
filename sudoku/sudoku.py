@@ -16,7 +16,7 @@ class Board(object):
         Raises:
             ValueError: board_array is not a valid board configuration.
         """
-        _is_valid_start_board(Board, board_array)
+        Board._is_valid_start_board(board_array)
         self.board = board_array
 
     @staticmethod
@@ -28,11 +28,11 @@ class Board(object):
         Args:
             board_array: The 2D list to check.
 
-        Raises:
-            ValueError: board_array is not a valid board configuration.
-
         Returns:
             True if the board is of the valid format.
+
+        Raises:
+            ValueError: board_array is not a valid board configuration.
         """
         if not type(board_array) in (list, tuple):
             raise ValueError("board_array must be a 2D list")
@@ -45,10 +45,61 @@ class Board(object):
                 raise ValueError("board_array grids must be 9x9")
             for item in sublist:
                 if type(item) != int:
-                  raise ValueError("board_array must contain only integers")
+                    raise ValueError("board_array must contain only integers")
                 if not 0 <= item <= 9:
-                  raise ValueError(
-                      "board_array numbers must be in range 0 <= x <= 9"
-                                  )
-        # TODO: Call function that says whether board has duplicates
+                    raise ValueError(
+                        "board_array numbers must be in range 0 <= x <= 9")
+        if not Board._is_valid_board(board_array):
+            raise ValueError(
+                "board_array rows, columns, and grids must not " + 
+                "contain non-zero duplicates")
         return True
+
+    @staticmethod
+    def _is_valid_board(board_array):
+        """Determines whether this Board is valid.
+
+        A Board is considered valid if there are no repeating numbers
+        (besides 0, which represents a blank space) in any row, column,
+        or 3 x 3 grid of the board.
+        The 3 x 3 grids divide the board into ninths such that exactly
+        9 fit onto the board. For example, there can be repeating numbers
+        in the 3 columns that span indecis 1-3, but not 0-2, because 0-2
+        and 3-5 are separate grids.
+
+        Args:
+            board_array: The 2D list to check.
+
+        Returns:
+            True iff the board is valid, and False otherwise.
+        """
+        board_size = len(board_array)
+        # Check rows
+        for i in xrange(board_size):
+            row_numbers = set()
+            for j in xrange(board_size):
+                if board_array[i][j] == 0: continue
+                if board_array[i][j] in row_numbers:
+                    return False
+                row_numbers.add(board_array[i][j])
+        # Check columns
+        for j in xrange(board_size):
+            col_numbers = set()
+            for i in xrange(board_size):
+                if board_array[i][j] == 0: continue
+                if board_array[i][j] in col_numbers:
+                    return False
+                col_numbers.add(board_array[i][j])
+        # Check grids
+        grids = ((0, 2), (3, 5), (6, 8))
+        for grid in grids:
+            grid_numbers = set()
+            for i in xrange(*grid):
+                for j in xrange(*grid):
+                    if board_array[i][j] == 0: continue
+                    if board_array[i][j] in grid_numbers:
+                        return False
+                    grid_numbers.add(board_array[i][j])
+        return True
+
+
