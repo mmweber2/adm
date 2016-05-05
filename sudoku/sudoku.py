@@ -16,9 +16,7 @@ class Board(object):
         Raises:
             ValueError: board_array is not a valid board configuration.
         """
-        is_valid, error = _is_valid_board(Board, board_array)
-        if not is_valid:
-            raise ValueError(error)
+        _is_valid_start_board(Board, board_array)
         self.board = board_array
 
     @staticmethod
@@ -30,38 +28,25 @@ class Board(object):
         Args:
             board_array: The 2D list to check.
 
+        Raises:
+            ValueError: board_array is not a valid board configuration.
+
         Returns:
-            A tuple of the format (is_valid, error_message).
-            If the board is of the valid format, error_message will
-            be an empty string; otherwise, it will be an error message
-            explaining what is invalid about the board.
-            If there are multiple problems with the board, only one such
-            reason will be given.
+            True if the board is of the valid format.
         """
-        is_valid = True
-        error = ""
-        if not type(board_array) == list:
-            is_valid = False
-            error = "board_array must be a 2D list"
-        elif not len(board_array) == 9:
-            is_valid = False
-            error = "board_array must contain 9 grids"
-        else:
-            for sublist in board_array:
-                if not type(sublist) == list:
-                    is_valid = False
-                    error = "board_array must contain only lists"
-                elif not len(sublist) == 9:
-                    is_valid = False
-                    error = "board_array grids must be 9x9"
-                else:
-                    for item in sublist:
-                        if type(item) != int:
-                          is_valid = False
-                          error = "All elements in board_array must" +
-                                  " be None or integers"
-                        elif not 0 <= item < 10:
-                            is_valid = False
-                            error = "All numbers must be >= 0 and <= 9"
+        if not type(board_array) in (list, tuple):
+            raise ValueError("board_array must be a 2D list")
+        if len(board_array) != 9:
+            raise ValueError("board_array must contain 9 grids")
+        for sublist in board_array:
+            if not type(sublist) in (list, tuple):
+                raise ValueError("board_array must contain only lists")
+            if len(sublist) != 9:
+                raise ValueError("board_array grids must be 9x9")
+            for item in sublist:
+                if type(item) != int:
+                  raise ValueError("board_array must contain only integers")
+                if not 0 <= item <= 9:
+                  raise ValueError("All numbers must be in range 0 <= x <= 9")
         # TODO: Call function that says whether board has duplicates
-        return (is_valid, error)
+        return True
