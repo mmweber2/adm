@@ -132,9 +132,36 @@ class Board(object):
         board_size = len(self.board_array)
         col_numbers = set()
         for i in xrange(board_size):
-            if board_array[i][col] == 0: continue
-            col_numbers.add(board_array[i][col])
+            if board_array[i][col] != 0:
+                col_numbers.add(board_array[i][col])
         return col_numbers
+
+    def _numbers_in_grid(self, grid_start_row, grid_start_col):
+        """Returns a set of the numbers in the given grid.
+
+        Zeroes are ignored, since they represent blank spaces.
+
+        For example, to check the first grid, grid_start_row and
+            grid_start_col should be 0 and 0. To check the center grid,
+            they should be 3 and 3.
+
+        Args:
+            grid_start_row: The row index of the upper left most number in the
+              grid.
+
+            grid_start_col: The column index of the upper left most number in
+              the grid.
+
+        Returns:
+            A set of the non-zero numbers found in this grid.
+        """
+        grid_numbers = set()
+        # +3 to check 3 numbers from each starting point
+        for i in xrange(grid_start_row, grid_start_row + 3):
+            for j in xrange(grid_start_col, grid_start_col + 3):
+                if self.board_array[i][j] != 0:
+                    grid_numbers.add(board_array[i][j])
+        return grid_numbers
 
 
 class Engine(object):
