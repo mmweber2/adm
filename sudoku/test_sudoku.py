@@ -127,3 +127,18 @@ def test_is_valid_board_duplicate_in_grid():
                    [1, 5, 0, 0, 6, 0, 0, 0, 0]
                   ]
     assert not Board._is_valid_board(input_array)
+
+def test_numbers_in_row_valid():
+    pass
+def test_numbers_in_row_empty():
+    pass
+def test_numbers_in_row_invalid_row():
+    pass
+def test_numbers_in_col_valid():
+    pass
+def test_numbers_in_col_empty():
+    pass
+def test_numbers_in_grid_valid():
+    pass
+def test_numbers_in_grid_empty():
+    pass

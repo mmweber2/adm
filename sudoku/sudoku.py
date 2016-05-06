@@ -111,11 +111,18 @@ class Board(object):
         Zeroes are ignored, since they represent blank spaces.
 
         Args:
-            row: The index of the row of this board to check.
+            row: The integer index of the row of this board to check.
+            Must be in the range 0 <= x < board size, so 0 <= x < 9
+            for a standard 9x9 board.
 
         Returns:
             A set of the non-zero numbers found in this row.
+
+        Raises:
+            ValueError: row is outside the valid range for this board.
         """
+        if type(row) != int or not (0 <= row < len(self.board_array)):
+            raise ValueError("Invalid row number: {}".format(row))
         return set([x for x in board.array[row] if x != 0])
 
     def _numbers_in_column(self, col):
@@ -124,11 +131,18 @@ class Board(object):
         Zeroes are ignored, since they represent blank spaces.
 
         Args:
-            col: The index of the column of this board to check.
+            col: The integer index of the column of this board to check.
+            Must be in the range 0 <= x < board size, so 0 <= x < 9
+            for a standard 9x9 board.
 
         Returns:
             A set of the non-zero numbers found in this column.
+
+        Raises:
+            ValueError: col is outside the valid range for this board.
         """
+        if type(col) != int or not (0 <= col < len(self.board_array)):
+            raise ValueError("Invalid column number: {}".format(col))
         board_size = len(self.board_array)
         col_numbers = set()
         for i in xrange(board_size):
@@ -142,8 +156,11 @@ class Board(object):
         Zeroes are ignored, since they represent blank spaces.
 
         For example, to check the first grid, grid_start_row and
-            grid_start_col should be 0 and 0. To check the center grid,
-            they should be 3 and 3.
+        grid_start_col should be 0 and 0. To check the center grid,
+        they should be 3 and 3.
+
+        For a standard 9x9 board, the only acceptable values for grid_start_row
+        and grid_start_col are 0, 3, and 6.
 
         Args:
             grid_start_row: The row index of the upper left most number in the
@@ -154,7 +171,13 @@ class Board(object):
 
         Returns:
             A set of the non-zero numbers found in this grid.
+
+        Raises:
+            ValueError: col is outside the valid range for this board.
         """
+        for param in (grid_start_row, grid_start_col):
+            if type(param) != int or param not in (0, 3, 6):
+                raise ValueError("Invalid grid start number: {}".format(param))
         grid_numbers = set()
         # +3 to check 3 numbers from each starting point
         for i in xrange(grid_start_row, grid_start_row + 3):
