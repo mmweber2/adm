@@ -121,9 +121,9 @@ class Board(object):
         Raises:
             ValueError: row is outside the valid range for this board.
         """
-        if type(row) != int or not (0 <= row < len(self.board_array)):
+        if type(row) != int or not (0 <= row < len(self.board)):
             raise ValueError("Invalid row number: {}".format(row))
-        return set([x for x in board.array[row] if x != 0])
+        return set([x for x in self.board[row] if x != 0])
 
     def _numbers_in_column(self, col):
         """Returns a set of the numbers in this column.
@@ -141,13 +141,13 @@ class Board(object):
         Raises:
             ValueError: col is outside the valid range for this board.
         """
-        if type(col) != int or not (0 <= col < len(self.board_array)):
+        if type(col) != int or not (0 <= col < len(self.board)):
             raise ValueError("Invalid column number: {}".format(col))
-        board_size = len(self.board_array)
+        board_size = len(self.board)
         col_numbers = set()
         for i in xrange(board_size):
             if board_array[i][col] != 0:
-                col_numbers.add(board_array[i][col])
+                col_numbers.add(self.board[i][col])
         return col_numbers
 
     def _numbers_in_grid(self, grid_start_row, grid_start_col):
@@ -182,8 +182,8 @@ class Board(object):
         # +3 to check 3 numbers from each starting point
         for i in xrange(grid_start_row, grid_start_row + 3):
             for j in xrange(grid_start_col, grid_start_col + 3):
-                if self.board_array[i][j] != 0:
-                    grid_numbers.add(board_array[i][j])
+                if self.board[i][j] != 0:
+                    grid_numbers.add(board[i][j])
         return grid_numbers
 
 

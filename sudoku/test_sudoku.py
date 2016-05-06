@@ -19,13 +19,36 @@ def test_is_valid_start_board_valid():
                   ]
     assert Board._is_valid_start_board(input_array)
 
-def test_board_wrong_outer_size():
+def test_board_constructor_valid():
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_equals(b.board, input_array)
+
+def test_is_valid_start_board_wrong_outer_size():
     input_array = [[1, 0], [0, 0]]
     with assert_raises(ValueError) as cm:
       Board._is_valid_start_board(input_array)
     assert_equals(str(cm.exception), "board_array must contain 9 grids")
 
-def test_board_wrong_inner_size():
+def test_board_constructor_invalid():
+    input_array = [[1, 0], [0, 0]]
+    b = None
+    with assert_raises(ValueError) as cm:
+      Board(input_array)
+    assert_equals(str(cm.exception), "board_array must contain 9 grids")
+    assert_equals(b, None)
+
+def test_is_valid_start_board_wrong_inner_size():
     input_array = [[1, 0], [0, 0], [0, 0],
                    [0, 0], [0, 0], [0, 0],
                    [0, 0], [0, 0], [0, 0]
@@ -34,30 +57,30 @@ def test_board_wrong_inner_size():
       Board._is_valid_start_board(input_array)
     assert_equals(str(cm.exception), "board_array grids must be 9x9")
 
-def test_board_not_list():
+def test_is_valid_start_board_not_list():
     input_array = "abcd"
     with assert_raises(ValueError) as cm:
       Board._is_valid_start_board(input_array)
     assert_equals(str(cm.exception), "board_array must be a 2D list")
 
-def test_board_no_inner_list():
+def test_is_valid_start_board_no_inner_list():
     input_array = ["abcd", "efgh", "i", "j", "k", "l", "m", "n", "o"]
     with assert_raises(ValueError) as cm:
       Board._is_valid_start_board(input_array)
     assert_equals(str(cm.exception), "board_array must contain only lists")
 
 # For now, an empty board is valid
-def test_board_empty():
+def test_is_valid_start_board_empty():
     assert Board._is_valid_start_board([[0] * 9 for _ in xrange(9)])
 
-def test_board_non_int():
+def test_is_valid_start_board_non_int():
     input_array = [[0] * 9 for _ in xrange(9)]
     input_array[2][2] = "abc"
     with assert_raises(ValueError) as cm:
       Board._is_valid_start_board(input_array)
     assert_equals(str(cm.exception), "board_array must contain only integers")
 
-def test_board_invalid_ints():
+def test_is_valid_start_board_invalid_ints():
     input_array = [[0] * 9 for _ in xrange(9)]
     input_array[2][2] = 10
     with assert_raises(ValueError) as cm:
@@ -129,7 +152,22 @@ def test_is_valid_board_duplicate_in_grid():
     assert not Board._is_valid_board(input_array)
 
 def test_numbers_in_row_valid():
-    pass
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    result = b._numbers_in_row(0)
+    # Two sets are equal iff every element of each set is contained in the other
+    assert_equals(result, set((2, 5, 9)))
+
 def test_numbers_in_row_empty():
     pass
 def test_numbers_in_row_invalid_row():
