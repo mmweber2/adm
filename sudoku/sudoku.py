@@ -51,7 +51,7 @@ class Board(object):
                         "board_array numbers must be in range 0 <= x <= 9")
         if not Board._is_valid_board(board_array):
             raise ValueError(
-                "board_array rows, columns, and grids must not " + 
+                "board_array rows, columns, and grids must not " +
                 "contain non-zero duplicates")
         return True
 
@@ -76,12 +76,10 @@ class Board(object):
         board_size = len(board_array)
         # Check rows
         for i in xrange(board_size):
-            row_numbers = set()
-            for j in xrange(board_size):
-                if board_array[i][j] == 0: continue
-                if board_array[i][j] in row_numbers:
-                    return False
-                row_numbers.add(board_array[i][j])
+            row_numbers = [x for x in board_array[i] if x != 0]
+            unique_size = len(set(row_numbers))
+            if unique_size < len(row_numbers):
+                return False
         # Check columns
         for j in xrange(board_size):
             col_numbers = set()
@@ -91,15 +89,53 @@ class Board(object):
                     return False
                 col_numbers.add(board_array[i][j])
         # Check grids
-        grids = ((0, 2), (3, 5), (6, 8))
+        # Start at upper left of each grid, then move 2 in each direction
+        grids = (
+                (0, 0), (0, 3), (0, 6),
+                (3, 0), (3, 3), (3, 6),
+                (6, 0), (6, 3), (6, 6))
         for grid in grids:
             grid_numbers = set()
-            for i in xrange(*grid):
-                for j in xrange(*grid):
+            # +3 to check 3 numbers from each starting point
+            for i in xrange(grid[0], grid[0] + 3):
+                for j in xrange(grid[1], grid[1] + 3):
                     if board_array[i][j] == 0: continue
                     if board_array[i][j] in grid_numbers:
                         return False
                     grid_numbers.add(board_array[i][j])
         return True
 
+    def _numbers_in_row(self, row):
+        """Returns a set of the numbers in this row.
 
+        Zeroes are ignored, since they represent blank spaces.
+
+        Args:
+            row: The index of the row of this board to check.
+
+        Returns:
+            A set of the non-zero numbers found in this row.
+        """
+        return set([x for x in board.array[row] if x != 0])
+
+    def _numbers_in_column(self, col):
+        """Returns a set of the numbers in this column.
+
+        Zeroes are ignored, since they represent blank spaces.
+
+        Args:
+            col: The index of the column of this board to check.
+
+        Returns:
+            A set of the non-zero numbers found in this column.
+        """
+        board_size = len(self.board_array)
+        col_numbers = set()
+        for i in xrange(board_size):
+            if board_array[i][col] == 0: continue
+            col_numbers.add(board_array[i][col])
+        return col_numbers
+
+
+class Engine(object):
+    pass
