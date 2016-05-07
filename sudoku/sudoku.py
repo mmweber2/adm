@@ -221,9 +221,7 @@ class Board(object):
             IndexError: The position at row, column is not empty; it
             contains a number > 0.
         """
-        for param in row, column:
-            if type(param) != int or not (0 <= param < self.board_size()):
-                raise ValueError("Position out of range: {}".format(param))
+        _valid_pos(self, row, column)
         # Already having a number here would confuse the row, column,
         # and grid checking.
         if self.board[row][column] != 0:
@@ -245,4 +243,30 @@ class Board(object):
                 remaining_moves.append(move)
         return remaining_moves
 
+    def remaining_move_count(self, row, col):
+        """Returns the number of moves playable at this position.
+
+        Returns 0 if there are no valid moves (i.e., it is a non-winnable
+        board).
+        """
+
+    def _valid_pos(self, index):
+        """Checks whether the given index is valid for this Board.
+        
+        Args:
+            index: The index to check. A valid index is an integer in
+            the range 0 <= x < board_size().
+            Since all Boards must be square, a valid row is necessarily a
+            valid column, and vice versa.
+            
+        Returns:
+            True iff index is a valid row or column index.
+
+        Raises:
+            ValueError: index is not an error, or is outside the range
+            of this Board.
+        """
+        if type(index) != int or not (0 <= index < self.board_size()):
+            raise ValueError("Position out of range: {}".format(index))
+        return True
 
