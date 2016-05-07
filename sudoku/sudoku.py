@@ -146,7 +146,7 @@ class Board(object):
         board_size = len(self.board)
         col_numbers = set()
         for i in xrange(board_size):
-            if board_array[i][col] != 0:
+            if self.board[i][col] != 0:
                 col_numbers.add(self.board[i][col])
         return col_numbers
 
@@ -183,7 +183,7 @@ class Board(object):
         for i in xrange(grid_start_row, grid_start_row + 3):
             for j in xrange(grid_start_col, grid_start_col + 3):
                 if self.board[i][j] != 0:
-                    grid_numbers.add(board[i][j])
+                    grid_numbers.add(self.board[i][j])
         return grid_numbers
 
 

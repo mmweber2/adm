@@ -89,6 +89,21 @@ def test_is_valid_start_board_invalid_ints():
         str(cm.exception), "board_array numbers must be in range 0 <= x <= 9"
                  )
 
+def test_is_valid_start_board_duplicates():
+    input_array = [
+                   # 2 2s in this row
+                   [0, 0, 0, 0, 9, 2, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    assert_raises(ValueError, Board._is_valid_start_board, input_array)
+
 def test_is_valid_board_valid():
     input_array = [
                    [0, 0, 0, 0, 9, 0, 0, 5, 2],
@@ -151,6 +166,8 @@ def test_is_valid_board_duplicate_in_grid():
                   ]
     assert not Board._is_valid_board(input_array)
 
+# The _numbers_in_row tests don't need checking for duplicates because
+# that will be done when the board is created.
 def test_numbers_in_row_valid():
     input_array = [
                    [0, 0, 0, 0, 9, 0, 0, 5, 2],
@@ -169,14 +186,92 @@ def test_numbers_in_row_valid():
     assert_equals(result, set((2, 5, 9)))
 
 def test_numbers_in_row_empty():
-    pass
+    input_array = [
+                   # Clear out non-zeroes in first row
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_equals(b._numbers_in_row(0), set())
+
 def test_numbers_in_row_invalid_row():
-    pass
+    input_array = [
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_raises(ValueError, b._numbers_in_row, 9)
+
 def test_numbers_in_col_valid():
-    pass
-def test_numbers_in_col_empty():
-    pass
+    input_array = [
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_equals(b._numbers_in_column(8), set((4, 9)))
+
+def test_numbers_in_col_invalid_col():
+    input_array = [
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [0, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [0, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [0, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_raises(ValueError, b._numbers_in_column, "4")
+
 def test_numbers_in_grid_valid():
-    pass
-def test_numbers_in_grid_empty():
-    pass
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_equals(b._numbers_in_grid(3, 3), set((7, 4, 6, 9, 1, 2, 5, 3)))
+
+def test_numbers_in_grid_invalid_params():
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_raises(ValueError, b._numbers_in_grid, 1, 1)
