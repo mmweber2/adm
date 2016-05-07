@@ -290,3 +290,50 @@ def test_numbers_in_grid_invalid_params():
                   ]
     b = Board(input_array)
     assert_raises(ValueError, b._numbers_in_grid, 1, 1)
+
+def test_valid_moves_valid():
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    result = b.valid_moves(0, 0)
+    assert_equals(type(result), list)
+    assert_equals(set(result), set((3, 6, 7, 8)))
+
+def test_valid_moves_position_already_filled():
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_raises(IndexError, b.valid_moves, 1, 1)
+
+def test_valid_moves_invalid_input():
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_raises(ValueError, b.valid_moves, 9, 0)

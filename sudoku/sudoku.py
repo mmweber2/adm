@@ -204,6 +204,11 @@ class Board(object):
     def valid_moves(self, row, column):
         """Returns the valid moves for the given position.
 
+        Args:
+            row, column: The zero-indexed integer row and column
+            numbers for the position to check. Must be in the range
+            0 <= x < board_size().
+
         Returns:
             A list of numbers in the range 1-9 that are not already
             part of the given position's row, column, or grid, and so
@@ -212,8 +217,32 @@ class Board(object):
         Raises:
             ValueError: row or column are not integers, or are not in
             the range 0 <= x < board_size.
+
+            IndexError: The position at row, column is not empty; it
+            contains a number > 0.
         """
         for param in row, column:
             if type(param) != int or not (0 <= param < self.board_size()):
                 raise ValueError("Position out of range: {}".format(param))
+        # Already having a number here would confuse the row, column,
+        # and grid checking.
+        if self.board[row][column] != 0:
+            raise IndexError(
+                "Number already at position {},{}: {}".format(
+                    row, column, self.board[row][column])
+                )
+        used_numbers = self._numbers_in_row(row)
+        # Combine all the used numbers together because we don't care where
+        # they were used, just that they are no longer possible
+        used_numbers.update(self._numbers_in_column(column))
+        # Round row and column numbers down to grid start positions
+        x = row / 3 * 3
+        y = column / 3 * 3
+        used_numbers.update(self._numbers_in_grid(x, y))
+        remaining_moves = []
+        for move in xrange(1, 9):
+            if move not in used_numbers:
+                remaining_moves.append(move)
+        return remaining_moves
+
 
