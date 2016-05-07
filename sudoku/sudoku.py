@@ -19,6 +19,21 @@ class Board(object):
         Board._is_valid_start_board(board_array)
         self.board = board_array
 
+    def board_size(self):
+        """Returns the size of the board.
+
+        Since the board must be a square, it will have this many rows
+        and columns. The number of numbers (or spaces) on the board will
+        be the square of this number.
+
+        The standard board size is 9, totaling 81 spaces.
+
+        Returns:
+           An integer indicating the size of the board in rows
+           (and columns).
+        """
+        return len(self.board)
+
     @staticmethod
     def _is_valid_start_board(board_array):
         """Confirms that board_array is in valid Sudoku format.
@@ -73,6 +88,7 @@ class Board(object):
         Returns:
             True iff the board is valid, and False otherwise.
         """
+        # Can't use board_size() here because the Board is not made yet
         board_size = len(board_array)
         # Check rows
         for i in xrange(board_size):
@@ -112,7 +128,7 @@ class Board(object):
 
         Args:
             row: The integer index of the row of this board to check.
-            Must be in the range 0 <= x < board size, so 0 <= x < 9
+            Must be in the range 0 <= x < board_size(), so 0 <= x < 9
             for a standard 9x9 board.
 
         Returns:
@@ -121,7 +137,7 @@ class Board(object):
         Raises:
             ValueError: row is outside the valid range for this board.
         """
-        if type(row) != int or not (0 <= row < len(self.board)):
+        if type(row) != int or not (0 <= row < self.board_size()):
             raise ValueError("Invalid row number: {}".format(row))
         return set([x for x in self.board[row] if x != 0])
 
@@ -132,7 +148,7 @@ class Board(object):
 
         Args:
             col: The integer index of the column of this board to check.
-            Must be in the range 0 <= x < board size, so 0 <= x < 9
+            Must be in the range 0 <= x < board_size(), so 0 <= x < 9
             for a standard 9x9 board.
 
         Returns:
@@ -141,11 +157,10 @@ class Board(object):
         Raises:
             ValueError: col is outside the valid range for this board.
         """
-        if type(col) != int or not (0 <= col < len(self.board)):
+        if type(col) != int or not (0 <= col < self.board_size()):
             raise ValueError("Invalid column number: {}".format(col))
-        board_size = len(self.board)
         col_numbers = set()
-        for i in xrange(board_size):
+        for i in xrange(self.board_size()):
             if self.board[i][col] != 0:
                 col_numbers.add(self.board[i][col])
         return col_numbers
@@ -186,6 +201,19 @@ class Board(object):
                     grid_numbers.add(self.board[i][j])
         return grid_numbers
 
+    def valid_moves(self, row, column):
+        """Returns the valid moves for the given position.
 
-class Engine(object):
-    pass
+        Returns:
+            A list of numbers in the range 1-9 that are not already
+            part of the given position's row, column, or grid, and so
+            can be played at the given position.
+
+        Raises:
+            ValueError: row or column are not integers, or are not in
+            the range 0 <= x < board_size.
+        """
+        for param in row, column:
+            if type(param) != int or not (0 <= param < self.board_size()):
+                raise ValueError("Position out of range: {}".format(param))
+

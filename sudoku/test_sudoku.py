@@ -34,6 +34,21 @@ def test_board_constructor_valid():
     b = Board(input_array)
     assert_equals(b.board, input_array)
 
+def test_board_size():
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_equals(b.board_size(), 9)
+
 def test_is_valid_start_board_wrong_outer_size():
     input_array = [[1, 0], [0, 0]]
     with assert_raises(ValueError) as cm:
