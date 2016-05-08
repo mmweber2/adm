@@ -354,3 +354,20 @@ def test_valid_moves_invalid_input():
                   ]
     b = Board(input_array)
     assert_raises(ValueError, b.valid_moves, 9, 0)
+
+def test_remaining_move_count():
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    # Remaining moves at 0,0: 3, 6, 7, 8
+    assert_equals(b.remaining_move_count(0,0), 4)
+

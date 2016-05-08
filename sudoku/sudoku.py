@@ -137,8 +137,7 @@ class Board(object):
         Raises:
             ValueError: row is outside the valid range for this board.
         """
-        if type(row) != int or not (0 <= row < self.board_size()):
-            raise ValueError("Invalid row number: {}".format(row))
+        self._valid_pos(row)
         return set([x for x in self.board[row] if x != 0])
 
     def _numbers_in_column(self, col):
@@ -157,8 +156,7 @@ class Board(object):
         Raises:
             ValueError: col is outside the valid range for this board.
         """
-        if type(col) != int or not (0 <= col < self.board_size()):
-            raise ValueError("Invalid column number: {}".format(col))
+        self._valid_pos(col)
         col_numbers = set()
         for i in xrange(self.board_size()):
             if self.board[i][col] != 0:
@@ -190,6 +188,7 @@ class Board(object):
         Raises:
             ValueError: col is outside the valid range for this board.
         """
+        # Don't use _valid_pos because grid requirements are more specific
         for param in (grid_start_row, grid_start_col):
             if type(param) != int or param not in (0, 3, 6):
                 raise ValueError("Invalid grid start number: {}".format(param))
@@ -221,7 +220,8 @@ class Board(object):
             IndexError: The position at row, column is not empty; it
             contains a number > 0.
         """
-        _valid_pos(self, row, column)
+        self._valid_pos(row)
+        self._valid_pos(column)
         # Already having a number here would confuse the row, column,
         # and grid checking.
         if self.board[row][column] != 0:
@@ -243,12 +243,14 @@ class Board(object):
                 remaining_moves.append(move)
         return remaining_moves
 
+    # No error checking here because valid_moves will do it
     def remaining_move_count(self, row, col):
         """Returns the number of moves playable at this position.
 
         Returns 0 if there are no valid moves (i.e., it is a non-winnable
         board).
         """
+        return len(self.valid_moves(row, col))
 
     def _valid_pos(self, index):
         """Checks whether the given index is valid for this Board.
