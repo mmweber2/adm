@@ -243,15 +243,6 @@ class Board(object):
                 remaining_moves.append(move)
         return remaining_moves
 
-    # No error checking here because valid_moves will do it
-    def remaining_move_count(self, row, col):
-        """Returns the number of moves playable at this position.
-
-        Returns 0 if there are no valid moves (i.e., it is a non-winnable
-        board).
-        """
-        return len(self.valid_moves(row, col))
-
     def _valid_pos(self, index):
         """Checks whether the given index is valid for this Board.
         
@@ -272,3 +263,51 @@ class Board(object):
             raise ValueError("Position out of range: {}".format(index))
         return True
 
+    # TODO: Move function that:
+    # Scans through all the empty positions, tracking their remaining move count
+    # If it finds one with 1 move, makes it and restarts
+    # If it finds one with 2+ moves, try making each of them and recurse
+    # If it finds one with 0 moves, backs up
+    # The 2+ move function can hold onto one 2+ move and try it after ensuring
+    # that there are no 1 move positions currently on the board
+    def make_moves(self):
+        """Traverses the Board, making moves where possible.
+
+        Returns:
+            True if the Board is completely filled with valid positions,
+            or False if the Board is in a dead-end (non-winnable) position.
+        """
+        # Moves we'd like to explore if there are no 0 or 1 move positions
+        potential_moves = []
+        # No square can have more than 9 possible moves in it
+        move_min = 10
+        for i in xrange(self.board_size()):
+            for j in xrange(self.board_size()):
+                # Skip filled positions
+                if self.board[i][j] != 0:
+                    continue
+                remaining = self.valid_moves(i, j)
+                if len(remaining) == 0:
+                    return False
+                if len(remaining) == 1:
+                    self.board[i][j] = remaining[0]
+                    # TODO: Find a better way to break out of the loop and restart
+                    self.make_moves()
+                else:
+                    if len(remaining) < move_min:
+                        move_min = len(remaining)
+                        potential_moves = [[i, j, x for x in remaining]]
+                    elif len(remaining) == move_min
+                        potential_moves.extend([i, j, x for x in remaining])
+        # Check for won position
+        if len(potential_moves) == 0:
+            return True
+        for move in potential_moves:
+            i, j, x = move
+            self.board[i][j] = x
+            # Undo moves that don't work and try more
+            if not self.make_moves():
+                self.board[i][j] = 0
+                self.make_moves()
+            # Pass up a True if we found a winning position
+            else: return True
