@@ -308,6 +308,23 @@ def test_valid_moves_valid():
     assert_equals(type(result), list)
     assert_equals(set(result), set((3, 6, 7, 8)))
 
+# Check for a 9 move (no off-by-one error)
+def test_valid_moves_9():
+    input_array = [
+                   [3, 4, 6, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 5, 0, 0, 0, 3, 0, 4],
+                   [7, 8, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    result = b.valid_moves(1, 0)
+    assert_equals(result, [9])
+
 # Test a "failed" board where a number has no possible remaining moves
 def test_valid_moves_none_left():
     input_array = [
@@ -354,3 +371,35 @@ def test_valid_moves_invalid_input():
                   ]
     b = Board(input_array)
     assert_raises(ValueError, b.valid_moves, 9, 0)
+
+def test_make_moves_normal():
+    input_array = [
+                   [0, 0, 0, 0, 9, 0, 0, 5, 2],
+                   [0, 1, 0, 0, 0, 0, 3, 0, 4],
+                   [0, 0, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    print b.make_moves()
+    assert Board._is_valid_board(b.make_moves())
+
+def test_make_moves_failed_board():
+    input_array = [
+                   # Second number on first row has no moves left
+                   [3, 0, 7, 6, 9, 4, 1, 5, 2],
+                   [5, 1, 9, 0, 7, 0, 3, 8, 4],
+                   [8, 6, 2, 3, 1, 5, 0, 0, 9],
+                   [0, 0, 8, 7, 4, 6, 0, 3, 0],
+                   [0, 7, 0, 9, 0, 1, 0, 2, 0],
+                   [0, 9, 0, 2, 5, 3, 7, 0, 0],
+                   [4, 0, 0, 5, 3, 8, 2, 0, 0],
+                   [2, 0, 3, 0, 0, 0, 0, 6, 0],
+                   [1, 5, 0, 0, 6, 0, 0, 0, 0]
+                  ]
+    b = Board(input_array)
+    assert_equals(b.make_moves(), None)

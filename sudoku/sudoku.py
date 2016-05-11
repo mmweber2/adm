@@ -238,7 +238,7 @@ class Board(object):
         y = column / 3 * 3
         used_numbers.update(self._numbers_in_grid(x, y))
         remaining_moves = []
-        for move in xrange(1, 9):
+        for move in xrange(1, 10):
             if move not in used_numbers:
                 remaining_moves.append(move)
         return remaining_moves
@@ -263,19 +263,13 @@ class Board(object):
             raise ValueError("Position out of range: {}".format(index))
         return True
 
-    # TODO: Move function that:
-    # Scans through all the empty positions, tracking their remaining move count
-    # If it finds one with 1 move, makes it and restarts
-    # If it finds one with 2+ moves, try making each of them and recurse
-    # If it finds one with 0 moves, backs up
-    # The 2+ move function can hold onto one 2+ move and try it after ensuring
-    # that there are no 1 move positions currently on the board
     def make_moves(self):
         """Traverses the Board, making moves where possible.
 
         Returns:
-            True if the Board is completely filled with valid positions,
-            or False if the Board is in a dead-end (non-winnable) position.
+            A complete board solution (as a 2D list if the Board is
+            completely filled with valid positions, or None if the
+            Board is in a dead-end (non-winnable) position.
         """
         # Moves we'd like to explore if there are no 0 or 1 move positions
         potential_moves = []
@@ -288,26 +282,28 @@ class Board(object):
                     continue
                 remaining = self.valid_moves(i, j)
                 if len(remaining) == 0:
-                    return False
+                    return None
                 if len(remaining) == 1:
                     self.board[i][j] = remaining[0]
-                    # TODO: Find a better way to break out of the loop and restart
+                    # Make move and recurse
                     self.make_moves()
                 else:
+                    # Find most constrained position, if no 1s or 0s
                     if len(remaining) < move_min:
                         move_min = len(remaining)
-                        potential_moves = [[i, j, x for x in remaining]]
-                    elif len(remaining) == move_min
-                        potential_moves.extend([i, j, x for x in remaining])
+                        potential_moves = [(i, j, x) for x in remaining]
+                   # elif len(remaining) == move_min:
+                        #potential_moves.extend([(i, j, x) for x in remaining])
         # Check for won position
         if len(potential_moves) == 0:
-            return True
+            if Board._is_valid_board(self.board):
+                return self.board
         for move in potential_moves:
             i, j, x = move
             self.board[i][j] = x
-            # Undo moves that don't work and try more
-            if not self.make_moves():
+            board_result = self.make_moves()
+            # If that path did not lead to a winning board, undo and try next
+            if board_result == None:
                 self.board[i][j] = 0
-                self.make_moves()
             # Pass up a True if we found a winning position
-            else: return True
+            else: return board_result
