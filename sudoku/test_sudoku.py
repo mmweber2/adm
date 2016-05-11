@@ -53,14 +53,14 @@ def test_is_valid_start_board_wrong_outer_size():
     input_array = [[1, 0], [0, 0]]
     with assert_raises(ValueError) as cm:
       Board._is_valid_start_board(input_array)
-    assert_equals(str(cm.exception), "board_array must contain 9 grids")
+    assert_equals(str(cm.exception), "board_array must contain 9 boxes")
 
 def test_board_constructor_invalid():
     input_array = [[1, 0], [0, 0]]
     b = None
     with assert_raises(ValueError) as cm:
       Board(input_array)
-    assert_equals(str(cm.exception), "board_array must contain 9 grids")
+    assert_equals(str(cm.exception), "board_array must contain 9 boxes")
     assert_equals(b, None)
 
 def test_is_valid_start_board_wrong_inner_size():
@@ -70,7 +70,7 @@ def test_is_valid_start_board_wrong_inner_size():
                   ]
     with assert_raises(ValueError) as cm:
       Board._is_valid_start_board(input_array)
-    assert_equals(str(cm.exception), "board_array grids must be 9x9")
+    assert_equals(str(cm.exception), "board_array boxes must be 9x9")
 
 def test_is_valid_start_board_not_list():
     input_array = "abcd"
@@ -133,8 +133,8 @@ def test_is_valid_board_valid():
                   ]
     assert Board._is_valid_board(input_array)
 
-# Duplicates are somewhat hidden in the grids because I wanted to test
-# situations where only the row, column, or grid had a duplicate, and
+# Duplicates are somewhat hidden in the boxes because I wanted to test
+# situations where only the row, column, or box had a duplicate, and
 # not multiple situations at the same time.
 def test_is_valid_board_duplicate_row():
     input_array = [
@@ -166,9 +166,9 @@ def test_is_valid_board_duplicate_column():
                   ]
     assert not Board._is_valid_board(input_array)
 
-def test_is_valid_board_duplicate_in_grid():
+def test_is_valid_board_duplicate_in_box():
     input_array = [
-                   # second grid in first row has two 1s
+                   # second box in first row has two 1s
                    [0, 0, 0, 1, 9, 0, 0, 5, 2],
                    [0, 1, 0, 0, 0, 0, 3, 0, 4],
                    [0, 0, 2, 3, 1, 5, 0, 0, 9],
@@ -261,7 +261,7 @@ def test_numbers_in_col_invalid_col():
     b = Board(input_array)
     assert_raises(ValueError, b._numbers_in_column, "4")
 
-def test_numbers_in_grid_valid():
+def test_numbers_in_box_valid():
     input_array = [
                    [0, 0, 0, 0, 9, 0, 0, 5, 2],
                    [0, 1, 0, 0, 0, 0, 3, 0, 4],
@@ -274,9 +274,9 @@ def test_numbers_in_grid_valid():
                    [1, 5, 0, 0, 6, 0, 0, 0, 0]
                   ]
     b = Board(input_array)
-    assert_equals(b._numbers_in_grid(3, 3), set((7, 4, 6, 9, 1, 2, 5, 3)))
+    assert_equals(b._numbers_in_box(3, 3), set((7, 4, 6, 9, 1, 2, 5, 3)))
 
-def test_numbers_in_grid_invalid_params():
+def test_numbers_in_box_invalid_params():
     input_array = [
                    [0, 0, 0, 0, 9, 0, 0, 5, 2],
                    [0, 1, 0, 0, 0, 0, 3, 0, 4],
@@ -289,7 +289,7 @@ def test_numbers_in_grid_invalid_params():
                    [1, 5, 0, 0, 6, 0, 0, 0, 0]
                   ]
     b = Board(input_array)
-    assert_raises(ValueError, b._numbers_in_grid, 1, 1)
+    assert_raises(ValueError, b._numbers_in_box, 1, 1)
 
 def test_valid_moves_valid():
     input_array = [
@@ -372,8 +372,9 @@ def test_valid_moves_invalid_input():
     b = Board(input_array)
     assert_raises(ValueError, b.valid_moves, 9, 0)
 
-def test_make_moves_normal():
-    input_array = [
+def test_make_moves():
+    # Easy
+    board1 = [
                    [0, 0, 0, 0, 9, 0, 0, 5, 2],
                    [0, 1, 0, 0, 0, 0, 3, 0, 4],
                    [0, 0, 2, 3, 1, 5, 0, 0, 9],
@@ -384,9 +385,46 @@ def test_make_moves_normal():
                    [2, 0, 3, 0, 0, 0, 0, 6, 0],
                    [1, 5, 0, 0, 6, 0, 0, 0, 0]
                   ]
-    b = Board(input_array)
-    print b.make_moves()
-    assert Board._is_valid_board(b.make_moves())
+    # Medium
+    board2 = [
+                   [4, 0, 6, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 9, 0, 0, 8, 0, 1],
+                   [8, 0, 0, 0, 7, 5, 0, 2, 0],
+                   [0, 0, 5, 0, 6, 0, 0, 0, 8],
+                   [2, 6, 0, 0, 9, 0, 0, 3, 4],
+                   [9, 0, 0, 0, 2, 0, 7, 0, 0],
+                   [0, 1, 0, 2, 5, 0, 0, 0, 7],
+                   [6, 0, 9, 0, 0, 3, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 1, 0, 3],
+                  ]
+    # Hard
+    board3 = [
+                   [8, 9, 0, 0, 3, 4, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 8, 2, 0, 0],
+                   [4, 0, 0, 2, 0, 0, 0, 0, 9],
+                   [0, 3, 0, 0, 0, 0, 0, 2, 5],
+                   [0, 0, 7, 0, 6, 0, 4, 0, 0],
+                   [5, 1, 0, 0, 0, 0, 0, 6, 0],
+                   [1, 0, 0, 0, 0, 3, 0, 0, 4],
+                   [0, 0, 9, 7, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 6, 1, 0, 0, 7, 2],
+              ]
+    # Expert
+    board4 = [
+                   [0, 6, 0, 0, 2, 0, 0, 0, 0],
+                   [0, 0, 2, 0, 0, 0, 0, 0, 5],
+                   [0, 0, 0, 0, 3, 5, 8, 0, 0],
+                   [5, 0, 0, 0, 7, 4, 0, 0, 6],
+                   [0, 0, 0, 0, 0, 0, 0, 9, 8],
+                   [0, 3, 9, 5, 0, 0, 0, 1, 0],
+                   [0, 5, 0, 0, 6, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 7, 0, 4, 0],
+                   [0, 4, 8, 0, 0, 0, 2, 0, 0]
+                  ]
+
+    for input_array in (board1, board2, board3, board4):
+        result = Board(input_array).make_moves()
+        assert result != None
 
 def test_make_moves_failed_board():
     input_array = [
@@ -403,3 +441,4 @@ def test_make_moves_failed_board():
                   ]
     b = Board(input_array)
     assert_equals(b.make_moves(), None)
+
