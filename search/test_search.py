@@ -20,6 +20,6 @@ def test_tsp_brute():
     assert tsp_brute(set3) > 0
 
 def test_tsp_brute_vs_montecarlo():
-    set1 = create_dataset(2)
+    set1 = create_dataset(6)
     assert tsp_brute(set1) <= tsp_montecarlo(set1)
     print "Brute force result: {}. MC result: {}".format(tsp_brute(set1), tsp_montecarlo(set1))
