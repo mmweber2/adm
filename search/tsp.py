@@ -33,10 +33,10 @@ def create_dataset(n, min_val=-10.0, max_val=10.0):
     # Behavior for uniform(max, min) is unspecified, so don't allow it either.
     if min_val >= max_val:
         raise ValueError("min_val must be less than max_val")
-    if n < 1:
-        raise ValueError("n must be greater than zero")
     if type(n) != int:
         raise TypeError("n must be an integer")
+    if n < 1:
+        raise ValueError("n must be greater than zero")
     points = []
     points_set = set()
     # Since we might find duplicates, it may take more than n tries
