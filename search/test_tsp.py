@@ -13,7 +13,9 @@ def test_find_path_distance():
 # Datasets are random every time, so I just make sure it's a possibly valid distance
 def test_tsp_brute():
     set1 = create_dataset(3)
+    result = tsp_brute(set1)
     assert tsp_brute(set1) > 0
+    print tsp_brute(set1)
     set2 = create_dataset(6)
     assert tsp_brute(set2) > 0
     set3 = create_dataset(8)
