@@ -12,15 +12,31 @@ def create_dataset(n, min_val=-10.0, max_val=10.0):
     same, but all tuples will be unique.
 
     Args:
-        n: The number of tuples (points) to create.
+        n: The number of tuples (points) to create. Must be an integer
+        greater than 0.
 
-        min_val: The minimum value of the points. Defaults to -10.
+        min_val: The minimum value of the points. Defaults to -10.0.
 
-        max_val: The maximum value of the points. Defaults to 10.
+        max_val: The maximum value of the points. Defaults to 10.0. 
+        Must be > min_val.
 
     Returns:
         A list of n unique 2-float tuples in the range specified.
+
+    Raises:
+        ValueError: min_val is >= max_val, or n is < 1.
+
+        TypeError: min_val or max_val are not numbers, or n is not an integer.
     """
+    # If min_val and max_val are equal, we can only create one point and will
+    # get an infinite loop if n > 1.
+    # Behavior for uniform(max, min) is unspecified, so don't allow it either.
+    if min_val >= max_val:
+        raise ValueError("min_val must be less than max_val")
+    if n < 1:
+        raise ValueError("n must be greater than zero")
+    if type(n) != int:
+        raise TypeError("n must be an integer")
     points = []
     points_set = set()
     # Since we might find duplicates, it may take more than n tries
