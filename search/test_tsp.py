@@ -1,6 +1,7 @@
 from tsp import create_dataset
 from tsp import tsp_brute
 from tsp import tsp_montecarlo
+from tsp import tsp_hill_climb
 from tsp import find_path_distance
 from nose.tools import assert_equals
 from nose.tools import assert_raises
@@ -28,10 +29,13 @@ def test_create_dataset_invalid_n_non_int():
     assert_raises(TypeError, create_dataset, None)
 
 def test_create_dataset_same_min_max():
-    pass
+    assert_raises(ValueError, create_dataset, 4, 2.0, 2.0)
 
 def test_create_dataset_bigger_min_than_max():
-    pass
+    assert_raises(ValueError, create_dataset, 4, 3.0, 2.0)
+
+def test_create_dataset_min_or_max_not_numbers():
+    assert_raises(TypeError, create_dataset, 4, "-5", 5)
 
 def test_find_path_distance():
     path = ((-1, 1), (1, 1), (1, -1), (-1, -1))
@@ -57,4 +61,11 @@ def test_tsp_brute():
 def test_tsp_brute_vs_montecarlo():
     set1 = create_dataset(6)
     assert tsp_brute(set1)[0] <= tsp_montecarlo(set1)[0]
-    print "Brute force result: {}. MC result: {}".format(tsp_brute(set1)[0], tsp_montecarlo(set1)[0])
+
+def test_tsp_hill_climb():
+    set1 = create_dataset(6)
+    assert tsp_brute(set1)[0] <= tsp_hill_climb(set1)[0]
+    print "Brute force result: {}. MC result: {}, HC result: {}".format(
+            tsp_brute(set1)[0], tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0]
+            )
+
