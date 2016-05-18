@@ -158,8 +158,10 @@ def tsp_hill_climb(dataset, n=10):
     """
     min_distance = find_path_distance(dataset)
     min_path = dataset
+    start_path = dataset[:]
     for _ in xrange(n):
-        distance, path = _hill_climb(dataset[:], min_distance, min_path)
+        shuffle(start_path)
+        distance, path = _hill_climb(start_path, min_distance, min_path)
         if distance < min_distance:
             min_distance = distance
             min_path = path
