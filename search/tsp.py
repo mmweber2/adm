@@ -189,6 +189,47 @@ def _hill_climb(path, min_distance, min_path):
         if not improved:
             break
     return (min_distance, min_path)
+
+def tsp_simulated_annealing(dataset, n):
+    """Finds a distance of a path through all nodes in dataset.
+
+    Chooses a random point in dataset and swaps it with the following point.
+    If this results in a shorter total distance, maintain this change. 
+    Otherwise, maintains the change with a small probability, which decreases
+    as the number of iterations approaches n.
+
+    Performs n iterations and returns the best results found.
+
+    Args:
+        dataset: A list or tuple of 2-item tuples or lists containing only floats.
+
+        n: The integer number of swap iterations to explore. Defaults to 1000.
+
+    Returns:
+        A tuple containing two items: A float indicating the length of the
+        shortest path discovered, and a list of points indicating that path.
+
+    Raises:
+        TypeError: dataset is not in the correct format, or n is not an integer.
+    """
+    t = .1
+    min_distance = find_path_distance(dataset)
+    min_path = dataset
+    path = dataset[:]
+    while n > 0:
+        n -= 1
+        # Decrease temperature every 100 iterations
+        if n % 100 == 0:
+            t -= .01
+    # TODO: Perform random swap and decide whether to keep it 
+
+def _keep_swap(previous_dist, new_dist, t):
+    """Helper function for tsp_simulated_annealing."""
+    if previous_dist > new_dist:
+        return True
+    chance = (previous_dist / new_dist) * t
+    return random.random() < chance
+
         
 
 
