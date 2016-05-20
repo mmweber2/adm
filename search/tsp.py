@@ -1,5 +1,5 @@
 from random import uniform
-from random import shuffle
+import random 
 from math import sqrt
 from itertools import permutations
 
@@ -127,7 +127,7 @@ def tsp_montecarlo(dataset, n=100):
     # path will be shuffled, so we need a copy
     path = dataset[:]
     for _ in xrange(n):
-        shuffle(path)
+        random.shuffle(path)
         distance = find_path_distance(path)
         if distance < min_distance:
             min_distance = distance
@@ -160,7 +160,7 @@ def tsp_hill_climb(dataset, n=10):
     min_path = dataset
     start_path = dataset[:]
     for _ in xrange(n):
-        shuffle(start_path)
+        random.shuffle(start_path)
         distance, path = _hill_climb(start_path, min_distance, min_path)
         if distance < min_distance:
             min_distance = distance
@@ -190,20 +190,20 @@ def _hill_climb(path, min_distance, min_path):
             break
     return (min_distance, min_path)
 
-def tsp_simulated_annealing(dataset, n):
+def tsp_simulated_annealing(dataset, n=1000):
     """Finds a distance of a path through all nodes in dataset.
 
     Chooses a random point in dataset and swaps it with the following point.
     If this results in a shorter total distance, maintain this change. 
     Otherwise, maintains the change with a small probability, which decreases
-    as the number of iterations approaches n.
+    as the number of swaps approaches n.
 
-    Performs n iterations and returns the best results found.
+    Performs n swaps and returns the best results found.
 
     Args:
         dataset: A list or tuple of 2-item tuples or lists containing only floats.
 
-        n: The integer number of swap iterations to explore. Defaults to 1000.
+        n: The integer number of swaps to explore. Defaults to 1000.
 
     Returns:
         A tuple containing two items: A float indicating the length of the
@@ -216,12 +216,25 @@ def tsp_simulated_annealing(dataset, n):
     min_distance = find_path_distance(dataset)
     min_path = dataset
     path = dataset[:]
-    while n > 0:
-        n -= 1
+    # current_distance could get bigger than min_distance, so track both
+    current_distance = min_distance
+    # Don't decrease t right away
+    for i in xrange(1, n):
         # Decrease temperature every 100 iterations
-        if n % 100 == 0:
+        if i % 100 == 0:
             t -= .01
-    # TODO: Perform random swap and decide whether to keep it 
+        # -2 because the last item doesn't have a next element to swap with
+        swap = random.randint(0, len(dataset) - 2)
+        path[swap], path[swap+1] = path[swap+1], path[swap]
+        new_distance = find_path_distance(path)
+        if _keep_swap(current_distance, new_distance, t):
+            current_distance = new_distance
+            if current_distance < min_distance:
+                min_path = path
+                min_distance = current_distance
+        else:
+            path[swap], path[swap+1] = path[swap+1], path[swap]
+    return (min_distance, min_path)
 
 def _keep_swap(previous_dist, new_dist, t):
     """Helper function for tsp_simulated_annealing."""
@@ -229,7 +242,3 @@ def _keep_swap(previous_dist, new_dist, t):
         return True
     chance = (previous_dist / new_dist) * t
     return random.random() < chance
-
-        
-
-

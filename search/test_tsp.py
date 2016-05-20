@@ -2,6 +2,7 @@ from tsp import create_dataset
 from tsp import tsp_brute
 from tsp import tsp_montecarlo
 from tsp import tsp_hill_climb
+from tsp import tsp_simulated_annealing
 from tsp import find_path_distance
 from nose.tools import assert_equals
 from nose.tools import assert_raises
@@ -69,3 +70,9 @@ def test_tsp_hill_climb():
             tsp_brute(set1)[0], tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0]
             )
 
+def test_tsp_sa():
+    set1 = create_dataset(6)
+    assert tsp_brute(set1)[0] <= tsp_simulated_annealing(set1)[0]
+    print "Brute force result: {}. MC result: {}, HC result: {}, SA result: {}".format(
+            tsp_brute(set1)[0], tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0], tsp_simulated_annealing(set1)[0]
+            )
