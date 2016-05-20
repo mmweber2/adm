@@ -1,9 +1,5 @@
-from tsp import create_dataset
-from tsp import tsp_brute
-from tsp import tsp_montecarlo
-from tsp import tsp_hill_climb
-from tsp import tsp_simulated_annealing
-from tsp import find_path_distance
+from tsp import create_dataset, find_path_distance
+from tsp import tsp_brute, tsp_montecarlo, tsp_hill_climb, tsp_simulated_annealing
 from nose.tools import assert_equals
 from nose.tools import assert_raises
 
@@ -27,13 +23,13 @@ def test_create_dataset_invalid_n_int():
     assert_raises(ValueError, create_dataset, 0)
 
 def test_create_dataset_invalid_n_non_int():
-    assert_raises(TypeError, create_dataset, None)
+    assert_raises(TypeError, create_dataset, "n")
 
 def test_create_dataset_same_min_max():
     assert_raises(ValueError, create_dataset, 4, 2.0, 2.0)
 
 def test_create_dataset_bigger_min_than_max():
-    assert_raises(ValueError, create_dataset, 4, 3.0, 2.0)
+    assert create_dataset(4, 3.0, 2.0) != None
 
 def test_create_dataset_min_or_max_not_numbers():
     assert_raises(TypeError, create_dataset, 4, "-5", 5)

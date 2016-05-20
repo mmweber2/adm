@@ -1,5 +1,4 @@
-from random import uniform
-import random 
+from random import uniform, shuffle, random, randint
 from math import sqrt
 from itertools import permutations
 
@@ -23,39 +22,34 @@ def create_dataset(n, min_val=-10.0, max_val=10.0):
         A list of n unique 2-float tuples in the range specified.
 
     Raises:
-        ValueError: min_val is >= max_val, or n is < 1.
+        ValueError: min_val is equal to max_val, or n is < 1.
 
         TypeError: min_val or max_val are not numbers, or n is not an integer.
     """
+    # If n isn't type checked, it can cause an infinite loop while len < n
+    # in the while loop below.
     if type(n) != int:
         raise TypeError("n must be an integer")
     if n < 1:
         raise ValueError("n must be greater than zero")
-    # Check that min_val are numeric types; could be int, float, etc
-    min_val + max_val + 0
     # If min_val and max_val are equal, we can only create one point and will
     # get an infinite loop if n > 1.
-    # Behavior for uniform(max, min) is unspecified, so don't allow it either.
-    if min_val >= max_val:
-        raise ValueError("min_val must be less than max_val")
-    points = []
-    points_set = set()
+    # uniform works for (max, min) as well, so don't check for max > min
+    if min_val == max_val:
+        raise ValueError("min_val must not be equal to max_val")
+    points = set()
     # Since we could find duplicates, it may take more than n tries
     while len(points) < n:
         point = (uniform(min_val, max_val), uniform(min_val, max_val))
-        if point not in points_set:
-            points.append(point)
-            points_set.add(point)
-    return points
+        points.add(point)
+    return list(points)
 
-# TODO: Consider storing this data in a graph
 def find_distance(point1, point2):
     """Finds straight line distance between points (x1, y1) and (x2, y2)."""
     x_dist = point1[0] - point2[0]
     y_dist = point1[1] - point2[1]
     return sqrt(x_dist**2 + y_dist**2)
 
-# TODO: Error checking
 def find_path_distance(path):
     """Calculates the distance of a path.
     
@@ -99,7 +93,7 @@ def tsp_brute(dataset):
         distance = find_path_distance(path)
         if distance < min_distance:
             min_distance = distance
-            min_path = path
+            min_path = path[:]
     return (min_distance, min_path)
 
 def tsp_montecarlo(dataset, n=100):
@@ -126,11 +120,11 @@ def tsp_montecarlo(dataset, n=100):
     # path will be shuffled, so we need a copy
     path = dataset[:]
     for _ in xrange(n):
-        random.shuffle(path)
+        shuffle(path)
         distance = find_path_distance(path)
         if distance < min_distance:
             min_distance = distance
-            min_path = path
+            min_path = path[:]
     return (min_distance, min_path)
 
 def tsp_hill_climb(dataset, n=10):
@@ -159,20 +153,20 @@ def tsp_hill_climb(dataset, n=10):
     min_path = dataset
     start_path = dataset[:]
     for _ in xrange(n):
-        random.shuffle(start_path)
-        distance, path = _hill_climb(start_path, min_distance, min_path)
+        shuffle(start_path)
+        distance, path = _hill_climb(start_path)
         if distance < min_distance:
             min_distance = distance
-            min_path = path
+            min_path = path[:]
     return (min_distance, min_path)
 
-def _hill_climb(path, min_distance, min_path):
+def _hill_climb(path):
     """Helper method for tsp_hill_climb."""
     while True:
         improved = False
         current_distance = find_path_distance(path)
         for i in xrange(len(path)):
-            for j in xrange(i, len(path)):
+            for j in xrange(i+1, len(path)):
                 path[i], path[j] = path[j], path[i]
                 new_distance = find_path_distance(path)
                 # Look for improvement, not just < min_distance
@@ -182,12 +176,9 @@ def _hill_climb(path, min_distance, min_path):
                 else:
                     # Revert path changes that didn't improve distance
                     path[i], path[j] = path[j], path[i]
-        if current_distance < min_distance:
-            min_distance = current_distance
-            min_path = path
         if not improved:
             break
-    return (min_distance, min_path)
+    return (current_distance, path)
 
 def tsp_simulated_annealing(dataset, n=1000):
     """Finds a distance of a path through all nodes in dataset.
@@ -219,29 +210,26 @@ def tsp_simulated_annealing(dataset, n=1000):
     path = dataset[:]
     # current_distance could get bigger than min_distance, so track both
     current_distance = min_distance
-    last_improvement = 0
+    last_change = 0
     cycle = 0
-    while last_improvement < n:
+    while last_change < n:
         # Decrease temperature every 100 cycles
         if cycle % 100 == 0:
-            t -= .001
+            t *= .9
         cycle += 1
         # -2 because the last item doesn't have a next element to swap with
-        swap = random.randint(0, len(dataset) - 2)
+        swap = randint(0, len(dataset) - 2)
         path[swap], path[swap+1] = path[swap+1], path[swap]
         new_distance = find_path_distance(path)
         if _keep_swap(current_distance, new_distance, t):
             current_distance = new_distance
+            last_change = 0
             if current_distance < min_distance:
-                min_path = path
+                min_path = path[:]
                 min_distance = current_distance
-                last_improvement = 0
-            else:
-                # Swapped, but didn't improve
-                last_improvement += 1
         else:
             path[swap], path[swap+1] = path[swap+1], path[swap]
-            last_improvement += 1
+            last_change += 1
     return (min_distance, min_path)
 
 def _keep_swap(previous_dist, new_dist, t):
@@ -249,4 +237,4 @@ def _keep_swap(previous_dist, new_dist, t):
     if previous_dist > new_dist:
         return True
     chance = (previous_dist / new_dist) * t
-    return random.random() < chance
+    return random() < chance
