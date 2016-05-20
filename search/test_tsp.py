@@ -66,13 +66,12 @@ def test_tsp_brute_vs_montecarlo():
 def test_tsp_hill_climb():
     set1 = create_dataset(6)
     assert tsp_brute(set1)[0] <= tsp_hill_climb(set1)[0]
-    print "Brute force result: {}. MC result: {}, HC result: {}".format(
-            tsp_brute(set1)[0], tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0]
-            )
+    #print "Brute force result: {}. MC result: {}, HC result: {}".format(
+    #        tsp_brute(set1)[0], tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0]
+    #        )
 
 def test_tsp_sa():
-    set1 = create_dataset(6)
-    assert tsp_brute(set1)[0] <= tsp_simulated_annealing(set1)[0]
-    print "Brute force result: {}. MC result: {}, HC result: {}, SA result: {}".format(
-            tsp_brute(set1)[0], tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0], tsp_simulated_annealing(set1)[0]
+    set1 = create_dataset(20)
+    print "MC result: {}, HC result: {}, SA result: {}".format(
+            tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0], tsp_simulated_annealing(set1)[0]
             )

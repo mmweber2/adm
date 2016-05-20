@@ -196,14 +196,16 @@ def tsp_simulated_annealing(dataset, n=1000):
     Chooses a random point in dataset and swaps it with the following point.
     If this results in a shorter total distance, maintain this change. 
     Otherwise, maintains the change with a small probability, which decreases
-    as the number of swaps approaches n.
+    as the number of swaps increases.
 
-    Performs n swaps and returns the best results found.
+    Repeats until n swaps are performed without encountering improvements,
+    and returns the best results found.
 
     Args:
         dataset: A list or tuple of 2-item tuples or lists containing only floats.
 
-        n: The integer number of swaps to explore. Defaults to 1000.
+        n: The limit of swaps without improvement to allow before stopping.
+        Defaults to 1000.
 
     Returns:
         A tuple containing two items: A float indicating the length of the
@@ -218,11 +220,13 @@ def tsp_simulated_annealing(dataset, n=1000):
     path = dataset[:]
     # current_distance could get bigger than min_distance, so track both
     current_distance = min_distance
-    # Don't decrease t right away
-    for i in xrange(1, n):
-        # Decrease temperature every 100 iterations
-        if i % 100 == 0:
-            t -= .01
+    last_improvement = 0
+    cycle = 0
+    while last_improvement < n:
+        # Decrease temperature every 100 cycles
+        if cycle % 100 == 0:
+            t -= .001
+        cycle += 1
         # -2 because the last item doesn't have a next element to swap with
         swap = random.randint(0, len(dataset) - 2)
         path[swap], path[swap+1] = path[swap+1], path[swap]
@@ -232,8 +236,13 @@ def tsp_simulated_annealing(dataset, n=1000):
             if current_distance < min_distance:
                 min_path = path
                 min_distance = current_distance
+                last_improvement = 0
+            else:
+                # Swapped, but didn't improve
+                last_improvement += 1
         else:
             path[swap], path[swap+1] = path[swap+1], path[swap]
+            last_improvement += 1
     return (min_distance, min_path)
 
 def _keep_swap(previous_dist, new_dist, t):
