@@ -4,7 +4,6 @@ from tsp import tsp_montecarlo
 from tsp import tsp_hill_climb
 from tsp import tsp_simulated_annealing
 from tsp import find_path_distance
-from tsp import _get_swap_distance
 from nose.tools import assert_equals
 from nose.tools import assert_raises
 
@@ -73,20 +72,6 @@ def test_tsp_hill_climb():
 
 def test_tsp_sa():
     set1 = create_dataset(20)
-    #print "MC result: {}, HC result: {}, SA result: {}".format(
-    #        tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0], tsp_simulated_annealing(set1)[0]
-            #)
-
-def test_get_swap_distance():
-    set1 = [(0, 0), (1, 0), (2, 0)]
-    # 2
-    old_distance = find_path_distance(set1)
-    set2 = [(0, 0), (2, 0), (1, 0)]
-    assert_equals(find_path_distance(set2), _get_swap_distance(set1, old_distance, 1))
-    # Add some points before and after
-    set1 = [(14, 12), (6, 13), (2, 9), (0, 0), (1, 0), (2, 0), (-2, 8), (4, -2)]
-    old_distance = find_path_distance(set1)
-    set2 = [(14, 12), (6, 13), (2, 9), (0, 0), (2, 0), (1, 0), (-2, 8), (4, -2)]
-    print "Swap distance is ", _get_swap_distance(set1, old_distance, 4)
-    print "Found distance is ", find_path_distance(set2)
-    assert_equals(find_path_distance(set2), _get_swap_distance(set1, old_distance, 4))
+    print "MC result: {}, HC result: {}, SA result: {}".format(
+            tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0], tsp_simulated_annealing(set1)[0]
+           )
