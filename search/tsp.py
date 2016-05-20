@@ -229,10 +229,11 @@ def tsp_simulated_annealing(dataset, n=1000):
         cycle += 1
         # -2 because the last item doesn't have a next element to swap with
         swap = random.randint(0, len(dataset) - 2)
-        path[swap], path[swap+1] = path[swap+1], path[swap]
-        new_distance = find_path_distance(path)
+        new_distance = _get_swap_distance(path, current_distance, swap)
         if _keep_swap(current_distance, new_distance, t):
             current_distance = new_distance
+            path[swap], path[swap+1] = path[swap+1], path[swap]
+            #assert new_distance == find_path_distance(path)
             if current_distance < min_distance:
                 min_path = path
                 min_distance = current_distance
@@ -241,9 +242,24 @@ def tsp_simulated_annealing(dataset, n=1000):
                 # Swapped, but didn't improve
                 last_improvement += 1
         else:
-            path[swap], path[swap+1] = path[swap+1], path[swap]
             last_improvement += 1
     return (min_distance, min_path)
+
+def _get_swap_distance(path, old_distance, swap_point):
+    """Helper function for tsp_simulated_annealing."""
+    # Since the swap point always swaps with the item after it, this only
+    # affects two edges: where swap point connects to the point before it,
+    # and where the following point connnects to the point after it.
+    # Rather than recalculate the entire distance, just find the distances
+    # between these points, and what the distance would become if they were
+    # swapped.
+    # Combining these distances with the remaining (unchanged) distance will
+    # result in the new distance of the entire path.
+    i = swap_point
+    old_partial_distance = find_path_distance(path[i-1:i+3])
+    new_partial_path = [path[i-1], path[i+1], path[i], path[i+2]]
+    new_partial_distance = find_path_distance(new_partial_path)
+    return old_distance - old_partial_distance + new_partial_distance
 
 def _keep_swap(previous_dist, new_dist, t):
     """Helper function for tsp_simulated_annealing."""
