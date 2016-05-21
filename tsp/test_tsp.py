@@ -22,9 +22,6 @@ def test_create_dataset_change_defaults():
 def test_create_dataset_invalid_n_int():
     assert_raises(ValueError, create_dataset, 0)
 
-def test_create_dataset_invalid_n_non_int():
-    assert_raises(TypeError, create_dataset, "n")
-
 def test_create_dataset_same_min_max():
     assert_raises(ValueError, create_dataset, 4, 2.0, 2.0)
 
@@ -45,29 +42,38 @@ def test_tsp_brute():
     result = tsp_brute(set1)
     assert_equals(len(result), 2)
     assert_equals(len(result[1]), 3)
+    assert_equals(find_path_distance(result[1]), result[0])
     assert result[0] > 0
     set2 = create_dataset(6)
     result = tsp_brute(set2)
     assert_equals(len(result[1]), 6)
+    assert_equals(find_path_distance(result[1]), result[0])
     assert result[0] > 0
     set3 = create_dataset(8)
     result = tsp_brute(set3)
     assert_equals(len(result[1]), 8)
     assert result[0] > 0
+    assert_equals(find_path_distance(result[1]), result[0])
 
 def test_tsp_brute_vs_montecarlo():
     set1 = create_dataset(6)
-    assert tsp_brute(set1)[0] <= tsp_montecarlo(set1)[0]
+    ma_result = tsp_montecarlo(set1)
+    assert_equals(find_path_distance(ma_result[1]), ma_result[0])
+    assert tsp_brute(set1)[0] <= ma_result[0]
 
 def test_tsp_hill_climb():
     set1 = create_dataset(6)
-    assert tsp_brute(set1)[0] <= tsp_hill_climb(set1)[0]
+    hc_result = tsp_hill_climb(set1)
+    assert_equals(find_path_distance(hc_result[1]), hc_result[0])
+    assert tsp_brute(set1)[0] <= hc_result[0]
     #print "Brute force result: {}. MC result: {}, HC result: {}".format(
     #        tsp_brute(set1)[0], tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0]
     #        )
 
 def test_tsp_sa():
     set1 = create_dataset(20)
+    sa_result = tsp_simulated_annealing(set1)
+    assert_equals(find_path_distance(sa_result[1]), sa_result[0])
     print "MC result: {}, HC result: {}, SA result: {}".format(
             tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0], tsp_simulated_annealing(set1)[0]
            )
