@@ -4,7 +4,7 @@ from itertools import permutations
 
 def create_dataset(n, min_val=-10.0, max_val=10.0):
     """Creates a list of n tuples.
-            
+
     Each tuple contains two randomly generated float values in the
     range between min_val and max_val. Some float values may be the
     same, but all tuples will be unique.
@@ -15,7 +15,7 @@ def create_dataset(n, min_val=-10.0, max_val=10.0):
 
         min_val: The minimum value of the points. Defaults to -10.0.
 
-        max_val: The maximum value of the points. Defaults to 10.0. 
+        max_val: The maximum value of the points. Defaults to 10.0.
         Must be > min_val.
 
     Returns:
@@ -49,7 +49,7 @@ def find_distance(point1, point2):
 
 def find_path_distance(path):
     """Calculates the distance of a path.
-    
+
     Calculates the sum of the straight-line distances from the first point
     to the second, the second to the third, and so on until the last point
     on the path is reached. Does not include the distance from the last point
@@ -59,11 +59,15 @@ def find_path_distance(path):
         path: A list or tuple of items, where each item is a 2-tuple or 2-item
         list consisting of two floats.
 
+    Returns:
+        A float indicating the sum of the straight-line distances of the
+        entire path.
+
     Raises:
         TypeError: path is not a list or tuple, or is not in the correct
         format.
     """
-    distance = 0
+    distance = 0.0
     # Index into the points on the path
     for i in xrange(1, len(path)):
         distance += find_distance(path[i-1], path[i])
@@ -73,7 +77,7 @@ def tsp_brute(dataset):
     """Finds the shortest distance through all nodes in dataset by brute force.
 
     Explores all permutations of the points in dataset and searches for the
-    ordering of points (path) with the smallest sum distance. 
+    ordering of points (path) with the smallest sum distance.
     This function is only suitable for small datasets consisting of less than 15
     items.
 
@@ -93,30 +97,30 @@ def tsp_brute(dataset):
             min_path = path[:]
     return (min_distance, min_path)
 
-def tsp_montecarlo(dataset, n=100):
+def tsp_montecarlo(dataset, runs=100):
     """Finds a distance through all nodes in dataset through random search.
 
-    Explores n random permutations of the points in dataset and returns the
+    Explores runs random permutations of the points in dataset and returns the
     ordering of points (path) with the smallest sum distance found.
 
     Args:
         dataset: A list or tuple of 2-item tuples or lists containing only floats.
 
-        n: The integer number of permutations to explore. Defaults to 100.
+        runs: The integer number of permutations to explore. Defaults to 100.
 
     Returns:
         A tuple containing two items: A float indicating the length of the
         shortest path discovered, and a list of points indicating that path.
 
     Raises:
-        TypeError: dataset is not in the correct format, or n is not an integer.
+        TypeError: dataset is not in the correct format, or runs is not an integer.
     """
     # May as well take the distance of the first/default path
     min_distance = find_path_distance(dataset)
     min_path = dataset
     # path will be shuffled, so we need a copy
     path = dataset[:]
-    for _ in xrange(n):
+    for _ in xrange(runs):
         shuffle(path)
         distance = find_path_distance(path)
         if distance < min_distance:
@@ -124,7 +128,7 @@ def tsp_montecarlo(dataset, n=100):
             min_path = path[:]
     return (min_distance, min_path)
 
-def tsp_hill_climb(dataset, n=10):
+def tsp_hill_climb(dataset, runs=10):
     """Finds a distance of a path through all nodes in dataset.
 
     Swaps each pair of points in dataset, then compares the overall path
@@ -132,12 +136,12 @@ def tsp_hill_climb(dataset, n=10):
     otherwise, the swap is discarded. In either case, the swaps continue
     until the end of dataset is reached.
     This pattern repeats until all swaps are made with no improvements.
-    Repeats n times and returns the best results found.
+    Repeats runs times and returns the best results found.
 
     Args:
         dataset: A list or tuple of 2-item tuples or lists containing only floats.
 
-        n: The integer number of swap iterations to explore. Defaults to 10.
+        runs: The integer number of swap iterations to explore. Defaults to 10.
 
     Returns:
         A tuple containing two items: A float indicating the length of the
@@ -149,7 +153,7 @@ def tsp_hill_climb(dataset, n=10):
     min_distance = find_path_distance(dataset)
     min_path = dataset
     start_path = dataset[:]
-    for _ in xrange(n):
+    for _ in xrange(runs):
         shuffle(start_path)
         distance, path = _hill_climb(start_path)
         if distance < min_distance:
@@ -181,7 +185,7 @@ def tsp_simulated_annealing(dataset, limit=1000):
     """Finds a distance of a path through all nodes in dataset.
 
     Chooses two random points in dataset and swaps them.
-    If this results in a shorter total distance, maintain this change. 
+    If this results in a shorter total distance, maintain this change.
     Otherwise, maintains the change with a small probability, which decreases
     as the number of swaps increases.
 
@@ -201,6 +205,7 @@ def tsp_simulated_annealing(dataset, limit=1000):
     Raises:
         TypeError: dataset is not in the correct format, or n is not an integer.
     """
+    # temperature
     t = .1
     min_distance = find_path_distance(dataset)
     # dataset won't change, so we can use a pointer instead of copy
