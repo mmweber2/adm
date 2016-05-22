@@ -66,14 +66,14 @@ def test_tsp_hill_climb():
     hc_result = tsp_hill_climb(set1)
     assert_equals(find_path_distance(hc_result[1]), hc_result[0])
     assert tsp_brute(set1)[0] <= hc_result[0]
-    #print "Brute force result: {}. MC result: {}, HC result: {}".format(
-    #        tsp_brute(set1)[0], tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0]
-    #        )
 
 def test_tsp_sa():
     set1 = create_dataset(20)
     sa_result = tsp_simulated_annealing(set1)
     assert_equals(find_path_distance(sa_result[1]), sa_result[0])
-    print "MC result: {}, HC result: {}, SA result: {}".format(
-            tsp_montecarlo(set1)[0], tsp_hill_climb(set1)[0], tsp_simulated_annealing(set1)[0]
-           )
+    print "MC result: ", tsp_montecarlo(set1)[0]
+    print "HC result (1 iteration): ", tsp_hill_climb(set1, 1)[0]
+    print "HC result (10 iterations): ", tsp_hill_climb(set1, 10)[0]
+    #print "HC result (100 iterations): ", tsp_hill_climb(set1, 100)[0]
+    print "SA result 1: ", sa_result[0]
+    print "SA result 2: ", tsp_simulated_annealing(set1)[0]

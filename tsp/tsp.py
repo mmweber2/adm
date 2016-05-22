@@ -1,4 +1,4 @@
-from random import uniform, shuffle, random, randint
+from random import uniform, shuffle, random, sample
 from math import sqrt
 from itertools import permutations
 
@@ -10,8 +10,8 @@ def create_dataset(n, min_val=-10.0, max_val=10.0):
     same, but all tuples will be unique.
 
     Args:
-        n: The number of tuples (points) to create. Must be an integer
-        greater than 0.
+        n: The integer number of tuples (points) to create.
+        Must be an integer greater than 0.
 
         min_val: The minimum value of the points. Defaults to -10.0.
 
@@ -26,10 +26,6 @@ def create_dataset(n, min_val=-10.0, max_val=10.0):
 
         TypeError: min_val or max_val are not numbers, or n is not an integer.
     """
-    # If n isn't type checked, it can cause an infinite loop while len < n
-    # in the while loop below.
-    if type(n) != int:
-        raise TypeError("n must be an integer")
     if n < 1:
         raise ValueError("n must be greater than zero")
     # If min_val and max_val are equal, we can only create one point and will
@@ -38,6 +34,7 @@ def create_dataset(n, min_val=-10.0, max_val=10.0):
     if min_val == max_val:
         raise ValueError("min_val must not be equal to max_val")
     points = set()
+    # If n is not an integer, this can cause an infinite loop.
     # Since we could find duplicates, it may take more than n tries
     while len(points) < n:
         point = (uniform(min_val, max_val), uniform(min_val, max_val))
@@ -180,21 +177,21 @@ def _hill_climb(path):
             break
     return (current_distance, path)
 
-def tsp_simulated_annealing(dataset, n=1000):
+def tsp_simulated_annealing(dataset, limit=1000):
     """Finds a distance of a path through all nodes in dataset.
 
-    Chooses a random point in dataset and swaps it with the following point.
+    Chooses two random points in dataset and swaps them.
     If this results in a shorter total distance, maintain this change. 
     Otherwise, maintains the change with a small probability, which decreases
     as the number of swaps increases.
 
-    Repeats until n swaps are performed without encountering improvements,
+    Repeats until limit swaps are performed without encountering improvements,
     and returns the best results found.
 
     Args:
         dataset: A list or tuple of 2-item tuples or lists containing only floats.
 
-        n: The limit of swaps without improvement to allow before stopping.
+        limit: The integer limit of swaps without improvement to allow before stopping.
         Defaults to 1000.
 
     Returns:
@@ -206,20 +203,21 @@ def tsp_simulated_annealing(dataset, n=1000):
     """
     t = .1
     min_distance = find_path_distance(dataset)
+    # dataset won't change, so we can use a pointer instead of copy
     min_path = dataset
     path = dataset[:]
     # current_distance could get bigger than min_distance, so track both
     current_distance = min_distance
     last_change = 0
     cycle = 0
-    while last_change < n:
+    while last_change < limit:
         # Decrease temperature every 100 cycles
         if cycle % 100 == 0:
             t *= .9
         cycle += 1
-        # -2 because the last item doesn't have a next element to swap with
-        swap = randint(0, len(dataset) - 2)
-        path[swap], path[swap+1] = path[swap+1], path[swap]
+        # Two indices at random
+        swap1, swap2 = sample(xrange(len(dataset)), 2)
+        path[swap1], path[swap2] = path[swap2], path[swap1]
         new_distance = find_path_distance(path)
         if _keep_swap(current_distance, new_distance, t):
             current_distance = new_distance
@@ -228,7 +226,7 @@ def tsp_simulated_annealing(dataset, n=1000):
                 min_path = path[:]
                 min_distance = current_distance
         else:
-            path[swap], path[swap+1] = path[swap+1], path[swap]
+            path[swap1], path[swap2] = path[swap2], path[swap1]
             last_change += 1
     return (min_distance, min_path)
 
