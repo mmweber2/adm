@@ -14,30 +14,20 @@ def edit_distance(s1, s2):
     if s1 == s2:
         return 0
     len1, len2 = len(s1), len(s2)
-    if not (len1 > 0 and len2 > 0):
+    if len1 == 0 or len2 == 0:
         return max(len1, len2)
     # Use 1-indexing so we can compare each to an empty string
-    len1 += 1
-    len2 += 1
-    distance = [[None] * len1 for _ in xrange(len2)]
+    distance = [[None] * (len1 + 1) for _ in xrange(len2 + 1)]
     # Initialize first row and column
-    for i in xrange(len1):
-        distance[0][i] = i
-    for j in xrange(len2):
-        distance[j][0] = j
+    for j in xrange(len1 + 1):
+        distance[0][j] = j
+    for i in xrange(len2 + 1):
+        distance[i][0] = i
     # Find the edit distances
-    for i in xrange(1, len2):
-        for j in xrange(1, len1):
-            # TODO: Keep track of which option was used
-            swap_cost = distance[i-1][j-1] + _get_swap_cost(s1[j-1], s2[i-1])
+    for i in xrange(1, len2 + 1):
+        for j in xrange(1, len1 + 1):
+            swap_cost = distance[i-1][j-1] + (0 if s1[j-1] == s2[i-1] else 1)
             del_cost = distance[i-1][j] + 1
             insert_cost = distance[i][j-1] + 1
             distance[i][j] = min(swap_cost, del_cost, insert_cost)
-    return distance[len2 - 1][len1 - 1]
-
-def _get_swap_cost(c1, c2):
-    """Determines the cost of a swap between 2 single-character strings."""
-    if c1 == c2:
-        return 0
-    return 1
-
+    return distance[len2][len1]
