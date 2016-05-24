@@ -15,6 +15,10 @@ def test_edit_one_swap():
 
 def test_edit_one_del():
     assert_equals(edit_distance("chat", "chaut"), 1)
+
+def test_edit_one_add():
+    assert_equals(edit_distance("char", "chair"), 1)
     
 def test_edit_longer_strings():
-    assert_equals(edit_distance("pineapple", "penelope"), 0)
+    # pineapple, peneapple, penelpple, penelople, penelope
+    assert_equals(edit_distance("pineapple", "penelope"), 4)
