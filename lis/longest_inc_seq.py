@@ -28,7 +28,7 @@ def longest_increasing_sequence(seq):
     # In the worst case, each number is a sequence of 1
     lengths = [1 for _ in xrange(len(seq))]
     # For each index, store the index of its predecessor
-    predecessors  = [None for _ in xrange(len(seq))]
+    predecessors = [None for _ in xrange(len(seq))]
     # First item has length 1 and no predecessor
     for i in xrange(1, len(seq)):
         for prev in xrange(0, i):
