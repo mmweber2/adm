@@ -1,9 +1,17 @@
 def longest_increasing_sequence(seq):
     """
-    Finds the longest monotonically increasing subsequence of sequence seq.
+    Finds the longest monotonically increasing subsequence of numbers in seq.
 
     If there are multiple such subsequences of the maximum length, an
     arbitrary one is returned.
+
+    For example, if seq is [2, 4, 3, 5, 1, 7, 6, 9, 8], the longest
+    monotonically increasing subsequence is of length 5, and one such
+    sequence is [2, 4, 5, 7, 9].
+    If seq is an empty sequence or only contains one element, returns seq.
+
+    Items will be compared by the default comparator, so the sequence may not
+    be monotonically increasing if seq contains items that are not numbers.
 
     Args:
         seq: A sequence of numbers.
@@ -12,6 +20,10 @@ def longest_increasing_sequence(seq):
         A list containing the longest monotonically increasing subsequence
         of numbers in seq.
     """
+    # An empty sequence will bypass the table creation, but will cause
+    # a ValueError from max() later on.
+    if seq == []:
+        return seq
     # Index to max sequence length
     # In the worst case, each number is a sequence of 1
     lengths = [1 for _ in xrange(len(seq))]
@@ -29,12 +41,12 @@ def longest_increasing_sequence(seq):
     # We have the lengths, so we can look for the max
     max_length = max(lengths)
     longest_seq = []
-    # No need to look at the first value, any index can be a sequence of 1
-    for i in xrange(len(seq) - 1, 0, -1):
+    # Start from the far end because it is more likely to have longer sequences
+    for i in xrange(len(seq) - 1, -1, -1):
         if lengths[i] == max_length:
-            longest_seq = [seq[i]]
+            longest_seq = []
             current = i
-            while predecessors[current] != None:
+            while current != None:
                 longest_seq.append(seq[current])
                 current = predecessors[current]
             # If there are ties, just take the first one we see
