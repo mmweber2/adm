@@ -24,7 +24,7 @@ def longest_increasing_sequence(seq):
     # a ValueError from max() later on.
     if seq == []:
         return seq
-    # Index to max sequence length
+    # Array of max sequence lengths corresponding to seq
     # In the worst case, each number is a sequence of 1
     lengths = [1 for _ in xrange(len(seq))]
     # For each index, store the index of its predecessor
@@ -38,19 +38,15 @@ def longest_increasing_sequence(seq):
                 lengths[i] = lengths[prev] + 1
                 predecessors[i] = prev
     # Table is built, now find the longest sequence
-    # We have the lengths, so we can look for the max
-    max_length = max(lengths)
     longest_seq = []
     # Start from the far end because it is more likely to have longer sequences
     for i in xrange(len(seq) - 1, -1, -1):
-        if lengths[i] == max_length:
+        if lengths[i] > len(longest_seq):
             longest_seq = []
             current = i
             while current != None:
                 longest_seq.append(seq[current])
                 current = predecessors[current]
-            # If there are ties, just take the first one we see
-            break
     # We added from largest to smallest, so reverse
     return longest_seq[::-1]
 
