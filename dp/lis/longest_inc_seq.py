@@ -20,10 +20,6 @@ def longest_increasing_sequence(seq):
         A list containing the longest monotonically increasing subsequence
         of numbers in seq.
     """
-    # An empty sequence will bypass the table creation, but will cause
-    # a ValueError from max() later on.
-    if seq == []:
-        return seq
     # Array of max sequence lengths corresponding to seq
     # In the worst case, each number is a sequence of 1
     lengths = [1 for _ in xrange(len(seq))]
