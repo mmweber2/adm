@@ -1,3 +1,6 @@
+# Trial version of partition adapted from ADM.
+# See partition2.py
+
 def partition(seq, k):
     """Partitions seq into k equal ranges without reordering seq.
 
