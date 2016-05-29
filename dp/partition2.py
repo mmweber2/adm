@@ -1,4 +1,9 @@
 def partition(seq, k):
+    """Second version of partition.
+
+    Since this is a rewrite, documentation is minimal; see partition.py for
+    full documentation.
+    """
     min_maxes = [[None] * k for _ in xrange(len(seq))]
     dividers  = [[None] * k for _ in xrange(len(seq))]
     
@@ -24,11 +29,23 @@ def partition(seq, k):
                 local_max = max(min_maxes[x][j-1], sum(seq[x + 1:i + 1]))
                 if local_max <= min_maxes[i][j]:
                     min_maxes[i][j] = local_max
-                    dividers[i][j] = x
+                    # x + 1 because that's where the sequence starts
+                    dividers[i][j] = x + 1
 
-    print "At the end, min_maxes is:"
-    print min_maxes
-    # TODO: Reconstruct sequences
+    # Reconstruct partitions
+    split = []
+    start = dividers[-1][-1]
+    end = len(seq)
+    while True:
+        split.append(seq[start:end])
+        k -= 1
+        if k == 0:
+            break
+        end = start
+        # One partition has been added, so get the one for k - 1 partitions
+        start = dividers[start - 1][k - 1]
+    print "Split was ", split[::-1]
+    print "Min max of this is ", min_maxes[-1][-1]
     return min_maxes[-1][-1]
 
 
