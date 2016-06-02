@@ -32,23 +32,41 @@ class KDTree(object):
             default comparator will be used to determine their ordering.
             Items must be immutable in order for comparisons to remain reliable.
         """
-        data = training_data[:]
-        dimension = 1
-        median = _get_median(data, dimension)
-        root = KDTreeNode(median[dimension], dimension)
+        self.data = training_data[:]
+        # All data points must have the same number of dimensions
+        self.k = len(training_data)[0]
+        return KDTree._build_tree(training_data[:], 1)
 
     @staticmethod
-    def _get_median(dataset, dimension):
-        """Returns the median value of dataset according to dimension."""
+    def _build_tree(data, dimension):
+        """Create a new subtree for a KD tree."""
+        if data == None:
+            return None
+        mid = len(data) / 2
+        median = KDTree._get_median_index(data, dimension)
+        root = KDTreeNode(data[median], dimension)
+        dimension = root._get_next_dimension(dimension)
+        # _get_median sorts by this dimension, so we can divide data
+        root.left = _build_tree(data[:median], dimension)
+        root.right = _build_tree(data[median + 1:], dimension)
+        return root
+
+    def _get_next_dimension(self, dimension):
+        """Get the next dimension by which to divide cells."""
+        # Cycle back to the first dimension when we've divided by all of them
+        if dimension == self.k:
+            return 1
+        return dimension + 1
+
+    @staticmethod
+    def _get_median_index(dataset, dimension):
+        """Returns the index of the median value of dataset by dimension."""
         # Methods exist to find a median in shorter O(n) time than this, but
         # I'm using this simple method for now.
         dataset.sort(key=itemgetter(dimension-1))
-        return dataset[len(dataset)/2]
+        return len(dataset)/2
 
-    # TODO: Create function that sorts by a dimension, splits by that dimension,
-    # then repeats on the next dimension
-
-# TODO: Add child in correct place
+# TODO: Add child in correct place?
 class KDTreeNode(object):
     """Represents a single vertex in the KD Tree."""
     def __init__(self, value, dimension):
