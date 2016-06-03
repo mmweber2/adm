@@ -1,5 +1,6 @@
 from operator import itemgetter
 
+# TODO: Add method to add new data points
 class KDTree(object):
     """Represents a K-Dimensional tree.
 
@@ -30,16 +31,13 @@ class KDTree(object):
         which may be None.
     """
 
-    def __init__(self, value, k, dimension):
+    def __init__(self, value, dimension):
         """Create a new KD Tree subtree.
 
         Args:
             value: The value this Node represents. Can be a number, string,
             or other comparable type, but must be immutable and the same type
             as all other values in the KDTree.
-
-            k: Integer representing the total number of dimensions contained in
-            this tree. Must be > 0.
 
             dimension: Integer representing the dimension among which this Node
             splits the data, or by which it has been split if it is a leaf Node.
@@ -48,7 +46,6 @@ class KDTree(object):
             Must be in the range 0 < dimension <= k.
         """
         self.value = value
-        self.k = k
         self.dimension = dimension
         self.left = None
         self.right = None
@@ -67,9 +64,10 @@ class KDTree(object):
             Items must all be of the same type (numbers, strings, etc), as the
             default comparator will be used to determine their ordering.
             Items must be immutable in order for comparisons to remain reliable.
+
+        Returns:
+            A KDTree object as described in the class documentation.
         """
-        self.left = None
-        self.right = None
         return KDTree._build_tree_inner(training_data[:], 1)
 
     @staticmethod
@@ -79,16 +77,17 @@ class KDTree(object):
             return None
         mid = len(data) / 2
         median = KDTree._get_median_index(data, dimension)
+        root = KDTree(data[median], dimension)
         # All points must have the same number of dimensions
         k = len(data)[0]
-        root = KDTree(data[median], k, dimension)
-        dimension = root._get_next_dimension(dimension)
+        dimension = root._get_next_dimension(k, dimension)
         # _get_median sorts by this dimension, so we can divide data
-        root.left = _build_tree(data[:median], dimension)
-        root.right = _build_tree(data[median + 1:], dimension)
+        root.left = _build_tree_inner(data[:median], dimension)
+        root.right = _build_tree_inner(data[median + 1:], dimension)
         return root
 
-    def _get_next_dimension(self, dimension):
+    @staticmethod
+    def _get_next_dimension(k, dimension):
         """Get the next dimension by which to divide cells."""
         # Cycle back to the first dimension when we've divided by all of them
         if dimension == self.k:
