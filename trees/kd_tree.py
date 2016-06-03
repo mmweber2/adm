@@ -73,24 +73,23 @@ class KDTree(object):
     @staticmethod
     def _build_tree_inner(data, dimension):
         """Create a new subtree for a KD tree."""
-        if data == None:
+        if data == []:
             return None
-        mid = len(data) / 2
         median = KDTree._get_median_index(data, dimension)
         root = KDTree(data[median], dimension)
         # All points must have the same number of dimensions
-        k = len(data)[0]
-        dimension = root._get_next_dimension(k, dimension)
+        k = len(data[0])
+        dimension = KDTree._get_next_dimension(k, dimension)
         # _get_median sorts by this dimension, so we can divide data
-        root.left = _build_tree_inner(data[:median], dimension)
-        root.right = _build_tree_inner(data[median + 1:], dimension)
+        root.left = KDTree._build_tree_inner(data[:median], dimension)
+        root.right = KDTree._build_tree_inner(data[median + 1:], dimension)
         return root
 
     @staticmethod
     def _get_next_dimension(k, dimension):
         """Get the next dimension by which to divide cells."""
         # Cycle back to the first dimension when we've divided by all of them
-        if dimension == self.k:
+        if dimension == k:
             return 1
         return dimension + 1
 
@@ -102,3 +101,27 @@ class KDTree(object):
         dataset.sort(key=itemgetter(dimension-1))
         return len(dataset)/2
 
+    def print_tree(self, queue=[]):
+        """Prints the KD Tree in level order.
+        
+        Each value will be in the following format:
+         
+        Value: (node value)
+        Dimension: (dimension sorted by for that split)
+
+        Args:
+            queue: The list of nodes to print. Defaults to [].
+        """
+        print "Value: ", self.value
+        print "Dimension: ", self.dimension
+        if self.left:
+            queue.append(self.left)
+        if self.right:
+            queue.append(self.right)
+        if queue != []:
+            next_item = queue.pop(0)
+            next_item.print_tree(queue)
+
+
+# TODO: Find min in dth dimension
+# TODO: Find closest value to (a, b)
