@@ -14,12 +14,48 @@ class KDTree(object):
     dimension, and so on until it has been split by the kth dimension, then
     cycles back to the first dimension until each split contains a single
     point.
+
+    Dimensions are 1-indexed, such that a 2-D tree has dimensions (1, 2).
+
+    Each node in the KDTree has the following attributes:
+        value: The value by which this node splits the data.
+
+        k: An integer representing the total number of dimensions this tree
+        considers.
+
+        dimension: An integer representing the dimension that that particular
+        node will split by. The root always splits by dimension 1.
+
+        left, right: Pointers to this node's left and right children,
+        which may be None.
     """
 
-    # TODO: Work in cells?
+    def __init__(self, value, k, dimension):
+        """Create a new KD Tree subtree.
 
-    def __init__(self, training_data):
-        """Create a new KD tree.
+        Args:
+            value: The value this Node represents. Can be a number, string,
+            or other comparable type, but must be immutable and the same type
+            as all other values in the KDTree.
+
+            k: Integer representing the total number of dimensions contained in
+            this tree. Must be > 0.
+
+            dimension: Integer representing the dimension among which this Node
+            splits the data, or by which it has been split if it is a leaf Node.
+            Dimensions are 1-indexed, so 1 and 2 are the acceptable dimensions
+            for a 2-dimensional tree.
+            Must be in the range 0 < dimension <= k.
+        """
+        self.value = value
+        self.k = k
+        self.dimension = dimension
+        self.left = None
+        self.right = None
+    
+    @staticmethod
+    def build_tree(training_data):
+        """Create a new KD tree from a set of data.
 
         Args:
             training_data: List or tuple of k-length list or tuples, where
@@ -32,19 +68,20 @@ class KDTree(object):
             default comparator will be used to determine their ordering.
             Items must be immutable in order for comparisons to remain reliable.
         """
-        self.data = training_data[:]
-        # All data points must have the same number of dimensions
-        self.k = len(training_data)[0]
-        return KDTree._build_tree(training_data[:], 1)
+        self.left = None
+        self.right = None
+        return KDTree._build_tree_inner(training_data[:], 1)
 
     @staticmethod
-    def _build_tree(data, dimension):
+    def _build_tree_inner(data, dimension):
         """Create a new subtree for a KD tree."""
         if data == None:
             return None
         mid = len(data) / 2
         median = KDTree._get_median_index(data, dimension)
-        root = KDTreeNode(data[median], dimension)
+        # All points must have the same number of dimensions
+        k = len(data)[0]
+        root = KDTree(data[median], k, dimension)
         dimension = root._get_next_dimension(dimension)
         # _get_median sorts by this dimension, so we can divide data
         root.left = _build_tree(data[:median], dimension)
@@ -66,24 +103,3 @@ class KDTree(object):
         dataset.sort(key=itemgetter(dimension-1))
         return len(dataset)/2
 
-# TODO: Add child in correct place?
-class KDTreeNode(object):
-    """Represents a single vertex in the KD Tree."""
-    def __init__(self, value, dimension):
-        """Create a new KD Tree vertex to use in a KDTree.
-
-        Args:
-            value: The value this Node represents. Can be a number, string,
-            or other comparable type, but must be immutable and the same type
-            as all other values in the KDTree.
-
-            dimension: Integer representing the dimension among which this Node
-            splits the data, or by which it has been split if it is a leaf Node.
-            Dimensions are 1-indexed, so 1 and 2 are the acceptable dimensions
-            for a 2-dimensional tree.
-            Must be in the range 0 < dimension <= k.
-        """
-        self.value = value
-        self.dimension = dimension
-        self.left = None
-        self.right = None
