@@ -22,7 +22,7 @@ class KDTree(object):
         value: The value by which this node splits the data.
 
         k: An integer representing the total number of dimensions this tree
-        considers.
+        considers. Equal to len(value) for any value in the tree.
 
         dimension: An integer representing the dimension that that particular
         node will split by. The root always splits by dimension 1.
@@ -37,7 +37,11 @@ class KDTree(object):
         Args:
             value: The value this Node represents. Can be a number, string,
             or other comparable type, but must be immutable and the same type
-            as all other values in the KDTree.
+            as all other values in the KDTree. Values contain all dimensions,
+            so if k is 2 and the data point is (10, 5), value will be (10, 5)
+            and the tree will be sorted by one of those dimensions, as indicated
+            by dimension below.
+            The tree's k will be equal to len(value).
 
             dimension: Integer representing the dimension among which this Node
             splits the data, or by which it has been split if it is a leaf Node.
@@ -46,6 +50,8 @@ class KDTree(object):
             Must be in the range 0 < dimension <= k.
         """
         self.value = value
+        if dimension <= 0 or dimension > len(value):
+            raise ValueError("dimension must be in range 0 < dimension <= k")
         self.dimension = dimension
         self.left = None
         self.right = None
@@ -68,6 +74,14 @@ class KDTree(object):
         Returns:
             A KDTree object as described in the class documentation.
         """
+        k = len(training_data[0])
+        if k == 1:
+            raise ValueError("Data values must have 2 <= k <= 20 dimensions")
+        # Explicit check for uneven dimensions because the behavior may be
+        # different depending on the position of the longer or shorter item
+        for item in training_data[1:]:
+            if len(item) != k:
+                raise IndexError("All items must contain k dimensions.")
         return KDTree._build_tree_inner(training_data[:], 1)
 
     @staticmethod
