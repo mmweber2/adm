@@ -34,6 +34,11 @@ def test_kd_construct_valid():
     tree = KDTree((10, 15), 2)
     assert tree.dimension == 2
     
+def test_kd_construct_zero():
+    assert_raises(ValueError, KDTree, (3, 4), 0)
+
+def test_kd_construct_non_iterable():
+    assert_raises(TypeError, KDTree, 2, 1)
 
 
     
