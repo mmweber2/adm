@@ -161,13 +161,26 @@ class KDTree(object):
 
         Args:
             new_value: The data point for which to find a close value.
-            Must be of length k (the same number of dimensions) and contain the
-            same data type (numbers, strings, etc) as items already in the tree.
+            Must be of length k (must have the same number of dimensions) and
+            contain the same data type (numbers, strings, etc) as items already
+            in the tree.
 
         Returns:
             An approximation of the closest data point in the KD Tree.
         """
-
+        dimension = 1
+        subtree = self
+        closest_value = subtree.value
+        while True:
+            # No further divisions, so this must be the closest existing value
+            if subtree == None:
+                return closest_value
+            closest_value = subtree.value
+            if new_value[dimension-1] <= subtree.value[dimension-1]:
+                subtree = subtree.left
+            else:
+                subtree = subtree.right
+            # Hold onto last value we've seen
+            dimension = KDTree._get_next_dimension(len(new_value), dimension)
 
 # TODO: Find min in dth dimension
-# TODO: Find closest value to (a, b)

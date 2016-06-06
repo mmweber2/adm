@@ -1,5 +1,6 @@
 from kd_tree import KDTree
 from nose.tools import assert_raises
+from nose.tools import assert_equals
 
 def test_build_tree_2k():
     print "K = 2:"
@@ -39,6 +40,13 @@ def test_kd_construct_zero():
 
 def test_kd_construct_non_iterable():
     assert_raises(TypeError, KDTree, 2, 1)
+
+def test_kd_find_closest():
+    data = [(30, 40), (5, 25), (10, 12), (70, 70), (50, 30), (35, 45)]
+    tree = KDTree.build_tree(data)
+    assert_equals(tree.find_closest((0, 0)), (10, 12))
+    assert_equals(tree.find_closest((0, 100)), (30, 40))
+    assert_equals(tree.find_closest((50, 50)), (50, 30))
 
 
     
