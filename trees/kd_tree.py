@@ -8,7 +8,7 @@ class KDTree(object):
 
     Once a tree has been created from data, the data will be sorted
     among the k dimensions of the data. The nearest neighbor of a new point
-    can then be found in O(height) time.
+    can then be found in approximately O(height) time.
 
     The data is split first among the first dimension, then the second
     dimension, and so on until it has been split by the kth dimension, then
@@ -18,49 +18,51 @@ class KDTree(object):
     Dimensions are 1-indexed, such that a 2-D tree has dimensions (1, 2).
 
     Each node in the KDTree has the following attributes:
-        value: The value iterable by which this node splits the data.
+        value: The data point iterable by which this node splits the data.
 
         k: An integer representing the total number of dimensions this tree
-        considers. Equal to len(value) for any value in the tree.
+            considers. Equal to len(value) for any value in the tree.
 
         dimension: An integer representing the dimension that that particular
-        node will split by. The root always splits by dimension 1.
+            node will split by. The root always splits by dimension 1.
 
         left, right: Pointers to this node's left and right children,
-        which may be None.
+            which may be None.
     """
 
     def __init__(self, data, dimension=1, error_checking=True):
-        """Create a new KD tree from a set of data.
+        """Creates a new KD tree from a set of data.
 
-        Each value contains all dimensions, so if k is 2 and value is
+        Each value in data contains all dimensions, so if k is 2 and value is
         (10, 5), the data point is (10, 5), and the tree will be sorted by
         one of those dimensions, as indicated by dimension below.
-        The tree's k is equal to len(value).
 
         Each position represents a dimension, so the first item always
         represents the first dimension, the second a second dimension,
         and so on. Each list or tuple must contain the same number of
         dimensions.
 
-        Items must all be of the same type (numbers, strings, etc), as the
-        default comparator will be used to determine their ordering.
-        Items must not be changed after creating the tree in order for
-        comparisons to remain reliable.
+        All items in the iterables must be numbers, and the default comparator
+        will be used to determine their ordering.
+        In order for comparisons to remain reliable, items must not be changed
+        after creating the tree.
 
         Args:
-            data: List or tuple of k-length list or tuples, where
-            k is an integer greater than 1.
+            data: List or tuple of k-length list or tuples of numbers, where
+                k is an integer greater than 1.
 
-            dimension: Integer representing the dimension among which this Node
-            splits the data, or by which it has been split if it is a leaf Node.
-            Dimensions are 1-indexed, so 1 and 2 are the acceptable dimensions
-            for a 2-dimensional tree.
-            Must be in the range 0 < dimension <= k.
+            dimension: Integer representing the dimension among which this node
+                splits the data, or by which it has been split if it is a leaf.
+                Dimensions are 1-indexed, so 1 and 2 are the acceptable
+                dimensions for a 2-dimensional tree.
+                Must be in the range 0 < dimension <= k.
+
+            error_checking: Boolean indicating whether data and dimension
+                should be checked for errors. Defaults to True.
 
         Raises:
             IndexError: data contains data points of different lengths
-            (dimensions).
+                (dimensions).
 
             ValueError: dimension is outside the valid range.
         """
@@ -74,8 +76,8 @@ class KDTree(object):
             for item in data[1:]:
                 if len(item) != k:
                     raise IndexError("All items must contain k dimensions")
-        if dimension <= 0 or dimension > k:
-            raise ValueError("dimension must be in range 0 < dimension <= k")
+            if dimension <= 0 or dimension > k:
+                raise ValueError("dimension must be in range 0 < dimension <= k")
         self.left = None
         self.right = None
         self.dimension = dimension
@@ -88,12 +90,12 @@ class KDTree(object):
         # Values should not be modified once they're added to the tree
         self.value = tuple(data[median])
         dimension = KDTree._get_next_dimension(k, dimension)
-        # _get_median sorts by this dimension, so we can divide data
+        # data is still sorted from the median check
         left_data = data[:median]
         right_data = data[median + 1:]
-        if left_data:
+        if len(left_data) > 0:
             self.left = KDTree(left_data, dimension, False)
-        if right_data:
+        if len(right_data) > 0:
             self.right = KDTree(right_data, dimension, False)
 
     @staticmethod
@@ -119,7 +121,6 @@ class KDTree(object):
         Dimension: (dimension sorted by for that split)
 
         """
-        print "---"
         queue = [self]
         while len(queue) > 0:
             current = queue.pop(0)
@@ -130,22 +131,19 @@ class KDTree(object):
             if current.right:
                 queue.append(current.right)
 
-    # TODO: Rework to use calculated distance, not just find the cell
+    # TODO: Rework to use _get_distance(), not just find the cell
     def find_closest(self, new_value):
-        """Finds an approximation of the closest value already in the Tree.
-
-        Returns the value in the same cell in which new_value would be found,
-        if it were part of the tree. This value may not be the closest value
-        across all dimensions, and is an approximation.
+        """Finds the closest value already in the Tree.
 
         Args:
-            new_value: The data point for which to find a close value.
-            Must be of length k (must have the same number of dimensions) and
-            contain the same data type (numbers, strings, etc) as items already
-            in the tree.
+            new_value: The list or tuple representing a data point for which to
+                find a close value.
+                Must be of length k (must have the same number of dimensions)
+                and contain only numbers.
 
         Returns:
-            An approximation of the closest data point in the KD Tree.
+            A tuple representing the closest data point to new_value that is
+                part of this KDTree.
         """
         dimension = 1
         subtree = self
@@ -161,5 +159,12 @@ class KDTree(object):
                 subtree = subtree.right
             # Hold onto last value we've seen
             dimension = KDTree._get_next_dimension(len(new_value), dimension)
+
+
+    # TODO: Complete
+    @staticmethod
+    def _get_distance(p1, p2):
+        """Returns the straight line distance between p1 and p2."""
+        pass
 
 # TODO: Find min in dth dimension
