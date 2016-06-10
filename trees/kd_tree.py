@@ -17,18 +17,6 @@ class KDTree(object):
     point.
 
     Dimensions are 1-indexed, such that a 2-D tree has dimensions (1, 2).
-
-    Each node in the KDTree has the following attributes:
-        value: The data point iterable by which this node splits the data.
-
-        k: An integer representing the total number of dimensions this tree
-            considers. Equal to len(value) for any value in the tree.
-
-        dimension: An integer representing the dimension that that particular
-            node will split by. The root always splits by dimension 1.
-
-        left, right: Pointers to this node's left and right children,
-            which may be None.
     """
 
     def __init__(self, data, dimension=1, error_checking=True):
@@ -132,7 +120,6 @@ class KDTree(object):
             if current.right:
                 queue.append(current.right)
 
-    # TODO: Rework to use _get_distance(), not just find the cell
     def find_closest(self, new_value):
         """Finds the closest value already in the Tree.
 
@@ -145,21 +132,47 @@ class KDTree(object):
         Returns:
             A tuple representing the closest data point to new_value that is
                 part of this KDTree.
+
+        Raises:
+            ValueError: new_value is not of length k.
+
+            TypeError: new_value is not an iterable.
         """
-        dimension = 1
-        subtree = self
-        closest_value = self.value
+        if len(new_value) != len(self.value):
+            raise ValueError("new_value must be of length k")
+        current = self
+        closest_value = None
+        min_distance = float("inf")
+        # Order of areas to explore doesn't matter, but check all cells that
+        # could have closer values
+        explore_queue = []
         while True:
-            # No further divisions, so this must be the closest existing value
-            if subtree == None:
-                return closest_value
-            closest_value = subtree.value
-            if new_value[dimension-1] <= subtree.value[dimension-1]:
-                subtree = subtree.left
+            distance = KDTree._get_distance(new_value, current.value)
+            if distance < min_distance:
+                closest_value = current.value
+                min_distance = distance
+            dimension = current.dimension
+            # Go left
+            if new_value[dimension-1] <= current.value[dimension-1]:
+                explore_queue.append(current.left)
+                # But, also consider right subtree
+                for i in xrange(len(new_value)):
+                    # Since all dimensions are checked here, an equal value in
+                    # the current dimension will lead to checking both cells
+                    if new_value[i] >= current.value[i]:
+                        explore_queue.append(current.right)
+            # Go right
             else:
-                subtree = subtree.right
-            # Hold onto last value we've seen
-            dimension = KDTree._get_next_dimension(len(new_value), dimension)
+                explore_queue.append(current.right)
+                # But, also consider left subtree
+                for i in xrange(len(new_value)):
+                    if new_value[i] <= current.value[i]:
+                        explore_queue.append(current.left)
+            # None values will get added if we try to branch from a leaf
+            explore_queue = [x for x in explore_queue if x is not None]
+            if len(explore_queue) == 0:
+                return closest_value
+            current = explore_queue.pop()
 
     @staticmethod
     def _get_distance(p1, p2):
@@ -168,7 +181,7 @@ class KDTree(object):
             raise ValueError("_get_distance values must be of the same length")
         distance = 0
         for i in xrange(len(p1)):
-            distance += (p1[i] + p2[i])**2
+            distance += (p1[i] - p2[i])**2
         return sqrt(distance)
 
 # TODO: Find min in dth dimension
