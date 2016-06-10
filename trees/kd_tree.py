@@ -1,4 +1,5 @@
 from operator import itemgetter
+from math import sqrt
 
 class KDTree(object):
     """Represents a K-Dimensional tree.
@@ -160,11 +161,14 @@ class KDTree(object):
             # Hold onto last value we've seen
             dimension = KDTree._get_next_dimension(len(new_value), dimension)
 
-
-    # TODO: Complete
     @staticmethod
     def _get_distance(p1, p2):
         """Returns the straight line distance between p1 and p2."""
-        pass
+        if len(p1) != len(p2):
+            raise ValueError("_get_distance values must be of the same length")
+        distance = 0
+        for i in xrange(len(p1)):
+            distance += (p1[i] + p2[i])**2
+        return sqrt(distance)
 
 # TODO: Find min in dth dimension
