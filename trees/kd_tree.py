@@ -38,6 +38,9 @@ class KDTree(object):
         In order for comparisons to remain reliable, items must not be changed
         after creating the tree.
 
+        The tree creates copies of data, so deep copies may not be made if
+        data contains objects.
+
         Args:
             data: List or tuple of k-length list or tuples of numbers, where
                 k is an integer greater than 1.
@@ -72,22 +75,22 @@ class KDTree(object):
         self.left = None
         self.right = None
         self.dimension = dimension
-        # Don't recurse if node has no children
+        # Base case
         if len(data) == 1:
             self.value = tuple(data[0])
             return
         median = KDTree._get_median_index(data, dimension)
-        # _get_median_index sorts by dimension, so we can index to the median
+        # _get_median_index sorts data, so we can index into median
         # Values should not be modified once they're added to the tree
         self.value = tuple(data[median])
         dimension = KDTree._get_next_dimension(k, dimension)
-        # data is still sorted from the median check
         left_data = data[:median]
         right_data = data[median + 1:]
         if len(left_data) > 0:
             self.left = KDTree(left_data, dimension, False)
         if len(right_data) > 0:
             self.right = KDTree(right_data, dimension, False)
+        # Don't recurse if node has no children
 
     @staticmethod
     def _get_next_dimension(k, dimension):
@@ -97,7 +100,7 @@ class KDTree(object):
 
     @staticmethod
     def _get_median_index(dataset, dimension):
-        """Returns the index of the median value of dataset by dimension."""
+        """Returns the index of a median value of dataset by dimension."""
         # Methods exist to find a median in O(n) time, but I'm using this
         # simple O(n log n) method for now.
         dataset.sort(key=itemgetter(dimension-1))
@@ -122,62 +125,66 @@ class KDTree(object):
             if current.right:
                 queue.append(current.right)
 
-    def find_closest(self, new_value):
+    def find_closest(self, target, min_distance=None, closest_value=None):
         """Finds the closest value already in the Tree.
 
         Args:
-            new_value: The list or tuple representing a data point for which to
+            target: The list or tuple representing a data point for which to
                 find a close value.
                 Must be of length k (must have the same number of dimensions)
                 and contain only numbers.
 
         Returns:
-            A tuple representing the closest data point to new_value that is
-                part of this KDTree.
+            A tuple representing the closest data point to target that is
+                part of this KDTree. If there are multiple points the same
+                distance away, one of them will be returned arbitrarily.
 
         Raises:
-            ValueError: new_value is not of length k.
+            ValueError: target is not of length k.
 
-            TypeError: new_value is not an iterable.
+            TypeError: target is not an iterable.
         """
-        if len(new_value) != len(self.value):
-            raise ValueError("new_value must be of length k")
-        current = self
-        closest_value = None
-        min_distance = float("inf")
-        # Order of areas to explore doesn't matter, but check all cells that
-        # could have closer values
-        explore_queue = []
-        while True:
-            distance = KDTree._get_distance(new_value, current.value)
-            if distance < min_distance:
-                closest_value = current.value
-                min_distance = distance
-            dimension = current.dimension
-            # Go left
-            if new_value[dimension-1] <= current.value[dimension-1]:
-                explore_queue.append(current.left)
-                # But, also consider right subtree
-                for i in xrange(len(new_value)):
-                    # Since all dimensions are checked here, an equal value in
-                    # the current dimension will lead to checking both cells
-                    if new_value[i] >= current.value[i]:
-                        explore_queue.append(current.right)
-            # Go right
-            else:
-                explore_queue.append(current.right)
-                # But, also consider left subtree
-                for i in xrange(len(new_value)):
-                    if new_value[i] <= current.value[i]:
-                        explore_queue.append(current.left)
-            # None values will get added if we try to branch from a leaf
-            explore_queue = [x for x in explore_queue if x is not None]
-            if len(explore_queue) == 0:
-                return closest_value
-            current = explore_queue.pop()
+        if min_distance == None:
+            min_distance = KDTree._get_distance(target, self.value)
+            closest_value = self
+            # Initial call includes error checking
+            if len(target) != len(self.value):
+                raise ValueError("target must be of length k")
+        # Handle base case
+        if self == None:
+            return (min_distance, closest_value)
+        distance = KDTree._get_distance(target, current.value)
+        d = self.dimension
+        if distance < min_distance:
+            closest_value = current.value
+            min_distance = distance
+        dimension_distance = abs(target[d-1] - current.value[d-1])
+        # dimension_distance doesn't have a point on the other side, so don't
+        # update the minimum values, but do check any values on the other side
+        # of it since they could be closer than this one
+        if dimension_distance < min_distance:
+            # check other side too
+            check_opposite = True
+
+        # Go left
+        if target[dimension-1] <= current.value[dimension-1]:
+            left_best = self.left.find_closest(target, min_distance, closest_value)
+            # But, also consider right subtree
+            if check_opposite:
+                right_best = self.right.find_closest(target, min_distance, closest_value)
+        # Go right
+        else:
+            right_best = self.right.find_closest(target, min_distance, closest_value)
+            if check_opposite:
+                left_best = self.left.find_closest(target, min_distance, closest_value)
+        # None values will get added if we try to branch from a leaf
+        explore_queue = [x for x in explore_queue if x is not None]
+        if len(explore_queue) == 0:
+            return closest_value
+        current = explore_queue.pop()
 
     @staticmethod
-    def _get_distance(p1, p2):
+    def _get_straight_distance(p1, p2):
         """Returns the straight line distance between p1 and p2."""
         if len(p1) != len(p2):
             raise ValueError("_get_distance values must be of the same length")
@@ -185,5 +192,10 @@ class KDTree(object):
         for i in xrange(len(p1)):
             distance += (p1[i] - p2[i])**2
         return sqrt(distance)
+
+    @staticmethod
+    def _get_dim_distance(p1, p2, dimension):
+        """Returns the distance in one dimension between p1 and p2."""
+        return abs(p1[dimension-1] - p2[dimension-1])
 
 # TODO: Find min in dth dimension
