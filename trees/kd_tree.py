@@ -32,7 +32,9 @@ class KDTree(object):
         dimensions.
 
         All items in the iterables must be numbers, and the default comparator
-        will be used to determine their ordering.
+        will be used to determine their ordering. A stable sort is used, so
+        equal values can be found in either the left or right subtree.
+
         In order for comparisons to remain reliable, items must not be changed
         after creating the tree.
 
@@ -66,7 +68,7 @@ class KDTree(object):
                 if len(item) != k:
                     raise IndexError("All items must contain k dimensions")
             if dimension <= 0 or dimension > k:
-                raise ValueError("dimension must be in range 0 < dimension <= k")
+                raise ValueError("dimension must be > 0 and <= k")
         self.left = None
         self.right = None
         self.dimension = dimension

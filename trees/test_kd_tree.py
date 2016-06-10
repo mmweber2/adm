@@ -34,8 +34,6 @@ def test_kd_construct_zero():
 def test_kd_construct_non_iterable():
     assert_raises(TypeError, KDTree, 2, 1)
 
-# TODO: Tests:
-# Is closer on a different dimension
 def test_find_closest_non_leaf_node():
     data = [(30, 40), (5, 25), (10, 12), (70, 70), (50, 30), (35, 45)]
     tree = KDTree(data)
@@ -66,9 +64,18 @@ def test_find_closest_other_dimension():
     assert_equals(result, (70, 70))
     assert_equals(result_distance, min(distances))
 
+def test_find_closest_3k():
+    data = [
+        (30, 40, 10), (5, 25, 2), (10, 12, 30), (70, 70, 10), (50, 30, 5), 
+        (35, 45, 15)]
+    tree = KDTree(data)
+    new_point = (34, 100, 50)
+    result = tree.find_closest(new_point)
+    result_distance = KDTree._get_distance(result, new_point)
+    distances = [KDTree._get_distance(point, new_point) for point in data]
+    assert_equals(result, (70, 70, 10))
+    assert_equals(result_distance, min(distances))
+
 def test_find_closest_different_k():
     tree = KDTree([(30, 40)])
     assert_raises(ValueError, tree.find_closest, (1, 2, 3))
-
-
-    
