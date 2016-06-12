@@ -125,9 +125,10 @@ class KDTree(object):
             if current.right:
                 queue.append(current.right)
 
-    # TODO: Can we avoid?
+    # TODO: Check if having an outer method can be avoided
     def find_closest(self, target):
-        return KDTree._find_closest_inner(self, target)[1]
+        min_dist, closest_point = KDTree._find_closest_inner(self, target)
+        return closest_point
 
     @staticmethod
     def _find_closest_inner(current, target, min_dist=None, closest=None):
@@ -158,8 +159,6 @@ class KDTree(object):
         # Base case
         if current == None:
             return (min_dist, closest)
-        #print "Looking for target ", target
-        #print "Now looking at node ", current.value
         distance = KDTree._get_distance(target, current.value)
         # On initial call
         if min_dist == None:
