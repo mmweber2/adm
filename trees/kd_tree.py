@@ -127,11 +127,10 @@ class KDTree(object):
 
     # TODO: Check if having an outer method can be avoided
     def find_closest(self, target):
-        min_dist, closest_point = KDTree._find_closest_inner(self, target)
-        return closest_point
+        return KDTree._find_closest_inner(self, target)
 
     @staticmethod
-    def _find_closest_inner(current, target, min_dist=None, closest=None):
+    def _find_closest_inner(current, target):
         """Finds the closest value already in the Tree.
 
         Args:
@@ -156,59 +155,44 @@ class KDTree(object):
 
             TypeError: target is not an iterable.
         """
-        # Base case
-        if current == None:
-            return (min_dist, closest)
-        distance = KDTree._get_distance(target, current.value)
         # On initial call
-        if min_dist == None:
-            min_dist = distance
-            closest = current.value
-            # Initial call includes error checking
-            if len(target) != len(current.value):
-                raise ValueError("target must be of length k")
-        else:
-            if distance < min_dist:
-                min_dist = distance
-                closest = current.value
+        if len(target) != len(current.value):
+            raise ValueError("target must be of length k")
+        closest = current.value
         d = current.dimension
-        check_opposite = False
-        # This dimension distance doesn't represent an actual point, so don't
-        # update the minimums, but do check any values on the other side of it
-        # since they could be closer than this one
-        if abs(target[d-1] - current.value[d-1]) < min_dist:
-            check_opposite = True
-        # left or right could go unchecked, so default to currents
-        left = (min_dist, closest)
-        right = (min_dist, closest)
-
-        # Go left
         if target[d-1] <= current.value[d-1]:
-            left = KDTree._find_closest_inner(current.left, target, min_dist, closest)
-            # But, also consider right subtree
-            if check_opposite:
-                right = KDTree._find_closest_inner(current.right, target, min_dist, closest)
-        # Go right
+            check_left = True
+            check_right = False
         else:
-            right = KDTree._find_closest_inner(current.right, target, min_dist, closest)
-            if check_opposite:
-                left = KDTree._find_closest_inner(current.left, target, min_dist, closest)
-        # left and right are tuples of (minimum distance seen, closest value found)
-        # If right didn't find any improvements, it will still be min_dist, so
-        # there's no need to compare left[0] to both right[0] and min_dist
-        if left[0] < right[0]:
-            min_dist, closest = left
-        else:
-            min_dist, closest = right
-        return (min_dist, closest)
+            check_right = True
+            check_left = False
+        current_distance = KDTree._get_distance(target, current.value)
+        best_distance = current_distance
+        # Check if we need to look at the other side of the dividing dimension
+        if abs(target[d-1] - current.value[d-1]) < best_distance:
+            check_right = True
+            check_left = True
+        if check_left: 
+            if current.left != None:
+                closest = KDTree._find_closest_inner(current.left, target)
+                best_distance = KDTree._get_distance(target, closest)
+                # Current node is closer than best node on left
+                if current_distance < best_distance:
+                    closest = current.value
+        if check_right:
+            if current.right != None:
+                closest = KDTree._find_closest_inner(current.right, target)
+                best_distance = KDTree._get_distance(target, closest)
+        # Current node is closer than best node on right
+        if current_distance < best_distance:
+            closest = current.value
+        return closest
 
     @staticmethod
     def _get_distance(p1, p2):
         """Returns the straight line distance between p1 and p2."""
         if len(p1) != len(p2):
             raise ValueError("_get_distance values must be of the same length")
-        distance = 0
-        for i in xrange(len(p1)):
-            distance += (p1[i] - p2[i])**2
+        distance = sum([(p1[i] - p2[i])**2 for i in xrange(len(p1))])
         return sqrt(distance)
 # TODO: Find min in dth dimension
