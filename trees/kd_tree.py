@@ -125,7 +125,12 @@ class KDTree(object):
             if current.right:
                 queue.append(current.right)
 
-    def find_closest(self, target, min_distance=None, closest_value=None):
+    # TODO: Can we avoid?
+    def find_closest(self, target):
+        return KDTree._find_closest_inner(self, target)[1]
+
+    @staticmethod
+    def _find_closest_inner(current, target, min_dist=None, closest=None):
         """Finds the closest value already in the Tree.
 
         Args:
@@ -133,6 +138,12 @@ class KDTree(object):
                 find a close value.
                 Must be of length k (must have the same number of dimensions)
                 and contain only numbers.
+
+            min_dist: The floating point number representing the distance
+                of the closest value found so far. Defaults to None.
+
+            closest: The list or tuple representing the closest value
+                found so far. Defaults to None.
 
         Returns:
             A tuple representing the closest data point to target that is
@@ -144,47 +155,56 @@ class KDTree(object):
 
             TypeError: target is not an iterable.
         """
-        if min_distance == None:
-            min_distance = KDTree._get_distance(target, self.value)
-            closest_value = self
-            # Initial call includes error checking
-            if len(target) != len(self.value):
-                raise ValueError("target must be of length k")
-        # Handle base case
-        if self == None:
-            return (min_distance, closest_value)
+        # Base case
+        if current == None:
+            return (min_dist, closest)
+        #print "Looking for target ", target
+        #print "Now looking at node ", current.value
         distance = KDTree._get_distance(target, current.value)
-        d = self.dimension
-        if distance < min_distance:
-            closest_value = current.value
-            min_distance = distance
-        dimension_distance = abs(target[d-1] - current.value[d-1])
-        # dimension_distance doesn't have a point on the other side, so don't
-        # update the minimum values, but do check any values on the other side
-        # of it since they could be closer than this one
-        if dimension_distance < min_distance:
-            # check other side too
+        # On initial call
+        if min_dist == None:
+            min_dist = distance
+            closest = current.value
+            # Initial call includes error checking
+            if len(target) != len(current.value):
+                raise ValueError("target must be of length k")
+        else:
+            if distance < min_dist:
+                min_dist = distance
+                closest = current.value
+        d = current.dimension
+        check_opposite = False
+        # This dimension distance doesn't represent an actual point, so don't
+        # update the minimums, but do check any values on the other side of it
+        # since they could be closer than this one
+        if abs(target[d-1] - current.value[d-1]) < min_dist:
             check_opposite = True
+        # left or right could go unchecked, so default to currents
+        left = (min_dist, closest)
+        right = (min_dist, closest)
 
         # Go left
-        if target[dimension-1] <= current.value[dimension-1]:
-            left_best = self.left.find_closest(target, min_distance, closest_value)
+        if target[d-1] <= current.value[d-1]:
+            left = KDTree._find_closest_inner(current.left, target, min_dist, closest)
             # But, also consider right subtree
             if check_opposite:
-                right_best = self.right.find_closest(target, min_distance, closest_value)
+                right = KDTree._find_closest_inner(current.right, target, min_dist, closest)
         # Go right
         else:
-            right_best = self.right.find_closest(target, min_distance, closest_value)
+            right = KDTree._find_closest_inner(current.right, target, min_dist, closest)
             if check_opposite:
-                left_best = self.left.find_closest(target, min_distance, closest_value)
-        # None values will get added if we try to branch from a leaf
-        explore_queue = [x for x in explore_queue if x is not None]
-        if len(explore_queue) == 0:
-            return closest_value
-        current = explore_queue.pop()
+                left = KDTree._find_closest_inner(current.left, target, min_dist, closest)
+        # left and right are tuples of (minimum distance seen, closest value found)
+        # If right didn't find any improvements, it will still be min_dist, so
+        # there's no need to compare left[0] to both right[0] and min_dist
+        if left[0] < right[0]:
+            min_dist, closest = left
+        else:
+            min_dist, closest = right
+        return (min_dist, closest)
 
     @staticmethod
-    def _get_straight_distance(p1, p2):
+    def _get_distance(p1, p2):
         """Returns the straight line distance between p1 and p2."""
         if len(p1) != len(p2):
             raise ValueError("_get_distance values must be of the same length")
@@ -192,10 +212,4 @@ class KDTree(object):
         for i in xrange(len(p1)):
             distance += (p1[i] - p2[i])**2
         return sqrt(distance)
-
-    @staticmethod
-    def _get_dim_distance(p1, p2, dimension):
-        """Returns the distance in one dimension between p1 and p2."""
-        return abs(p1[dimension-1] - p2[dimension-1])
-
 # TODO: Find min in dth dimension
