@@ -60,18 +60,9 @@ class KDTree(object):
 
             ValueError: dimension is outside the valid range.
         """
-        # All points must have the same number of dimensions
         k = len(data[0])
         if error_checking:
-            if k == 1:
-                raise ValueError("Data values must have 2 or more dimensions")
-            # Explicit check for uneven dimensions because the behavior may be
-            # different depending on the position of the longer or shorter item
-            for item in data[1:]:
-                if len(item) != k:
-                    raise IndexError("All items must contain k dimensions")
-            if dimension <= 0 or dimension > k:
-                raise ValueError("dimension must be > 0 and <= k")
+            KDTree._initial_error_check(data, dimension)
         self.left = None
         self.right = None
         self.dimension = dimension
@@ -91,6 +82,21 @@ class KDTree(object):
         if len(right_data) > 0:
             self.right = KDTree(right_data, dimension, False)
         # Don't recurse if node has no children
+
+    @staticmethod
+    def _initial_error_check(data, dimension):
+        """Helper method for __init__ that performs error checking."""
+        # All points must have the same number of dimensions
+        k = len(data[0])
+        if k == 1:
+            raise ValueError("Data values must have 2 or more dimensions")
+        # Explicit check for uneven dimensions because the behavior may be
+        # different depending on the position of the longer or shorter item
+        for item in data[1:]:
+            if len(item) != k:
+                raise IndexError("All items must contain k dimensions")
+        if dimension <= 0 or dimension > k:
+            raise ValueError("dimension must be > 0 and <= k")
 
     @staticmethod
     def _get_next_dimension(k, dimension):
