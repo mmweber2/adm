@@ -46,7 +46,7 @@ def test_find_closest_three_points():
 
 def test_find_closest_same_dimension():
     tree = KDTree([(30, 40), (30, 4), (30, 60)])
-    new_point = (30, 50)
+    new_point = (30, 55)
     result = tree.find_closest(new_point)
     assert_equals(result, (30, 60))
 

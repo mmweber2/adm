@@ -179,13 +179,13 @@ class KDTree(object):
                 # Current node is closer than best node on left
                 if current_distance < best_distance:
                     closest = current.value
+                    best_distance = current_distance
         if check_right:
             if current.right != None:
-                closest = KDTree._find_closest_inner(current.right, target)
-                best_distance = KDTree._get_distance(target, closest)
-        # Current node is closer than best node on right
-        if current_distance < best_distance:
-            closest = current.value
+                right_best = KDTree._find_closest_inner(current.right, target)
+                right_distance = KDTree._get_distance(target, right_best)
+                if right_distance < best_distance:
+                    closest = right_best
         return closest
 
     @staticmethod
