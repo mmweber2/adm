@@ -156,15 +156,15 @@ class KDTree(object):
             closest = self.value
         # The current dimension, ready for indexing
         d = self.dimension - 1
-        child_to_check = self.left if target[d] <= self.value[d] else self.right
+        check_side = self.left if target[d] <= self.value[d] else self.right
         best_distance = KDTree._get_distance(target, closest)
         closest, best_distance = self._check_child(
-                child_to_check, target, closest, best_distance)
+                check_side, target, closest, best_distance)
         # Check if we need to look at the other side of the dividing dimension
         if abs(target[d] - self.value[d]) < best_distance:
-            child_to_check = self.right if child_to_check == self.left else self.left
+            check_side = self.right if check_side == self.left else self.left
             closest, best_distance = self._check_child(
-                    child_to_check, target, closest, best_distance)
+                    check_side, target, closest, best_distance)
         if KDTree._get_distance(target, self.value) < best_distance:
             closest = self.value
         return closest
