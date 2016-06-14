@@ -3,6 +3,14 @@ from random import uniform
 from nose.tools import assert_raises
 from nose.tools import assert_equals
 
+# Decorator for counting function calls
+def counted(func):
+    def wrapped(*args, **kwargs):
+        wrapped.calls += 1
+        return func(*args, **kwargs)
+    wrapped.calls = 0
+    return wrapped
+
 def test_construct_2k():
     print "K = 2:"
     data = [(30, 40), (5, 25), (10, 12), (70, 70), (50, 30), (35, 45)]
@@ -38,54 +46,70 @@ def test_kd_construct_zero():
 def test_kd_construct_non_iterable():
     assert_raises(TypeError, KDTree, 2, 1)
 
+
 def test_find_closest_three_points():
     tree = KDTree([(10, 12), (70, 70), (35, 45)])
     new_point = (50, 50)
+    KDTree.find_closest = counted(KDTree.find_closest)
     result = tree.find_closest(new_point)
     assert_equals(result, (35, 45))
+    assert_equals(tree.find_closest.calls, 3)
 
 def test_find_closest_same_dimension():
     tree = KDTree([(30, 40), (30, 4), (30, 60)])
     new_point = (30, 55)
+    KDTree.find_closest = counted(KDTree.find_closest)
     result = tree.find_closest(new_point)
     assert_equals(result, (30, 60))
+    assert_equals(tree.find_closest.calls, 3)
 
 def test_find_closest_distant_point():
     tree = KDTree([(10, 12), (70, 70), (35, 45)])
     new_point = (0, 10000)
+    KDTree.find_closest = counted(KDTree.find_closest)
     result = tree.find_closest(new_point)
     assert_equals(result, (70, 70))
+    assert_equals(tree.find_closest.calls, 3)
 
 def test_find_closest_very_close_point():
     tree = KDTree([(10, 12), (70, 70), (35, 45)])
     new_point = (8, 10)
+    KDTree.find_closest = counted(KDTree.find_closest)
     result = tree.find_closest(new_point)
     assert_equals(result, (10, 12))
+    assert_equals(tree.find_closest.calls, 2)
 
 def test_find_closest_identical_point():
     tree = KDTree([(10, 12), (70, 70), (35, 45)])
     new_point = (10, 12)
+    KDTree.find_closest = counted(KDTree.find_closest)
     result = tree.find_closest(new_point)
     result_distance = KDTree._get_distance(result, new_point)
     assert_equals(result, (10, 12))
     assert_equals(result_distance, 0)
+    assert_equals(tree.find_closest.calls, 2)
 
 def test_find_closest_negative_numbers():
     tree = KDTree([(10, 12), (70, -70), (-35, 45)])
     new_point = (-40, 60)
+    KDTree.find_closest = counted(KDTree.find_closest)
     result = tree.find_closest(new_point)
     assert_equals(result, (-35, 45))
+    assert_equals(tree.find_closest.calls, 2)
 
 def test_find_closest_randomized():
     RANGES = (-1000, 1000)
-    DATA_SIZE = 20
+    DATA_SIZE = 6000
     data = [(uniform(*RANGES), uniform(*RANGES)) for _ in xrange(DATA_SIZE)]
     tree = KDTree(data)
     new_point = (uniform(*RANGES), uniform(*RANGES))
+    KDTree.find_closest = counted(KDTree.find_closest)
     result = tree.find_closest(new_point)
     result_distance = KDTree._get_distance(result, new_point)
     distances = [KDTree._get_distance(point, new_point) for point in data]
     assert_equals(result_distance, min(distances))
+    # Number of calls will be inconsistent, but should not check all points
+    assert tree.find_closest.calls < len(data)
 
 def test_find_closest_3k():
     data = [
@@ -93,11 +117,10 @@ def test_find_closest_3k():
         (35, 45, 15)]
     tree = KDTree(data)
     new_point = (34, 100, 50)
+    KDTree.find_closest = counted(KDTree.find_closest)
     result = tree.find_closest(new_point)
-    result_distance = KDTree._get_distance(result, new_point)
-    distances = [KDTree._get_distance(point, new_point) for point in data]
     assert_equals(result, (70, 70, 10))
-    assert_equals(result_distance, min(distances))
+    assert_equals(tree.find_closest.calls, 5)
 
 def test_find_closest_different_k():
     tree = KDTree([(30, 40)])
