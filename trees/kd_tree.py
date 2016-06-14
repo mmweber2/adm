@@ -156,32 +156,22 @@ class KDTree(object):
             closest = self.value
         # The current dimension, ready for indexing
         d = self.dimension - 1
-        check_left = False
-        if target[d] <= self.value[d]:
-            check_left = True
-        if check_left: 
-            child_to_check = self.left
-        else: # target is to the right of this point
-            child_to_check = self.right
+        child_to_check = self.left if target[d] <= self.value[d] else self.right
         best_distance = KDTree._get_distance(target, closest)
-        closest, best_distance = KDTree._check_child(
+        closest, best_distance = self._check_child(
                 child_to_check, target, closest, best_distance)
         # Check if we need to look at the other side of the dividing dimension
         if abs(target[d] - self.value[d]) < best_distance:
-            if check_left:
-                child_to_check = self.right
-            else:
-                child_to_check = self.left
-            closest, best_distance = KDTree._check_child(
+            child_to_check = self.right if child_to_check == self.left else self.left
+            closest, best_distance = self._check_child(
                     child_to_check, target, closest, best_distance)
         if KDTree._get_distance(target, self.value) < best_distance:
             closest = self.value
         return closest
 
-    @staticmethod
-    def _check_child(child, target, closest, best_distance):
+    def _check_child(self, child, target, closest, best_distance):
         """Helper method for find_closest."""
-        if child == None:
+        if child is None:
             return (closest, best_distance)
         local_best = child.find_closest(target, closest)
         local_distance = KDTree._get_distance(target, local_best)
