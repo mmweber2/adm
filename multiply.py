@@ -11,9 +11,9 @@ def multiply(a, b):
     a, b = (str(a), str(b)) if a < b else (str(b), str(a))
     digit = 0
     while digit < len(a):
-        multiplicant = int(a[digit]) * 10**digit
+        multiplicant = int(a[-1 - digit]) * 10**digit
         for i in xrange(len(b)):
-            result += multiplicant * (int(b[i]) * 10**i)
+            result += multiplicant * (int(b[-1 -i]) * 10**i)
         digit += 1
     return result
 
