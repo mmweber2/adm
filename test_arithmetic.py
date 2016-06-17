@@ -9,7 +9,11 @@ def test_multiply_different_lengths():
 
 def test_multiply_zeroes():
     assert_equals(multiply(0, 10), 0)
-    # Test more cases
+    assert_equals(multiply(0, 0), 0)
+    assert_equals(multiply(5, 0), 0)
+
+def test_multiply_two_negative():
+    assert_equals(multiply(-5, -3), 15)
 
 # TODO: Test both numbers are negative
 # Test either number is negative
