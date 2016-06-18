@@ -109,6 +109,7 @@ def test_find_closest_randomized():
     distances = [KDTree._get_distance(point, new_point) for point in data]
     assert_equals(result_distance, min(distances))
     # Number of calls will be inconsistent, but should not check all points
+    print "Number of calls: ", tree.find_closest.calls
     assert tree.find_closest.calls < len(data)
 
 def test_find_closest_3k():
