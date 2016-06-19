@@ -12,18 +12,25 @@ class BigInteger(object):
 
             negative: A boolean that is True iff this number is negative.
 
+        A leading negative is ignored if the number contains only zeroes, so
+        a num of "-000" would have digits of [0, 0, 0] and a negative 
+        attribute of False.
+
         Args:
             num: string, the number to convert into a BigInteger.
                 Must be comprised of only integer digits and (optionally)
-                a leading negative sign.
+                a leading negative sign. Leading zeroes are permitted, but
+                must follow the negative sign if the number contains one.
 
         Raises:
-            ValueError: num contains non-digit characters, other than a leading
-                negative sign.
+            ValueError: num contains non-digit characters, other than one
+                leading negative sign.
         """
         self.negative = False
         # Negative signs are only allowed at the beginning of the number
         if num[0] == "-":
-            self.negative = True
             num = num[1:]
+            # Ignore negative sign if all digits are zeroes
+            if set(num) != set("0"):
+                self.negative = True
         self.digits = [int(c) for c in num]
