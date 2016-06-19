@@ -1,4 +1,4 @@
-def multiply(a, b):
+    def multiply(a, b):
     """Returns the product of integers a and b."""
     # We could special case a or b being 0 or 1, but those cases will
     # be resolved quickly anyway because they will be just a single digit
