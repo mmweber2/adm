@@ -19,7 +19,7 @@ def test_multiply_two_negative():
     assert_equals(multiply(2, -1), -2)
 
 def test_multiply_large():
-    # 2 **64 is just beyond the bounds of int, so Python makes it a long
+    # 2**64 is just beyond the bounds of int, so Python makes it a long
     assert_equals(multiply(2**64, 100), 1844674407370955161600)
 
 
