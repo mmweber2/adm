@@ -34,3 +34,20 @@ class BigInteger(object):
             if set(num) != set("0"):
                 self.negative = True
         self.digits = [int(c) for c in num]
+
+    @staticmethod
+    def add(n1, n2):
+        """Adds two BigIntegers and returns a new BigInteger of the sum."""
+        # TODO: Handle negatives
+        # Work with smaller number in the same position
+        if len(n1.digits) <= len(n2.digits):
+            num1 = n1.digits
+            num2 = n2.digits
+        else:
+            num1 = n2.digits
+            num2 = n1.digits
+        result = []
+        while len(num1) > 0:
+            # TODO: Adding procedure here
+            pass
+
