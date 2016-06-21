@@ -41,13 +41,22 @@ class BigInteger(object):
         # TODO: Handle negatives
         # Work with smaller number in the same position
         if len(n1.digits) <= len(n2.digits):
-            num1 = n1.digits
-            num2 = n2.digits
+            num1 = n1.digits[:]
+            num2 = n2.digits[:]
         else:
-            num1 = n2.digits
-            num2 = n1.digits
-        result = []
+            num1 = n2.digits[:]
+            num2 = n1.digits[:]
+        # BigInteger accepts a string, so track the result in this format
+        result = ""
+        carry = 0
         while len(num1) > 0:
-            # TODO: Adding procedure here
-            pass
-
+            d1, d2 = num1.pop(), num2.pop()
+            if carry != 0:
+                d1 += carry
+            carry = (d1 + d2) / 10
+            digit_sum = (d1 + d2) % 10
+            result = str(digit_sum) + result
+        # Be sure to add any leftover carry
+        if carry != 0:
+            result = str(carry) + result
+        return BigInteger(result)
