@@ -13,7 +13,7 @@ def test_big_int_zeroes():
     assert_equals(a.digits, [0])
     assert a.negative is False
     a = BigInteger("00")
-    assert_equals(a.digits, [0, 0])
+    assert_equals(a.digits, [0])
 
 def test_big_int_negative_zero():
     a = BigInteger("-0")
@@ -32,7 +32,7 @@ def test_big_int_large_number():
 
 def test_big_int_leading_zeroes():
     a = BigInteger("0032")
-    assert_equals(a.digits, [0, 0, 3, 2])
+    assert_equals(a.digits, [3, 2])
 
 def test_big_int_float():
     assert_raises(ValueError, BigInteger, "1.0")
@@ -42,6 +42,44 @@ def test_big_int_non_number():
 
 def test_big_int_middle_negative():
     assert_raises(ValueError, BigInteger, "19-1")
+
+# Tests for __cmp__
+
+def test_cmp_both_pos_one_longer():
+    a = BigInteger("2502")
+    b = BigInteger("35")
+    assert a > b
+
+def test_cmp_zeroes():
+    a = BigInteger("0")
+    b = BigInteger("2")
+    c = BigInteger("-30")
+    assert a < b
+    assert a > c
+    assert b > c
+
+def test_cmp_both_negative():
+    a = BigInteger("-5")
+    b = BigInteger("-22")
+    assert a > b
+
+def test_cmp_longer_negative():
+    a = BigInteger("-100")
+    b = BigInteger("3")
+    assert a < b
+
+def test_cmp_same_size():
+    a = BigInteger("25")
+    b = BigInteger("31")
+    assert a < b
+    assert b > a
+
+def test_cmp_equal():
+    a = BigInteger("32")
+    b = BigInteger("32")
+    assert a == b
+
+# Tests for add
 
 def test_add_two_single():
     result = BigInteger.add(BigInteger("1"), BigInteger("2"))
