@@ -33,6 +33,7 @@ class BigInteger(object):
             # Ignore negative sign if all digits are zeroes
             if set(num) != set("0"):
                 self.negative = True
+        # Check for all zeroes again now that leading negative is removed
         if set(num) == set("0"):
             self.digits = [0]
             return
@@ -48,23 +49,19 @@ class BigInteger(object):
         if self.negative:
             if other.negative is False: return -1
         elif other.negative: return 1
-
-        
-
-
-
-
-
-        # Check for either number or both numbers being zero
-        if set(self.digits) == set(0):
-            if set(other.digits) == set(0): return 0
-            return 1 if other.negative else -1
-        if set(other.digits) == set(0):
+        # Same signs, compare lengths
+        if len(self.digits) < len(other.digits):
+            return 1 if self.negative else -1
+        if len(other.digits) < len(self.digits):
             return -1 if self.negative else 1
-
-
-
-    # TODO: Custom compare for BigInteger?
+        # Same sign and same length
+        for i in xrange(len(self.digits)):
+            if self.digits[i] > other.digits[i]:
+                return 1
+            if self.digits[i] < other.digits[i]:
+                return -1
+        # Numbers are the same length and all digits are equal
+        return 0
  
     @staticmethod
     def add(n1, n2):
