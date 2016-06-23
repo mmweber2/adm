@@ -12,14 +12,14 @@ class BigInteger(object):
 
             negative: A boolean that is True iff this number is negative.
 
-        A leading negative is ignored if the number contains only zeroes, so
-        a num of "-000" would have digits of [0, 0, 0] and a negative 
-        attribute of False.
+        A leading negative is ignored if the number contains only zeroes,
+        and all non-significant zeroes are ignored. Therefore, a num of
+        "-000" would have digits of [0] and a negative attribute of False.
 
         Args:
             num: string, the number to convert into a BigInteger.
                 Must be comprised of only integer digits and (optionally)
-                a leading negative sign. Leading zeroes are permitted, but
+                a leading negative sign. Leading zeroes will be ignored, but
                 must follow the negative sign if the number contains one.
 
         Raises:
@@ -33,11 +33,55 @@ class BigInteger(object):
             # Ignore negative sign if all digits are zeroes
             if set(num) != set("0"):
                 self.negative = True
+        if set(num) == set("0"):
+            self.digits = [0]
+            return
+        # Ignore all leading zeroes
+        while num[0] == "0":
+            num = num[1:]
         self.digits = [int(c) for c in num]
 
+    def __cmp__(self, other):
+        """Compares two BigInteger objects."""
+        # Returns 1 if self > other, 0 if self == other, and -1 if self < other
+        # Check for opposing signs
+        if self.negative:
+            if other.negative is False: return -1
+        elif other.negative: return 1
+
+        
+
+
+
+
+
+        # Check for either number or both numbers being zero
+        if set(self.digits) == set(0):
+            if set(other.digits) == set(0): return 0
+            return 1 if other.negative else -1
+        if set(other.digits) == set(0):
+            return -1 if self.negative else 1
+
+
+
+    # TODO: Custom compare for BigInteger?
+ 
     @staticmethod
     def add(n1, n2):
-        """Adds two BigIntegers and returns a new BigInteger of the sum."""
+        """Adds two BigIntegers and returns a new BigInteger of the sum.
+
+        This function currently does not support negative numbers.
+        Negative BigIntegers may be used as input, but their result will
+        always be positive and will be inaccurate if only one of the numbers
+        is negative.
+
+        Args:
+            n1, n2: BigIntegers to sum.
+
+        Returns:
+            A new BigInteger representing the sum, with a negative value of
+                False regardless of the input values.
+        """
         # TODO: Handle negatives
         # Work with smaller number in the same position
         if len(n1.digits) <= len(n2.digits):
@@ -51,12 +95,22 @@ class BigInteger(object):
         carry = 0
         while len(num1) > 0:
             d1, d2 = num1.pop(), num2.pop()
+            # This might cause d1 to become multi-digit, but the mod
+            # and division results will still be accurate
             if carry != 0:
                 d1 += carry
             carry = (d1 + d2) / 10
             digit_sum = (d1 + d2) % 10
             result = str(digit_sum) + result
-        # Be sure to add any leftover carry
+        # We may be left with leftover num2 and/or a carry
+        while carry != 0 and len(num2) > 0:
+            d2 = num2.pop()
+            digit_sum = (carry + d2) % 10
+            carry = (carry + d2) / 10
+            result = str(digit_sum) + result
+        # If carry runs out before num2
+        result = "".join([str(x) for x in num2]) + result
+        # If there is still a carry after both numbers have run out
         if carry != 0:
             result = str(carry) + result
         return BigInteger(result)
