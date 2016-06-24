@@ -124,7 +124,7 @@ class BigInteger(object):
     def subtract(n1, n2):
         """Subtracts one BigInteger from another and returns the difference.
 
-        Note that neither of the original BigIntegers are modified during
+        Note that neither of the original BigIntegers are modified after
         this operation.
 
         Args:
@@ -138,5 +138,14 @@ class BigInteger(object):
         if n2.negative:
             n2._flip_sign()
             return BigInteger.add(n1, n2)
-        # TODO: Complete
-
+        if n1.negative: # and n2 is not
+            # Add both numbers as if positive, then flip signs accordingly
+            n1._flip_sign()
+            result_sum = BigInteger.add(n1, n2)
+            result_sum._flip_sign()
+            n1._flip_sign()
+            return result_sum
+        result = ""
+        for i in xrange(len(n2.digits)):
+            result += str(n1.digits[i] - n2.digits[i])
+        return BigInteger(result)
