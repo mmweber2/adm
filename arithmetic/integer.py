@@ -67,17 +67,17 @@ class BigInteger(object):
     def add(n1, n2):
         """Adds two BigIntegers and returns a new BigInteger of the sum.
 
-        This function currently does not support negative numbers.
+        This function currently does not fully support negative numbers.
         Negative BigIntegers may be used as input, but their result will
-        always be positive and will be inaccurate if only one of the numbers
-        is negative.
+        be inaccurate if only one of the numbers is negative.
+        If both n1 and n2 have the same sign, the result will be correct
+        and have that sign as well.
 
         Args:
             n1, n2: BigIntegers to sum.
 
         Returns:
-            A new BigInteger representing the sum, with a negative value of
-                False regardless of the input values.
+            A new BigInteger representing the sum.
         """
         # TODO: Handle negatives
         # Work with smaller number in the same position
@@ -108,4 +108,8 @@ class BigInteger(object):
         # If there is still a carry after both numbers have run out
         if carry != 0:
             result = str(carry) + result
+        # Result is negative only if both are negative, since
+        # adding mixed sign numbers is currently not supported
+        if n1.negative and n2.negative:
+            return BigInteger("-" + result)
         return BigInteger(result)
