@@ -79,7 +79,7 @@ def test_cmp_equal():
     b = BigInteger("32")
     assert a == b
 
-# Tests for add
+# Tests for BigInteger.add
 
 def test_add_two_single():
     result = BigInteger.add(BigInteger("1"), BigInteger("2"))
@@ -116,7 +116,7 @@ def test_add_different_lengths():
     result = BigInteger.add(BigInteger("489"), BigInteger("12"))
     assert_equals(result.digits, [5, 0, 1])
 
-# Negative addition is currently not supported
+# Negative BigInteger.addition is currently not supported
 def test_add_negatives():
 #    result = BigInteger.add(BigInteger("2"), BigInteger("-5"))
 #    assert_equals(result.digits, [3])
@@ -165,5 +165,18 @@ def test_multiply_large():
     expect = [1, 8, 4, 4, 6, 7, 4, 4, 0, 7, 3, 7, 0, 9, 5, 5, 1, 6, 1, 6, 0, 0]
     assert_equals(multiply(a, BigInteger("100")).digits, expect)
 
+# Subtract tests
 
+def test_subtract_zeroes():
+    a = BigInteger("0")
+    assert_equals(BigInteger.subtract(a, a), a)
+    assert_equals(BigInteger.subtract(BigInteger("1"), a).digits, [1])
+    assert_equals(BigInteger.subtract(a, BigInteger("5")), BigInteger("-5"))
+    result = BigInteger.subtract(a, BigInteger("-2"))
+    assert_equals(result, BigInteger("2"))
 
+def test_subtract_from_negative():
+    result = BigInteger.subtract(BigInteger("-1"), BigInteger("2"))
+    assert_equals(result, BigInteger("-3"))
+
+# Divide tests
