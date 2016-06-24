@@ -133,25 +133,36 @@ def test_add_negatives():
 # Multiply tests
 
 def test_multiply_small_numbers():
-    assert_equals(multiply(2, 3), 6)
+    a = BigInteger("2")
+    b = BigInteger("3")
+    assert_equals(multiply(a, b).digits, [6])
 
 def test_multiply_different_lengths():
-    assert_equals(multiply(1012, 35), 35420)
+    a = BigInteger("1012")
+    b = BigInteger("35")
+    assert_equals(multiply(a, b).digits, [3, 5, 4, 2, 0])
 
 def test_multiply_zeroes():
-    assert_equals(multiply(0, 10), 0)
-    assert_equals(multiply(0, 0), 0)
-    assert_equals(multiply(5, 0), 0)
-    assert_equals(multiply(0, -5), 0)
+    a = BigInteger("0")
+    assert_equals(multiply(a, BigInteger("10")).digits, [0])
+    assert_equals(multiply(a, a).digits, [0])
+    assert_equals(multiply(BigInteger("5"), a).digits, [0])
+    assert_equals(multiply(a, BigInteger("-5")).digits, [0])
 
 def test_multiply_two_negative():
-    assert_equals(multiply(-5, -3), 15)
-    assert_equals(multiply(-2, 3), -6)
-    assert_equals(multiply(2, -1), -2)
+    assert_equals(multiply(BigInteger("-5"), BigInteger("-3")).digits, [1,5])
+    result = multiply(BigInteger("-2"), BigInteger("3"))
+    assert_equals(result.digits, [6])
+    assert result.negative
+    result = multiply(BigInteger("2"), BigInteger("-1"))
+    assert_equals(result.digits, [2])
+    assert result.negative
 
 def test_multiply_large():
     # 2**64 is just beyond the bounds of int, so Python makes it a long
-    assert_equals(multiply(2**64, 100), 1844674407370955161600)
+    a = BigInteger("18446744073709551616")
+    expect = [1, 8, 4, 4, 6, 7, 4, 4, 0, 7, 3, 7, 0, 9, 5, 5, 1, 6, 1, 6, 0, 0]
+    assert_equals(multiply(a, BigInteger("100")).digits, expect)
 
 
 
