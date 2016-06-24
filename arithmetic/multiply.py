@@ -28,8 +28,6 @@ def multiply(a, b):
     result = BigInteger("0")
     for product in products:
         result = BigInteger.add(result, product)
-    # We could just modify the negative attribute for result, but that
-    # feels like a bad practice
     if negative:
-        return BigInteger("-" + "".join([str(x) for x in result.digits]))
+        result._flip_sign()
     return result

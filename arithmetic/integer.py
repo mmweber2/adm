@@ -42,6 +42,10 @@ class BigInteger(object):
             num = num[1:]
         self.digits = [int(c) for c in num]
 
+    def _flip_sign(self):
+        """Flips the sign of a BigInteger between positive and negative."""
+        self.negative = not self.negative
+
     def __cmp__(self, other):
         """Compares two BigInteger objects."""
         # Returns 1 if self > other, 0 if self == other, and -1 if self < other
@@ -115,3 +119,24 @@ class BigInteger(object):
         if n1.negative and n2.negative:
             return BigInteger("-" + result)
         return BigInteger(result)
+
+    @staticmethod
+    def subtract(n1, n2):
+        """Subtracts one BigInteger from another and returns the difference.
+
+        Note that neither of the original BigIntegers are modified during
+        this operation.
+
+        Args:
+            n1, n2: BigIntegers to subtract. n1 is the minuend and
+            n2 is the subtrahend, so the result will be n1 - n2.
+
+        Returns:
+            A new BigInteger representing the difference of n1 and n2.
+        """
+        # a - b = a + (-b) if b is negative
+        if n2.negative:
+            n2._flip_sign()
+            return BigInteger.add(n1, n2)
+        # TODO: Complete
+
