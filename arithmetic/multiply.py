@@ -1,24 +1,35 @@
-    def multiply(a, b):
-    """Returns the product of integers a and b."""
-    # We could special case a or b being 0 or 1, but those cases will
-    # be resolved quickly anyway because they will be just a single digit
-    result = 0
-    # Put shorter number first for consistency
-    a, b = (str(a), str(b)) if a < b else (str(b), str(a))
+from integer import BigInteger
+
+def multiply(a, b):
+    """Returns the product of BigIntegers a and b.
+    
+    Args:
+        a, b: BigIntegers to multiply.
+        
+    Returns:
+        A new BigInteger of the product of a and b.
+    """
     negative = False
-    if a[0] == "-":
-        a = a[1:]
-        negative = True
-    if b[0] == "-":
-        b = b[1:]
-        # If both numbers are negative or positive, result will be positive
-        negative = False if negative else True
+    if a.negative ^ b.negative: negative = True
+    # Put shorter number first for consistency
+    if len(a.digits) > len(b.digits): a, b = b, a
     digit = 0
-    while digit < len(a):
-        multiplicant = int(a[-1 - digit]) * 10**digit
-        for i in xrange(len(b)):
-            result += multiplicant * (int(b[-1 -i]) * 10**i)
+    products = []
+    while digit < len(a.digits):
+        multiplicant = a.digits[-1 - digit]
+        for i in xrange(len(b.digits)):
+            product = multiplicant * b.digits[-1 -i]
+            # Don't bother adding zero products
+            if product == 0: continue
+            # Move the product over the correct number of zeroes
+            zeroes = "0" * (i + digit)
+            products.append(BigInteger(str(product) + zeroes))
         digit += 1
+    result = BigInteger("0")
+    for product in products:
+        result = BigInteger.add(result, product)
+    # We could just modify the negative attribute for result, but that
+    # feels like a bad practice
     if negative:
-        return -1 * result
+        return BigInteger("-" + "".join([str(x) for x in result.digits]))
     return result
