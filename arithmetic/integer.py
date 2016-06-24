@@ -72,6 +72,8 @@ class BigInteger(object):
         be inaccurate if only one of the numbers is negative.
         If both n1 and n2 have the same sign, the result will be correct
         and have that sign as well.
+        Zero is considered positive for these functions, so a negative
+        number added to zero will give an incorrect result.
 
         Args:
             n1, n2: BigIntegers to sum.
