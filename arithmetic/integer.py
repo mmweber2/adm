@@ -81,12 +81,10 @@ class BigInteger(object):
         """
         # TODO: Handle negatives
         # Work with smaller number in the same position
-        if len(n1.digits) <= len(n2.digits):
-            num1 = n1.digits[:]
-            num2 = n2.digits[:]
+        if n1 < n2:
+            num1, num2 = n1.digits[:], n2.digits[:]
         else:
-            num1 = n2.digits[:]
-            num2 = n1.digits[:]
+            num1, num2 = n2.digits[:], n1.digits[:]
         # BigInteger accepts a string, so track the result in this format
         result = ""
         carry = 0
