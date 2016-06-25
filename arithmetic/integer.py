@@ -42,6 +42,13 @@ class BigInteger(object):
             num = num[1:]
         self.digits = [int(c) for c in num]
 
+    def __repr__(self):
+        """Represents this BigInteger as a string."""
+        digits = "".join([str(x) for x in self.digits])
+        if self.negative:
+            return "-" + digits
+        return digits
+
     def _flip_sign(self):
         """Flips the sign of a BigInteger between positive and negative."""
         self.negative = not self.negative
