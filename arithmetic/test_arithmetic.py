@@ -178,5 +178,30 @@ def test_subtract_zeroes():
 def test_subtract_from_negative():
     result = BigInteger.subtract(BigInteger("-1"), BigInteger("2"))
     assert_equals(result, BigInteger("-3"))
+    result = BigInteger.subtract(BigInteger("-1"), BigInteger("-2"))
+    assert_equals(result, BigInteger("1"))
+
+def test_subtract_positive():
+    # Same number of digits, positive result
+    result = BigInteger.subtract(BigInteger("5"), BigInteger("1"))
+    assert_equals(result, BigInteger("4"))
+    # Same number of digits, negative result
+    result = BigInteger.subtract(BigInteger("1"), BigInteger("5"))
+    assert_equals(result, BigInteger("-4"))
+    # Same number
+    result = BigInteger.subtract(BigInteger("3"), BigInteger("3"))
+    assert_equals(result, BigInteger("0"))
+    # Second number has more digits
+    c = BigInteger("2")
+    d = BigInteger("12")
+    assert_equals(BigInteger.subtract(c, d), BigInteger("-10"))
+    # First number has more digits (no carry)
+    assert_equals(BigInteger.subtract(d, c), BigInteger("10"))
+    # Requires a carry
+    result = BigInteger.subtract(BigInteger("10"), BigInteger("1"))
+    assert_equals(result, BigInteger("9"))
+    # Requires a multi-digit carry
+    result = BigInteger.subtract(BigInteger("100"), BigInteger("2"))
+    assert_equals(result, BigInteger("98"))
 
 # Divide tests
