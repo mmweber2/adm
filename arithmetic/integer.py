@@ -141,6 +141,7 @@ class BigInteger(object):
         Returns:
             A new BigInteger representing the difference of n1 and n2.
         """
+        print "Subtracting a, b: ", (n1, n2)
         # a - b = a + (-b) if b is negative
         if n2.negative:
             n2._flip_sign()
@@ -152,7 +153,33 @@ class BigInteger(object):
             result_sum._flip_sign()
             n1._flip_sign()
             return result_sum
+        # a - b = -(b - a)
+        if n2 > n1:
+            difference = BigInteger.subtract(n2, n1)
+            difference._flip_sign()
+            return difference
         result = ""
+        # Make copy of n1 so we can modify it for carries
+        n1_digits = n1.digits[:]
         for i in xrange(len(n2.digits)):
-            result += str(n1.digits[i] - n2.digits[i])
+            digit_difference = n1_digits[-1 - i] - n2.digits[-1 -i]
+            # Is there another digit to carry from?
+            if digit_difference < 0 and len(n1_digits) > i + 1:
+                print "Digit difference is ", digit_difference
+                print "N1 digits are ", n1_digits
+                # Start at the digit to the left and check for non-zeroes
+                for j in xrange(len(n1_digits) - 1, -1, -1):
+                    if n1_digits[j] > 0:
+                        # TODO: If there are digits between j and start j, make them 9s
+                        n1_digits[j] -= 1
+                        print "N1 digits are now ", n1_digits
+                        # Carry means borrowing 10 from the next digit
+                        result += str(10 + digit_difference)
+                        print "So result is now ", result
+                        break
+            else:
+                result += str(digit_difference)
+        if len(n1_digits) > len(n2.digits):
+            remaining_digits = [str(x) for x in n1_digits[:len(n2.digits)]]
+            result = "".join(remaining_digits) + result
         return BigInteger(result)
