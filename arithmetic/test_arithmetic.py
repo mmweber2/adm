@@ -181,25 +181,39 @@ def test_subtract_from_negative():
     result = BigInteger.subtract(BigInteger("-1"), BigInteger("-2"))
     assert_equals(result, BigInteger("1"))
 
-def test_subtract_positive():
+def test_subtract_positive_same_number_digits_positive():
     # Same number of digits, positive result
     result = BigInteger.subtract(BigInteger("5"), BigInteger("1"))
     assert_equals(result, BigInteger("4"))
+
+def test_subtract_positive_same_number_digits_negative():
     # Same number of digits, negative result
     result = BigInteger.subtract(BigInteger("1"), BigInteger("5"))
     assert_equals(result, BigInteger("-4"))
+
+def test_subtract_positive_same_number():
     # Same number
     result = BigInteger.subtract(BigInteger("3"), BigInteger("3"))
     assert_equals(result, BigInteger("0"))
+
+def test_subtract_positive_smaller_minuend():
     # Second number has more digits
     c = BigInteger("2")
     d = BigInteger("12")
     assert_equals(BigInteger.subtract(c, d), BigInteger("-10"))
+
+def test_subtract_positive_no_carry():
     # First number has more digits (no carry)
+    c = BigInteger("2")
+    d = BigInteger("12")
     assert_equals(BigInteger.subtract(d, c), BigInteger("10"))
+
+def test_subtract_positive_single_digit_carry():
     # Requires a carry
     result = BigInteger.subtract(BigInteger("10"), BigInteger("1"))
     assert_equals(result, BigInteger("9"))
+
+def test_subtract_positive_multi_digit_carry():
     # Requires a multi-digit carry
     result = BigInteger.subtract(BigInteger("100"), BigInteger("2"))
     assert_equals(result, BigInteger("98"))
