@@ -38,8 +38,11 @@ class BigInteger(object):
             self.digits = [0]
             return
         # Ignore all leading zeroes
-        while num[0] == "0":
-            num = num[1:]
+        if num[0] == "0":
+            zero_index = 0
+            while num[zero_index + 1] == "0":
+                zero_index += 1
+            num = num[zero_index+1:]
         self.digits = [int(c) for c in num]
 
     def __repr__(self):
@@ -172,6 +175,7 @@ class BigInteger(object):
                     if n1_digits[j] > 0:
                         # TODO: If there are digits between j and start j, make them 9s
                         n1_digits[j] -= 1
+                        # n_digits[j+1:j]
                         print "N1 digits are now ", n1_digits
                         # Carry means borrowing 10 from the next digit
                         result += str(10 + digit_difference)
