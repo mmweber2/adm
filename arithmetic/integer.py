@@ -95,7 +95,12 @@ class BigInteger(object):
         Returns:
             A new BigInteger representing the sum.
         """
-        # TODO: Handle negatives
+        if n1.negative ^ n2.negative:
+            negative_int, positive_int = (n1, n2) if n1.negative else (n2, n1)
+            negative_int._flip_sign()
+            difference = BigInteger.subtract(positive_int, negative_int)
+            negative_int._flip_sign()
+            return difference
         # Work with smaller number in the same position
         if n1 < n2:
             num1, num2 = n1.digits[:], n2.digits[:]

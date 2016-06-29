@@ -204,8 +204,8 @@ def test_subtract_positive_smaller_minuend():
 
 def test_subtract_positive_no_carry():
     # First number has more digits (no carry)
-    c = BigInteger("2")
     d = BigInteger("12")
+    c = BigInteger("2")
     assert_equals(BigInteger.subtract(d, c), BigInteger("10"))
 
 def test_subtract_positive_single_digit_carry():
