@@ -29,5 +29,5 @@ def multiply(a, b):
     for product in products:
         result = BigInteger.add(result, product)
     if negative:
-        result._flip_sign()
+        return result._flip_sign()
     return result
