@@ -53,8 +53,11 @@ class BigInteger(object):
         return digits
 
     def _flip_sign(self):
-        """Flips the sign of a BigInteger between positive and negative."""
-        self.negative = not self.negative
+        """Returns a new BigInteger with the same value but opposite sign."""
+        number = "".join([str(x) for x in self.digits])
+        if self.negative:
+            return BigInteger(number)
+        return BigInteger("-" + number)
 
     def __cmp__(self, other):
         """Compares two BigInteger objects."""
@@ -81,14 +84,6 @@ class BigInteger(object):
     def add(n1, n2):
         """Adds two BigIntegers and returns a new BigInteger of the sum.
 
-        This function currently does not fully support negative numbers.
-        Negative BigIntegers may be used as input, but their result will
-        be inaccurate if only one of the numbers is negative.
-        If both n1 and n2 have the same sign, the result will be correct
-        and have that sign as well.
-        Zero is considered positive for these functions, so a negative
-        number added to zero will give an incorrect result.
-
         Args:
             n1, n2: BigIntegers to sum.
 
@@ -97,10 +92,8 @@ class BigInteger(object):
         """
         if n1.negative ^ n2.negative:
             negative_int, positive_int = (n1, n2) if n1.negative else (n2, n1)
-            negative_int._flip_sign()
-            difference = BigInteger.subtract(positive_int, negative_int)
-            negative_int._flip_sign()
-            return difference
+            negative_int = negative_int._flip_sign()
+            return BigInteger.subtract(positive_int, negative_int)
         # Work with smaller number in the same position
         if n1 < n2:
             num1, num2 = n1.digits[:], n2.digits[:]
@@ -151,20 +144,13 @@ class BigInteger(object):
         """
         # a - b = a + (-b) if b is negative
         if n2.negative:
-            n2._flip_sign()
-            return BigInteger.add(n1, n2)
+            return BigInteger.add(n1, n2._flip_sign())
         if n1.negative: # and n2 is not
             # Add both numbers as if positive, then flip signs accordingly
-            n1._flip_sign()
-            result_sum = BigInteger.add(n1, n2)
-            result_sum._flip_sign()
-            n1._flip_sign()
-            return result_sum
+            return BigInteger.add(n1._flip_sign(), n2)._flip_sign()
         # a - b = -(b - a)
         if n2 > n1:
-            difference = BigInteger.subtract(n2, n1)
-            difference._flip_sign()
-            return difference
+            return BigInteger.subtract(n2, n1)._flip_sign()
         result = ""
         # Make copy of n1 so we can modify it for carries
         n1_digits = n1.digits[:]
