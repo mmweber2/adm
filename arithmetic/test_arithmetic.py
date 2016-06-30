@@ -79,6 +79,14 @@ def test_cmp_equal():
     b = BigInteger("32")
     assert a == b
 
+def test_flip_sign_pos_neg():
+    a = BigInteger("1")
+    assert_equals(a._flip_sign(), BigInteger("-1"))
+
+def test_flip_sign_neg_pos():
+    a = BigInteger("-1")
+    assert_equals(a._flip_sign(), BigInteger("1"))
+
 # Tests for BigInteger.add
 
 def test_add_two_single():
