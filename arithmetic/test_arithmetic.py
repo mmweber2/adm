@@ -126,18 +126,18 @@ def test_add_different_lengths():
 
 # Negative BigInteger.addition is currently not supported
 def test_add_negatives():
-#    result = BigInteger.add(BigInteger("2"), BigInteger("-5"))
-#    assert_equals(result.digits, [3])
-#    assert result.negative is True
-#    result = BigInteger.add(BigInteger("-3"), BigInteger("6"))
-#    assert_equals(result.digits, [3])
-#    assert result.negative is False
+    result = BigInteger.add(BigInteger("2"), BigInteger("-5"))
+    assert_equals(result.digits, [3])
+    assert result.negative is True
+    result = BigInteger.add(BigInteger("-3"), BigInteger("6"))
+    assert_equals(result.digits, [3])
+    assert result.negative is False
     result = BigInteger.add(BigInteger("-3"), BigInteger("-6"))
     assert_equals(result.digits, [9])
     assert result.negative is True
-#    result = BigInteger.add(BigInteger("-2"), BigInteger("0"))
-#    assert_equals(result.digits, [2])
-#    assert result.negative is True
+    result = BigInteger.add(BigInteger("-2"), BigInteger("0"))
+    assert_equals(result.digits, [2])
+    assert result.negative is True
 
 # Multiply tests
 
