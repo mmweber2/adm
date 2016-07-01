@@ -57,6 +57,8 @@ class BigInteger(object):
         number = "".join([str(x) for x in self.digits])
         if self.negative:
             return BigInteger(number)
+        # The constructor won't allow -0, so calling this function with a
+        # zero BigInteger will just create a copy of that BigInteger.
         return BigInteger("-" + number)
 
     def __cmp__(self, other):
@@ -159,7 +161,7 @@ class BigInteger(object):
             # Is there another digit to carry from?
             if digit_difference < 0 and len(n1_digits) > i + 1:
                 # Start at the digit to the left and check for non-zeroes
-                start = len(n1_digits) - 2
+                start = len(n1_digits) - 2 - i
                 for j in xrange(start, -1, -1):
                     if n1_digits[j] > 0:
                         # Turn any digits between j and start j into 9s
@@ -167,7 +169,7 @@ class BigInteger(object):
                         for carried in xrange(j+1, start+1):
                             n1_digits[carried] = 9
                         # Carry means borrowing 10 from the next digit
-                        result += str(10 + digit_difference)
+                        result = str(10 + digit_difference) + result
                         break
             else:
                 result += str(digit_difference)
