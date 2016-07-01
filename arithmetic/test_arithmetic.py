@@ -226,4 +226,9 @@ def test_subtract_positive_multi_digit_carry():
     result = BigInteger.subtract(BigInteger("100"), BigInteger("2"))
     assert_equals(result, BigInteger("98"))
 
+def test_subtract_positive_later_digit_carry():
+    # Requires a carry later than the first digit
+    result = BigInteger.subtract(BigInteger("115"), BigInteger("20"))
+    assert_equals(result, BigInteger("95"))
+
 # Divide tests
