@@ -1,5 +1,6 @@
 from integer import BigInteger
 from multiply import multiply
+from divide import divide
 from nose.tools import assert_equals
 from nose.tools import assert_raises
 
@@ -232,3 +233,25 @@ def test_subtract_positive_later_digit_carry():
     assert_equals(result, BigInteger("95"))
 
 # Divide tests
+
+def test_divide_int_result_positive():
+    result = divide(BigInteger("3"), BigInteger("1"))
+    assert_equals(result, BigInteger("3"))
+
+def test_divide_remainder_result_positive():
+    result = divide(BigInteger("3"), BigInteger("2"))
+    assert_equals(result, BigInteger("1"))
+
+def test_divide_remainder_result_negative():
+    result = divide(BigInteger("-3"), BigInteger("2"))
+    assert_equals(result, BigInteger("-1"))
+    result = divide(BigInteger("3"), BigInteger("-2"))
+    assert_equals(result, BigInteger("-1"))
+
+def test_divide_smaller_dividend():
+    result = divide(BigInteger("3"), BigInteger("5"))
+    assert_equals(result, BigInteger("0"))
+
+def test_divide_by_zero():
+    assert_raises(ZeroDivisionError, divide, BigInteger("2"), BigInteger("0"))
+
