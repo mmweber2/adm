@@ -242,6 +242,10 @@ def test_divide_remainder_result_positive():
     result = divide(BigInteger("3"), BigInteger("2"))
     assert_equals(result, BigInteger("1"))
 
+def test_divide_positive_multi_digit():
+    result = divide(BigInteger("30"), BigInteger("2"))
+    assert_equals(result, BigInteger("15"))
+
 def test_divide_remainder_result_negative():
     result = divide(BigInteger("-3"), BigInteger("2"))
     assert_equals(result, BigInteger("-1"))
@@ -254,4 +258,3 @@ def test_divide_smaller_dividend():
 
 def test_divide_by_zero():
     assert_raises(ZeroDivisionError, divide, BigInteger("2"), BigInteger("0"))
-
