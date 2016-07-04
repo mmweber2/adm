@@ -25,14 +25,14 @@ def divide(dividend, divisor):
     while True:
         product = multiply(multiplicant, divisor)
         product_table.append((multiplicant, product))
-        if product > divisor:
+        if product > dividend:
             break
         multiplicant = multiply(multiplicant, BigInteger("2"))
     remainder = dividend
     # Start with biggest product less than dividend
-    for i in xrange(len(product_table), -1, -1):
+    for i in xrange(len(product_table)-1, -1, -1):
         factor, product = product_table[i]
-        if product < remainder:
+        if product <= remainder:
             quotient = BigInteger.add(quotient, factor)
             remainder = BigInteger.subtract(remainder, product)
         # Keep checking smaller products whether or not we found a match
