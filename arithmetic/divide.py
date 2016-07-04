@@ -18,6 +18,11 @@ def divide(dividend, divisor):
     """
     if divisor == BigInteger("0"):
         raise ZeroDivisionError("Cannot divide by zero")
+    negative = dividend.negative ^ divisor.negative
+    if dividend.negative:
+        dividend = BigInteger._flip_sign(dividend)
+    if divisor.negative:
+        divisor = BigInteger._flip_sign(divisor)
     quotient = BigInteger("0")
     # Create table of divisor products for lookup
     product_table = []
@@ -36,4 +41,6 @@ def divide(dividend, divisor):
             quotient = BigInteger.add(quotient, factor)
             remainder = BigInteger.subtract(remainder, product)
         # Keep checking smaller products whether or not we found a match
+    if negative:
+        return BigInteger._flip_sign(quotient)
     return quotient
