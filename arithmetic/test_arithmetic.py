@@ -1,6 +1,7 @@
 from integer import BigInteger
 from multiply import multiply
 from divide import divide
+from power import power
 from nose.tools import assert_equals
 from nose.tools import assert_raises
 
@@ -280,3 +281,13 @@ def test_divide_large():
     b = BigInteger("48446744073709551616")
     result = divide(a, b)
     assert_equals(result, BigInteger("2"))
+
+# Power (exponent) tests
+
+def test_power_even_exponent():
+    result = power(BigInteger("3"), BigInteger("2"))
+    assert_equals(result, BigInteger("9"))
+
+def test_power_odd_exponent():
+    result = power(BigInteger("2"), BigInteger("3"))
+    assert_equals(result, BigInteger("8"))
