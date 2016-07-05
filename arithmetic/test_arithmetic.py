@@ -274,3 +274,9 @@ def test_divide_smaller_dividend():
 
 def test_divide_by_zero():
     assert_raises(ZeroDivisionError, divide, BigInteger("2"), BigInteger("0"))
+
+def test_divide_large():
+    a = BigInteger("96893488157419103232")
+    b = BigInteger("48446744073709551616")
+    result = divide(a, b)
+    assert_equals(result, BigInteger("2"))
