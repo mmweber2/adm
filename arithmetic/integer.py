@@ -59,19 +59,19 @@ class BigInteger(object):
 
     def _flip_sign(self):
         """Returns a new BigInteger with the same value but opposite sign."""
-        number = "".join([str(x) for x in self.digits])
-        if self.negative:
-            return BigInteger(number)
-        # The constructor won't allow -0, so calling this function with a
-        # zero BigInteger will just create a copy of that BigInteger.
-        return BigInteger("-" + number)
+        # Creates a positive number by default
+        clone = self._clone_digits()
+        # It is possible to get a -0 BigInteger using this method.
+        if not self.negative:
+            clone.negative = True
+        return clone
 
     def __cmp__(self, other):
         """Compares two BigInteger objects."""
         # Returns 1 if self > other, 0 if self == other, and -1 if self < other
         # Check for opposing signs
         if self.negative:
-            if other.negative is False: return -1
+            if not other.negative: return -1
         elif other.negative: return 1
         # Same signs, compare lengths
         if len(self.digits) < len(other.digits):
@@ -102,12 +102,13 @@ class BigInteger(object):
             negative_int = negative_int._flip_sign()
             return BigInteger.subtract(positive_int, negative_int)
         # Work with smaller number in the same position
-        if n1 < n2:
-            num1, num2 = n1.digits[:], n2.digits[:]
-        else:
+        # Use a slice on digits instead of cloning so that we have direct access
+        # to the digits, since we don't need access to the object here
+        num1, num2 = n1.digits[:], n2.digits[:]
+        if n2 < n1:
             num1, num2 = n2.digits[:], n1.digits[:]
-        # BigInteger accepts a string, so track the result in this format
-        result = ""
+        # Track results in list for later string joining
+        result = []
         carry = 0
         while len(num1) > 0:
             d1, d2 = num1.pop(), num2.pop()
@@ -117,20 +118,19 @@ class BigInteger(object):
                 d1 += carry
             carry = (d1 + d2) / 10
             digit_sum = (d1 + d2) % 10
-            result = str(digit_sum) + result
+            result.insert(0, digit_sum)
         # We may be left with leftover num2 and/or a carry
         while carry != 0 and len(num2) > 0:
             d2 = num2.pop()
             digit_sum = (carry + d2) % 10
             carry = (carry + d2) / 10
-            result = str(digit_sum) + result
+            result.insert(0, digit_sum)
         # If carry runs out before num2
-        result = "".join([str(x) for x in num2]) + result
+        result = num2 + result
         # If there is still a carry after both numbers have run out
         if carry != 0:
-            result = str(carry) + result
-        # Result is negative only if both are negative, since
-        # adding mixed sign numbers is currently not supported
+            result.insert(0, carry)
+        result = "".join([str(x) for x in result])
         if n1.negative and n2.negative:
             return BigInteger("-" + result)
         return BigInteger(result)
@@ -158,7 +158,7 @@ class BigInteger(object):
         # a - b = -(b - a)
         if n2 > n1:
             return BigInteger.subtract(n2, n1)._flip_sign()
-        result = ""
+        result = []
         # Make copy of n1 so we can modify it for carries
         n1_digits = n1.digits[:]
         for i in xrange(len(n2.digits)):
@@ -174,12 +174,12 @@ class BigInteger(object):
                         for carried in xrange(j+1, start+1):
                             n1_digits[carried] = 9
                         # Carry means borrowing 10 from the next digit
-                        result = str(10 + digit_difference) + result
+                        result.insert(0, str(10 + digit_difference))
                         break
             else:
-                result += str(digit_difference)
+                result.insert(0, str(digit_difference))
         if len(n1_digits) > len(n2.digits):
             size_diff = len(n1_digits) - len(n2.digits)
             remaining_digits = [str(x) for x in n1_digits[:size_diff]]
-            result = "".join(remaining_digits) + result
+            result = "".join(remaining_digits + result)
         return BigInteger(result)
