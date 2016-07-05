@@ -80,6 +80,8 @@ def test_cmp_equal():
     b = BigInteger("32")
     assert a == b
 
+# Tests for _flip_sign
+
 def test_flip_sign_pos_neg():
     a = BigInteger("1")
     assert_equals(a._flip_sign(), BigInteger("-1"))
@@ -87,6 +89,16 @@ def test_flip_sign_pos_neg():
 def test_flip_sign_neg_pos():
     a = BigInteger("-1")
     assert_equals(a._flip_sign(), BigInteger("1"))
+
+# Tests for _clone
+
+def test_clone_positive():
+    a = BigInteger("25")
+    assert_equals(a._clone_digits(), a)
+
+def test_clone_negative():
+    a = BigInteger("-3")
+    assert_equals(a._clone_digits(), BigInteger("3"))
 
 # Tests for BigInteger.add
 

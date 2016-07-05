@@ -48,9 +48,14 @@ class BigInteger(object):
     def __repr__(self):
         """Represents this BigInteger as a string."""
         digits = "".join([str(x) for x in self.digits])
-        if self.negative:
-            return "-" + digits
-        return digits
+        return "-" + digits if self.negative else digits
+
+    def _clone_digits(self):
+        """Returns a positive clone of this BigInteger."""
+        # Copy digits over all at once instead of converting to string first
+        clone = BigInteger("0")
+        clone.digits = self.digits
+        return clone
 
     def _flip_sign(self):
         """Returns a new BigInteger with the same value but opposite sign."""
