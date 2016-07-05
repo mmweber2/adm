@@ -73,7 +73,6 @@ def test_cmp_same_size():
     a = BigInteger("25")
     b = BigInteger("31")
     assert a < b
-    assert b > a
 
 def test_cmp_equal():
     a = BigInteger("32")
@@ -126,8 +125,7 @@ def test_add_zeroes():
 
 def test_add_two_long():
     a = BigInteger("18446744073709551616")
-    b = BigInteger("18446744073709551616")
-    result = BigInteger.add(a, b)
+    result = BigInteger.add(a, a)
     expected =  [3, 6, 8, 9, 3, 4, 8, 8, 1, 4, 7, 4, 1, 9, 1, 0, 3, 2, 3, 2]
     assert_equals(result.digits, expected)
 
@@ -137,7 +135,6 @@ def test_add_different_lengths():
     result = BigInteger.add(BigInteger("489"), BigInteger("12"))
     assert_equals(result.digits, [5, 0, 1])
 
-# Negative BigInteger.addition is currently not supported
 def test_add_negatives():
     result = BigInteger.add(BigInteger("2"), BigInteger("-5"))
     assert_equals(result.digits, [3])
@@ -243,6 +240,13 @@ def test_subtract_positive_later_digit_carry():
     # Requires a carry later than the first digit
     result = BigInteger.subtract(BigInteger("115"), BigInteger("20"))
     assert_equals(result, BigInteger("95"))
+
+def test_subtract_positive_large():
+    a = BigInteger("48446744073709551616")
+    b = BigInteger("24501785728478724121")
+    result = BigInteger.subtract(a, b)
+    expected = BigInteger("23944958345230827495")
+    assert_equals(result, expected)
 
 # Divide tests
 
