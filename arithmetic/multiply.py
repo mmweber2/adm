@@ -15,21 +15,25 @@ def multiply(a, b):
     if len(a.digits) > len(b.digits): a, b = b, a
     digit = 0
     products = []
-    carry = 0
     while digit < len(a.digits):
+        # Reset carry for each new digit of a, since it will be appended
+        # at the end of the previous digit
+        carry = 0
         multiplicant = a.digits[-1 -digit]
-        products.append([])
+        # Order of products doesn't matter, so insert at the beginning once
+        # to allow simple 0-index lookup later
+        products.insert(0, [])
         for i in xrange(len(b.digits)):
             product = multiplicant * b.digits[-1 -i]
             product += carry
             # Add smallest digit to list (to turn into final answer later)
-            products[-1].insert(0, product % 10)
+            products[0].insert(0, product % 10)
             carry = product / 10
-        digit += 1
         # If carry is 0, it will be ignored when turning into a BigInteger
-        products[-1].insert(0, carry)
-        # Add zeroes to allow for position of multiplicant digit
-        products[-1].extend([0] * (digit - 1))
+        products[0].insert(0, carry)
+        # Add zeroes to adjust for position of multiplicant digit
+        products[0].extend([0] * (digit))
+        digit += 1
     result = BigInteger("0")
     for product in products:
         partial_result = BigInteger("".join([str(digit) for digit in product]))
