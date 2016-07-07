@@ -178,11 +178,23 @@ def test_multiply_two_negative():
     assert_equals(result.digits, [2])
     assert result.negative
 
-def test_multiply_large():
+def test_multiply_carry():
+    a = BigInteger("12")
+    b = BigInteger("56")
+    expected = BigInteger("672")
+    assert_equals(multiply(a, b), expected)
+
+def test_multiply_one_large():
     # 2**64 is just beyond the bounds of int, so Python makes it a long
     a = BigInteger("18446744073709551616")
     expect = [1, 8, 4, 4, 6, 7, 4, 4, 0, 7, 3, 7, 0, 9, 5, 5, 1, 6, 1, 6, 0, 0]
     assert_equals(multiply(a, BigInteger("100")).digits, expect)
+
+def test_multiply_two_large():
+    a = BigInteger("48446744073709551616")
+    b = BigInteger("130808823666624465123")
+    expected = BigInteger("6337261602759956545834207900472160288768")
+    assert_equals(multiply(a, b), expected)
 
 # Subtract tests
 
@@ -291,3 +303,33 @@ def test_power_even_exponent():
 def test_power_odd_exponent():
     result = power(BigInteger("2"), BigInteger("3"))
     assert_equals(result, BigInteger("8"))
+
+def test_power_zero_base():
+    result = power(BigInteger("0"), BigInteger("3"))
+    assert_equals(result, BigInteger("0"))
+    
+def test_power_zero_exponent():
+    result = power(BigInteger("2"), BigInteger("0"))
+    assert_equals(result, BigInteger("1"))
+
+def test_power_one_exponent():
+    result = power(BigInteger("3"), BigInteger("1"))
+    assert_equals(result, BigInteger("3"))
+
+def test_power_large():
+    a = BigInteger("48446744073709551616")
+    result = power(a, BigInteger("2"))
+    assert_equals(result, BigInteger("2347087011343511560423374607431768211456"))
+
+def test_power_negative_base_even():
+    result = power(BigInteger("-2"), BigInteger("4"))
+    assert_equals(result, BigInteger("16"))
+
+def test_power_negative_base_odd():
+    result = power(BigInteger("-3"), BigInteger("3"))
+    assert_equals(result, BigInteger("-27"))
+
+def test_power_negative_exponent():
+    assert_equals(power(BigInteger("3"), BigInteger("-2")), BigInteger("0"))
+
+
