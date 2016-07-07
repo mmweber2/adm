@@ -28,11 +28,13 @@ def divide(dividend, divisor):
     product_table = []
     multiplicant = BigInteger("1")
     while True:
-        product = multiply(multiplicant, divisor)
-        product_table.append((multiplicant, product))
-        if product > dividend:
+        product_table.append((multiplicant, divisor))
+        if divisor > dividend:
             break
-        multiplicant = multiply(multiplicant, BigInteger("2"))
+        # Divisor doubles as multiplicant does; if divisor changes from 3 to 6,
+        # multiplicant changes from 1 to 2
+        multiplicant = BigInteger.add(multiplicant, multiplicant)
+        divisor = BigInteger.add(divisor, divisor)
     remainder = dividend
     # Start with biggest product less than dividend
     for i in xrange(len(product_table)-1, -1, -1):
