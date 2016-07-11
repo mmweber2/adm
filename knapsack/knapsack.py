@@ -14,6 +14,9 @@ def knapsack(items, capacity):
     Each item has both a size and a value, and this function returns the
     set with the maximum sum of values that has a size <= capacity.
 
+    If there are multiple possible subsets with the same value, one will
+    be returned arbitrarily.
+
     Args:
         itemset: List of tuples in the form (size, value) where size is an
             integer and value is a float.
@@ -23,23 +26,41 @@ def knapsack(items, capacity):
 
     Returns:
         A list of items with a sum of sizes less than equal to capacity and
-        the maximum sum of values.
+            the maximum sum of values. Returns an empty list if items is empty
+            or if capacity is 0.
     """
+
     # TODO: Is it the maximum sum? A good sum?
-    # Trying the method on line 8
-    max_values = [(0, capacity)]
-    # TODO: Add another dictionary for backtracking
-    for i in xrange(len(itemset)):
-        size, value = itemset[i]
-        # This item doesn't fit, so it doesn't improve the solution
+    # Trying the method on line 9
+
+    if len(items) == 0 or capacity == 0:
+        return []
+    
+    # 1-index columns to allow for an "empty" first item; if the first
+    # item is > capacity, we need to have a zero-value item to put in
+    # the table.
+    # 1-index rows so that the row [capacity] is actually the best
+    # known value for capacity.
+    max_values = [([0] * (len(items) + 1)) for _ in xrange(capacity + 1)]
+    # List of indices of items that make up the best subset out of each
+    # partial item selection for each capacity
+    best_subsets = [([] * (len(items) + 1)) for _ in xrange(capacity + 1)]
+    for i in xrange(1, len(items)):
+        size, value = items[i]
+        # # This item doesn't fit, so it doesn't improve the solution
         if size > capacity:
-            max_values.append(max_values[-1])
+            max_values[i][capacity] = max_values[i-1][capacity]
+            best_subsets[i][capacity] = best_subsets[i-1][capacity]
         else:
-            previous_best = max_values[(i-1, capacity)]
+            previous_best = max_values[i-1][capacity]
             # Value if we include this item
-            with_i = max_values[(i-1, capacity-size)] + value
-            max_values.append(max(previous_best, with_i))
-    return max_values[(n, capacity)]
+            with_i = max_values[i-1][capacity-size] + value
+            if with_i > previous_best:
+                max_values[i][capacity] = with_i
+                best_subsets[i][capacity] = best_subsets[i-1][capacity-size] + [i]
+    print "Best subsets:"
+    print best_subsets[-1]
+    return best_subsets[-1][capacity]
 
         
 
