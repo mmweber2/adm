@@ -18,7 +18,7 @@ def knapsack(items, capacity):
     be returned arbitrarily.
 
     Args:
-        itemset: List of tuples in the form (size, value) where size is an
+        items: List of tuples in the form (size, value) where size is an
             integer and value is a float. Size must be a positive integer
             and value must be a non-negative float.
 
@@ -50,24 +50,24 @@ def knapsack(items, capacity):
         size, value = items[i-1]
         # # This item doesn't fit, so it doesn't improve the solution
         if size > capacity:
-            max_values[i][capacity] = max_values[i-1][capacity]
+            max_values[capacity][i] = max_values[capacity][i-1]
         else:
-            previous_best = max_values[i-1][capacity]
+            previous_best = max_values[capacity][i-1]
             # Value if we include this item
-            with_i = max_values[i-1][capacity-size] + value
-            max_values[i][capacity] = max(with_i, previous_best)
-    print "Best value was ", max_values[-1][-1]
+            with_i = max_values[capacity-size][i-1] + value
+            max_values[capacity][i] = max(with_i, previous_best)
+    #print "Best value was ", max_values[-1][-1]
     return reconstruct_subset(max_values, items)
 
 def reconstruct_subset(max_values, items):
     subset = []
     capacity = len(max_values[0]) - 1
-    for i in xrange(len(max_values)-1, 0, -1):
-        size, value = items[-i]
+    for i in xrange(len(items)-1, -1, -1):
+        size, value = items[i]
         # This item was included
-        if max_values[i][capacity] == max_values[i-1][capacity-size] + value:
-            # ith item is at index i-1 due to table padding
-            subset.append(i-1)
+        # Look at table result for ith item (column i+1)
+        if max_values[capacity][i+1] == max_values[capacity-size][i] + value:
+            subset.append(i)
     return subset
 
         
