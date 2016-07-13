@@ -19,15 +19,19 @@ def knapsack(items, capacity):
 
     Args:
         itemset: List of tuples in the form (size, value) where size is an
-            integer and value is a float.
+            integer and value is a float. Size must be a positive integer
+            and value must be a non-negative float.
 
         capacity: Integer indicating the maximum sum of sizes that fit within
-            this knapsack.
+            this knapsack. Must be non-negative.
 
     Returns:
         A list of items with a sum of sizes less than equal to capacity and
             the maximum sum of values. Returns an empty list if items is empty
             or if capacity is 0.
+
+    Raises:
+        IndexError: capacity is < 0, or at least one item has a negative size.
     """
 
     # TODO: Is it the maximum sum? A good sum?
@@ -42,25 +46,29 @@ def knapsack(items, capacity):
     # 1-index rows so that the row [capacity] is actually the best
     # known value for capacity.
     max_values = [([0] * (len(items) + 1)) for _ in xrange(capacity + 1)]
-    # List of indices of items that make up the best subset out of each
-    # partial item selection for each capacity
-    best_subsets = [([] * (len(items) + 1)) for _ in xrange(capacity + 1)]
-    for i in xrange(1, len(items)):
-        size, value = items[i]
+    for i in xrange(1, len(items) + 1):
+        size, value = items[i-1]
         # # This item doesn't fit, so it doesn't improve the solution
         if size > capacity:
             max_values[i][capacity] = max_values[i-1][capacity]
-            best_subsets[i][capacity] = best_subsets[i-1][capacity]
         else:
             previous_best = max_values[i-1][capacity]
             # Value if we include this item
             with_i = max_values[i-1][capacity-size] + value
-            if with_i > previous_best:
-                max_values[i][capacity] = with_i
-                best_subsets[i][capacity] = best_subsets[i-1][capacity-size] + [i]
-    print "Best subsets:"
-    print best_subsets[-1]
-    return best_subsets[-1][capacity]
+            max_values[i][capacity] = max(with_i, previous_best)
+    print "Best value was ", max_values[-1][-1]
+    return reconstruct_subset(max_values, items)
+
+def reconstruct_subset(max_values, items):
+    subset = []
+    capacity = len(max_values[0]) - 1
+    for i in xrange(len(max_values)-1, 0, -1):
+        size, value = items[-i]
+        # This item was included
+        if max_values[i][capacity] == max_values[i-1][capacity-size] + value:
+            # ith item is at index i-1 due to table padding
+            subset.append(i-1)
+    return subset
 
         
 
