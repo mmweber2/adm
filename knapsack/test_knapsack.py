@@ -17,9 +17,22 @@ def test_negative_size_item():
 def test_single_item_fits():
     assert_equals(knapsack([(1, 1)], 1), [0])
 
+def test_single_item_too_big():
+    assert_equals(knapsack([(2, 2)], 1), [])
+
+def test_negative_value():
+    assert_equals(knapsack([(2, -3)], 2), [])
+
+def test_size_greater_than_value():
+    assert_equals(knapsack([(5, 2)], 7), [0])
+
 # Tests to add:
 # Non-zero capacity, but too small for any items
+
+# Value > capacity
+# Capacity > value
 # Items with negative value
 # Finds best choice when it can fit one of two items
+# Doesn't try to fit the same item more than once
 # Finds two items better value than one large (non-greedy)
 # Larger subsets
