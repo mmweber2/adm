@@ -26,6 +26,9 @@ def test_negative_value():
 def test_size_greater_than_value():
     assert_equals(knapsack([(5, 2)], 7), [0])
 
+def test_value_greater_than_size():
+    assert_equals(knapsack([(2, 5)], 3), [0])
+
 # Tests to add:
 # Non-zero capacity, but too small for any items
 
