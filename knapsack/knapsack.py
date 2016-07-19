@@ -69,7 +69,7 @@ def reconstruct_subset(max_values, items):
             subset.append(i)
             # Available capacity is reduced
             capacity -= size
-    return subset
+    return [items[index] for index in subset]
 
         
 
