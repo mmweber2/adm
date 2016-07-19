@@ -67,6 +67,8 @@ def reconstruct_subset(max_values, items):
         # Look at table result for ith item (column i+1)
         if max_values[capacity][i+1] == max_values[capacity-size][i] + value:
             subset.append(i)
+            # Available capacity is reduced
+            capacity -= size
     return subset
 
         
