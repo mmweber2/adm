@@ -32,11 +32,11 @@ def test_value_greater_than_size():
 def test_too_small_capacity():
     assert_equals(knapsack([(2, 3)], 1), [])
 
-# Tests to add:
-# Non-zero capacity, but too small for any items
+def test_best_of_two_choices():
+    assert_equals(knapsack([(2, 1), (2, 2)], 2), [1])
 
-# Capacity > value
-# Items with negative value
+# Tests to add:
+
 # Finds best choice when it can fit one of two items
 # Doesn't try to fit the same item more than once
 # Finds two items better value than one large (non-greedy)
