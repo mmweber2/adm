@@ -41,16 +41,16 @@ def knapsack(items, capacity):
         return []
     
     # 1-index columns to allow for an "empty" first item; if the first
-    # item is > capacity, we need to have a zero-value item to put in
+    # item is too big, we need to have a zero-value item to put in
     # the table.
     # 1-index rows so that the row [capacity] is actually the best
     # known value for capacity.
     max_values = [([0] * (len(items) + 1)) for _ in xrange(capacity + 1)]
     for i in xrange(1, len(items) + 1):
         size, value = items[i-1]
-        # Loop over sub-capacities
-        for j in xrange(0, capacity + 1):
-        # # This item doesn't fit, so it doesn't improve the solution
+        # Loop over partial capacities
+        for j in xrange(capacity + 1):
+            # This item doesn't fit, so it doesn't improve the solution
             if size > j:
                 max_values[j][i] = max_values[j][i-1]
             else:
@@ -62,13 +62,13 @@ def knapsack(items, capacity):
 
 def reconstruct_subset(max_values, items):
     subset = []
+    # Avoid passing capacity as a parameter
     capacity = len(max_values) - 1
     for i in xrange(len(items)-1, -1, -1):
         size, value = items[i]
-        # This item was included
-        # Look at table result for ith item (column i+1)
+        # This item was included, so look at table result for ith item
         if max_values[capacity][i+1] == max_values[capacity-size][i] + value:
             subset.append(i)
-            # Available capacity is reduced
+            # Reduce available capacity
             capacity -= size
     return [items[index] for index in subset]
