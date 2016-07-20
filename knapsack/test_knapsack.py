@@ -35,8 +35,15 @@ def test_too_small_capacity():
 def test_best_of_two_choices():
     assert_equals(knapsack([(2, 1), (2, 2)], 2), [(2, 2)])
 
+def test_duplicate_item():
+    assert_equals(knapsack([(1, 1), (1, 1)], 1), [(1, 1)])
+
+def test_only_include_once():
+    assert_equals(knapsack([(2, 2)], 4), [(2, 2)])
+
+def test_non_greedy():
+    assert_equals(knapsack([(8, 8), (3, 5), (3, 5)], 8), [(3, 5), (3, 5)])
+
 # Tests to add:
 
-# Doesn't try to fit the same item more than once
-# Finds two items better value than one large (non-greedy)
 # Larger subsets
