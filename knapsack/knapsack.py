@@ -71,4 +71,6 @@ def reconstruct_subset(max_values, items):
             subset.append(i)
             # Reduce available capacity
             capacity -= size
-    return [items[index] for index in subset]
+    # Traverse subset in reverse order so that items are returned in
+    # their original order
+    return [items[index] for index in subset[::-1]]
