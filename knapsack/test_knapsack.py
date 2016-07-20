@@ -44,6 +44,11 @@ def test_only_include_once():
 def test_non_greedy():
     assert_equals(knapsack([(8, 8), (3, 5), (3, 5)], 8), [(3, 5), (3, 5)])
 
+def test_larger_subset():
+    input_set = [(5, 10), (4, 40), (6, 30), (3, 50)]
+    assert_equals(knapsack(input_set, 10), [(4, 40), (3, 50)])
+
+
 # Tests to add:
 
 # Larger subsets
