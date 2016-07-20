@@ -48,14 +48,16 @@ def knapsack(items, capacity):
     max_values = [([0] * (len(items) + 1)) for _ in xrange(capacity + 1)]
     for i in xrange(1, len(items) + 1):
         size, value = items[i-1]
+        # Loop over sub-capacities
+        for j in xrange(0, capacity + 1):
         # # This item doesn't fit, so it doesn't improve the solution
-        if size > capacity:
-            max_values[capacity][i] = max_values[capacity][i-1]
-        else:
-            previous_best = max_values[capacity][i-1]
-            # Value if we include this item
-            with_i = max_values[capacity-size][i-1] + value
-            max_values[capacity][i] = max(with_i, previous_best)
+            if size > j:
+                max_values[j][i] = max_values[j][i-1]
+            else:
+                previous_best = max_values[j][i-1]
+                # Value if we include this item
+                with_i = max_values[j-size][i-1] + value
+                max_values[j][i] = max(with_i, previous_best)
     return reconstruct_subset(max_values, items)
 
 def reconstruct_subset(max_values, items):
@@ -70,7 +72,3 @@ def reconstruct_subset(max_values, items):
             # Available capacity is reduced
             capacity -= size
     return [items[index] for index in subset]
-
-        
-
-
