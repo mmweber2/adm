@@ -26,10 +26,13 @@ def power(base, exponent, cache=None):
         return BigInteger("1")
     if exponent == BigInteger("1"):
         return base
+    print "Printing"
+    print exponent.__hash__()
     if exponent in cache:
+        print "Accessing cache: ", exponent
         return cache[exponent]
     half_exponent = divide(exponent, BigInteger("2"))
-    half_result = power(base, half_exponent)
+    half_result = power(base, half_exponent, cache)
     # a**n = a**(n/2) * 2 if n is even
     result = multiply(half_result, half_result)
     # Divide doesn't support mod or remainder, so check for an odd number
