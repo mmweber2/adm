@@ -1,13 +1,4 @@
 from collections import defaultdict
-from collections import namedtuple
-# A set of items S where item i has size si and value vi. Knapsack has capacity C.
-# Find the subset that maximizes the value of values, given that total size is less
-# than C.
-
-# Check if all cost/value or size is the same
-# If value per size is the same, it becomes an integer partition problem
-# If the sizes and C are all integers and C <= 1000, you can use dynamic programming
-
 def knapsack(items, capacity):
     """Finds the highest-value subset of item that fit within capacity.
 
@@ -20,23 +11,20 @@ def knapsack(items, capacity):
     Args:
         items: List of tuples in the form (size, value) where size is an
             integer and value is a float. Size must be a positive integer
-            and value must be a float.
+            and value must be an integer or float.
 
         capacity: Integer indicating the maximum sum of sizes that fit within
             this knapsack. Must be non-negative.
 
     Returns:
         A list of items with a sum of sizes less than equal to capacity and
-            the maximum sum of values. Returns an empty list if items is empty
-            or if capacity is 0.
+            the maximum sum of values. Items are listed in the same order in
+            which they were given in the items parameter.
+            Returns an empty list if items is empty or if capacity is 0.
 
     Raises:
         IndexError: capacity is < 0, or at least one item has a negative size.
     """
-
-    # TODO: Is it the maximum sum? A good sum?
-    # Trying the method on line 9
-
     if len(items) == 0 or capacity == 0:
         return []
     
@@ -66,8 +54,8 @@ def reconstruct_subset(max_values, items):
     capacity = len(max_values) - 1
     for i in xrange(len(items)-1, -1, -1):
         size, value = items[i]
-        # This item was included, so look at table result for ith item
         if max_values[capacity][i+1] == max_values[capacity-size][i] + value:
+            # This item was included, so look at table result for ith item
             subset.append(i)
             # Reduce available capacity
             capacity -= size
