@@ -18,13 +18,16 @@ def test_prime():
     assert_equals(factorize(5), [5])
 
 def test_single_factor():
-    assert_equals(factorize(9), [3])
+    assert_equals(factorize(9), [3, 3])
 
 def test_multi_factor():
     assert_equals(factorize(21), [3, 7])
 
 def test_multi_factor_repeats():
-    assert_equals(factorize(147), [3, 7])
+    assert_equals(factorize(147), [3, 7, 7])
+
+def test_cubed():
+    assert_equals(factorize(27), [3, 3, 3])
 
 def test_larger_prime():
     assert_equals(factorize(13), [13])
