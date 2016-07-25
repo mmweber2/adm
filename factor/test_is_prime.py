@@ -20,3 +20,11 @@ def test_multi_factor():
 
 def test_larger_prime():
     assert is_prime(17)
+
+def test_large_range():
+    count = 0
+    for x in xrange(2, 101):
+        if is_prime(x):
+            count += 1
+    assert count == 25
+
