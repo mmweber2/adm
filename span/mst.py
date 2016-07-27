@@ -11,7 +11,8 @@ class SpanningTree(object):
     """A representation of a spanning tree."""
 
     # TODO: What are allowable values?
-    def __init__(self, value, root=False):
+    # TODO: Include root?
+    def __init__(self, value):
         """Creates a new SpanningTree vertex with no edges.
         
         Args:
@@ -22,7 +23,6 @@ class SpanningTree(object):
         """
         self.value = value
         self.edges = []
-        self.is_root = root
 
     def add_edge(self, edge):
         """Adds a new edge to this vertex.
@@ -30,12 +30,18 @@ class SpanningTree(object):
         Args:
             edge: A namedtuple Edge to add.
         """
-        edges.append(edge)
+        self.edges.append(edge)
 
     # TODO
     def get_total_weight(self):
         """Returns the sum of the weights of the edges in this spanning tree."""
         return 0
+
+# TODO: Prim's gives us the edges in the order we want. Does Kruskal's?
+def build_mst(edges):
+    root = SpanningTree(edges[0][0])
+    for edge in edges:
+
 
 def _is_connected(edges):
     # Avoid IndexError when choosing a vertex to start from
@@ -57,7 +63,6 @@ def _is_connected(edges):
         queue.extend(new_edges)
     return len(seen) == len(connections)
     
-#def build_mst(edges):
 def get_min_edges_kruskal(edges):
     """Returns a list of edges to connect all vertices with a minimum sum of
     weights.
@@ -98,4 +103,56 @@ def get_min_edges_kruskal(edges):
         subgraph.append(edge)
     return subgraph
 
+def get_min_edges_prim(edges):
+    """Returns a list of edges to connect all vertices with a minimum sum of
+    weights.
 
+    Uses Prim's algorithm.
+
+    Args:
+        edges: A list of Edge namedtuples of points and weights.
+            All Edges must be part of one connected component.
+
+    Returns:
+        A list of edges connecting all vertices with the minimum sum of weights,
+            in arbitrary order, or an empty list if edges is empty.
+
+    Raises:
+        ValueError: At least one edge is disconnected (unreachable) from other
+            edges.
+    """
+    if not _is_connected(edges):
+        raise ValueError("Graph must be a single connected component")
+    if len(edges) == 0:
+        return []
+    connections = defaultdict(list)
+    for edge in edges:
+        start, end = edge.vertex1, edge.vertex2
+        # Add edges instead of points because we need to be able to look up the
+        # edges when we add them to grow the components
+        connections[start].append(edge)
+        connections[end].append(edge)
+    # Vertices included so far
+    components = set()
+    tree_edges = []
+    # Pick arbitrary vertex to start from
+    components.add(edges[0][0])
+    while len(components) < len(connections):
+        # Get all edges that connect to points in the component
+        possible_edges = []
+        for point in components:
+            possible_edges.extend(connections[point])
+        best_edge = None
+        for edge in possible_edges:
+            # We don't know which end of the edge is connected to our component,
+            # but one of them must be. If both are connected, discard it.
+            if edge.vertex1 in components and edge.vertex2 in components:
+                continue
+            # Edge connects a new vertex to the component; keep it
+            if (not best_edge) or (edge.value < best_edge.value):
+                best_edge = edge
+        tree_edges.append(best_edge)
+        # One of these vertices is already in components, but add both
+        # to the set to ensure the new one is added
+        components.update(best_edge.vertex1, best_edge.vertex2)
+    return tree_edges
