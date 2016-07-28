@@ -103,10 +103,8 @@ def test_get_min_edges_prim_large():
     eg = Edge('e', 'g', 9)
     fg = Edge('f', 'g', 11)
     points = [ad, ab, bc, be, bd, ce, de, df, ef, eg, fg]
+    # Sorts are not by weight or vertex name, but as long as it's consistent
+    # it doesn't matter what it uses
     result = sorted(get_min_edges_prim(points))
-    expected = sorted([ad, ce, df, ab, be, eg])
+    expected = sorted([ab, ad, be, ce, df, eg])
     assert_equals(result, expected)
-
-
-
-
