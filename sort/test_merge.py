@@ -7,14 +7,11 @@ def test_merge_empty():
 def test_merge_one():
     assert_equals(merge_sort([1]), [1])
 
-def test_merge_one_as_string():
-    assert_equals(merge_sort("a"), ["a"])
-
 def test_merge_two():
     assert_equals(merge_sort([2, 1]), [1, 2])
 
 def test_merge_three():
-    assert_equals(merge_sort("cda"), ["a", "c", "d"])
+    assert_equals(merge_sort(["c", "d", "a"]), ["a", "c", "d"])
 
 def test_merge_backwards():
     assert_equals(merge_sort([4, 3, 2, 1]), [1, 2, 3, 4])
