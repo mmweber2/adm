@@ -1,15 +1,15 @@
 def merge_sort(sequence):
-    """Sorts sequence using merge sort.
+    """Sorts a list using merge sort.
 
     Args:
-        sequence: An iterable of data to sort. May be numbers, strings, or other
-            comparable items.
+        sequence: A list of data to sort. May consist of numbers, strings,
+            or other comparable items.
     Returns:
         A list of the data in sequence in non-descending lexographic order.
     """
     if len(sequence) <= 1:
-        # Convert to list, but don't nest if it's already a list
-        return list(sequence)
+        # Per documentation, sequence should be a list already
+        return sequence
     mid = len(sequence) / 2
     left = merge_sort(sequence[:mid])
     right = merge_sort(sequence[mid:])
