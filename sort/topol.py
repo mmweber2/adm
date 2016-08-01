@@ -19,14 +19,16 @@ def topol(edges):
         ValueError: edges contains at least one cycle, or at least one edge
             contains fewer or more than two vertex names.
     """
+    # TODO: Add support for disconnected graphs
     if len(edges) == 0:
         return []
-    # Collect the vertices reachable from each vertex
+    # Collect the vertices reachable from each vertex.
     # Use a dict instead of a defaultdict because a lookup on a vertex with
     # no edges would cause the defaultdict graph to grow in size, which doesn't
     # work if we are using graph to iterate through the vertices.
-    # It would also be possible to make a list/tuple of graph and iterate
-    # through the vertices that way.
+    # It would also be possible to make a list/tuple of graph (since graph
+    # is effectively a set of unique vertex names) and iterate through the
+    # vertices that way.
     graph = dict()
     for edge in edges:
         start, end = edge
@@ -40,13 +42,12 @@ def topol(edges):
     stack = []
     sorted_vertices = []
     for vertex in graph:
-        # The first vertex in a topological sort has no incoming edges, so it
-        # cannot be visited before we try starting a search from it.
-        if vertex not in visited:
-            visit_vertex(vertex, graph, visited, set(), sorted_vertices)
+        visit_vertex(vertex, graph, visited, set(), sorted_vertices)
     return sorted_vertices
 
 def visit_vertex(vertex, graph, visited, seen, sorted_vertices):
+    if vertex in visited:
+        return
     if vertex in seen:
         raise ValueError("edges contains a cycle at vertex {}".format(vertex))
     seen.add(vertex)
