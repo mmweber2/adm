@@ -4,26 +4,46 @@ from random import sample
 from nose.tools import assert_equals
 
 def test_quick_empty():
-    assert_equals(quicksort([]), [])
+    array = []
+    quicksort(array)
+    expected = []
+    assert_equals(array, expected)
 
 def test_quick_one():
-    assert_equals(quicksort([1]), [1])
+    array = [1]
+    quicksort(array)
+    expected = [1]
+    assert_equals(array, expected)
 
 def test_quick_two():
-    assert_equals(quicksort([2, 1]), [1, 2])
+    array = [2, 1]
+    quicksort(array)
+    expected = [1, 2]
+    assert_equals(array, expected)
 
 def test_quick_three():
-    assert_equals(quicksort(["c", "d", "a"]), ["a", "c", "d"])
+    array = ["c", "d", "a"]
+    quicksort(array)
+    expected = ["a", "c", "d"]
+    assert_equals(array, expected)
 
 def test_quick_backwards():
-    assert_equals(quicksort([4, 3, 2, 1]), [1, 2, 3, 4])
+    array = [4, 3, 2, 1]
+    quicksort(array)
+    expected = [1, 2, 3, 4]
+    assert_equals(array, expected)
 
 def test_quick_duplicates():
-    assert_equals(quicksort([1, 4, 1, 3, 2, 4]), [1, 1, 2, 3, 4, 4])
+    array = [1, 4, 1, 3, 2, 4]
+    quicksort(array)
+    expected = [1, 1, 2, 3, 4, 4]
+    assert_equals(array, expected)
 
 def test_quick_large():
-    input_list = sample(xrange(100000), 10)
-    assert_equals(quicksort(input_list), sorted(input_list))
+    array = sample(xrange(100000), 90)
+    expected = sorted(array)
+    quicksort(array)
+    assert_equals(array, expected)
 
 # Test _median_of_three
 def test_median_in_order():
