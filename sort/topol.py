@@ -8,9 +8,9 @@ def topol(edges):
 
             These edges may not contain cycles or self-loops.
 
-            If edges form more than one connected component, the topological
-            ordering is not guaranteed.
-
+            If there are multiple valid topological sorts for edges, one sort 
+            is returned arbitrarily.
+            
             For example:
             [(1, 2), (2, 4)]
             [('a', 'c'), ('b', 'c'), ('c', 'd')]
@@ -18,8 +18,6 @@ def topol(edges):
     Returns:
         A list of vertices in edges in topological ordering, or an empty list
             if edges is empty.
-            The topological ordering is not guaranteed if edges form more than
-            one connected component.
 
     Raises:
         ValueError: edges contains at least one cycle, or at least one edge

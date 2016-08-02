@@ -17,6 +17,13 @@ def test_topol_two_point_cycle():
     graph = [(1, 2), (2, 1)]
     assert_raises(ValueError, topol, graph)
 
+def test_topol_four_points_disjoint():
+    graph = [(1, 2), (3, 4)]
+    result = topol(graph)
+    # Many orderings are possible, so confirm partial ordering
+    assert result.index(3) < result.index(4)
+    assert result.index(1) < result.index(2)
+
 def test_topol_three_points_linked():
     graph = [(1, 2), (1, 3)]
     # Some graphs will have multiple valid sorts
