@@ -5,7 +5,11 @@ def topol(edges):
         edges: A list of edge tuples in the format (start, end), where each
             tuple represents a directed edge, and start and end are each names
             of vertices. These names can be strings or numbers.
+
             These edges may not contain cycles or self-loops.
+
+            If edges form more than one connected component, the topological
+            ordering is not guaranteed.
 
             For example:
             [(1, 2), (2, 4)]
@@ -14,12 +18,13 @@ def topol(edges):
     Returns:
         A list of vertices in edges in topological ordering, or an empty list
             if edges is empty.
+            The topological ordering is not guaranteed if edges form more than
+            one connected component.
 
     Raises:
         ValueError: edges contains at least one cycle, or at least one edge
             contains fewer or more than two vertex names.
     """
-    # TODO: Add support for disconnected graphs
     if len(edges) == 0:
         return []
     # Collect the vertices reachable from each vertex.
@@ -46,6 +51,7 @@ def topol(edges):
     return sorted_vertices
 
 def visit_vertex(vertex, graph, visited, seen, sorted_vertices):
+    """Recursive helper method for topol to determine sort."""
     if vertex in visited:
         return
     if vertex in seen:
@@ -56,8 +62,3 @@ def visit_vertex(vertex, graph, visited, seen, sorted_vertices):
     visited.add(vertex)
     seen.remove(vertex)
     sorted_vertices.insert(0, vertex)
-
-    
-
-
-
