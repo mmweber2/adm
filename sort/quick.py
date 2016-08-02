@@ -1,7 +1,7 @@
-from time import sleep
-
 def quicksort(sequence, start=0, end=None):
-    """Returns a sorted copy of a list.
+    """Sorts sequence using QuickSort.
+
+    This function performs the sort in place, but also returns the list.
 
     Args:
         sequence: A list of data to sort. Items may be numbers, strings,
@@ -12,7 +12,7 @@ def quicksort(sequence, start=0, end=None):
             sorting (inclusive). Defaults to None.
 
     Returns:
-        A list copy of sequence in non-descending lexographic order.
+        The input sequence in non-descending lexographic order.
     """
     if end is None:
         end = len(sequence) - 1
