@@ -1,24 +1,19 @@
 def quicksort(sequence, start=0, end=None):
     """Sorts sequence using QuickSort.
 
-    This function performs the sort in place, but also returns the list.
-
     Args:
         sequence: A list of data to sort. Items may be numbers, strings,
             or other comparable objects.
-        start: integer, the index of the array to begin sorting.
+        start: integer, the index of the list to begin sorting.
             Defaults to 0.
-        end: integer, the index of the array at which to end
-            sorting (inclusive). Defaults to None.
-
-    Returns:
-        The input sequence in non-descending lexographic order.
+        end: integer, the index of the list at which to end sorting (inclusive).
+            Defaults to the last element in sequence.
     """
     if end is None:
         end = len(sequence) - 1
     # Nothing to sort
     if start >= end:
-        return sequence
+        return
     pivot = _median_of_three(sequence, start, end)
     left = start
     right = end
@@ -36,10 +31,31 @@ def quicksort(sequence, start=0, end=None):
     quicksort(sequence, start, right)
     # left > right, so this is the second half of sequence
     quicksort(sequence, left, end)
-    return sequence
+
+def quicksort2(sequence, start=0, end=None):
+    """Alternate version of quicksort."""
+    if end is None:
+        end = len(sequence) - 1
+    if start < end:
+        pivot_pos = partition(sequence, start, end)
+        quicksort2(sequence, start, pivot_pos - 1)
+        quicksort2(sequence, pivot_pos + 1, end)
+
+def partition(sequence, start, end):
+    """Helper function for quicksort2."""
+    pivot = sequence[end]
+    swap_pos = start
+    # Don't check pivot position at end, swap it in later
+    for i in xrange(start, end):
+        if sequence[i] <= pivot:
+            sequence[i], sequence[swap_pos] = sequence[swap_pos], sequence[i]
+            swap_pos += 1
+    # Everything else is partitioned, so put the pivot in its correct spot
+    sequence[swap_pos], sequence[end] = sequence[end], sequence[swap_pos]
+    return swap_pos
 
 def _median_of_three(sequence, start=0, end=None):
-    """Helper method for quicksort to pick median of 3 elements."""
+    """Helper function for quicksort to pick median of 3 elements."""
     # Besides just returning the median of the first, middle, and last elements,
     # this function sorts them to help with future sub-sorts.
     if end is None:
