@@ -4,8 +4,8 @@ from nose.tools import assert_equals
 from nose.tools import assert_raises
 
 def test_rank_empty():
-    # Could return None or raise IndexError, but it will return None first.
-    assert_equals(get_rank([], 0), None)
+    # Could return None or raise IndexError, but it will raise the error first.
+    assert_raises(IndexError, get_rank, [], 0)
 
 def test_rank_single_valid():
     assert_equals(get_rank([1], 0), 1)
@@ -39,6 +39,13 @@ def test_rank_sorted():
 def test_rank_large_unsorted():
     array = random.sample(xrange(10000), 80)
     assert_equals(get_rank(array, 30), sorted(array)[30])
+
+def test_rank_every_pos():
+    array = random.sample(xrange(1000000), 100)
+    sorted_array = sorted(array)
+    for i in xrange(len(array)):
+        assert_equals(get_rank(array, i), sorted_array[i])
+
 
 
 
