@@ -49,8 +49,7 @@ def three_sat(clauses):
     assignments = {literal:True for literal in literals_table.values()}
     unsatisfied = check_if_satisfied(parsed_clauses, assignments)
     current_best = len(unsatisfied)
-    # TODO: At what point should we break and give up looking?
-    for _ in xrange(10000):
+    for _ in xrange(1000):
         if current_best == 0:
             return True
         # Permute a random assignment and see if it improves
