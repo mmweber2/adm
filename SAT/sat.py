@@ -5,7 +5,7 @@ def three_sat(clauses):
     Args:
         clauses: a list of strings where each string contains up to three
             literals separated by spaces, and each literal represents a variable
-            to satisfy.
+            to satisfy. May not contain '!' as a literal.
             Negated literals are marked with a preceding !.
             For example:
             ["A B !C", "B C", "!B", "!A C"]
@@ -18,24 +18,58 @@ def three_sat(clauses):
         ValueError: At least one clause in clauses contains more than three
             literals.
     """
-    # Based on Python returning True for all([]), treat empty list as True
     if not clauses:
         return True
     # Start with 0 so we can 1-index and not worry about -0
     literals = [0]
     # Literal itself ('a') to index (1)
     literals_table = {}
-    # Translate each clause
+    parsed_clauses = parse_clauses(clauses, literals, literals_table):
+    # Track whether each literal is True or False. Set all to True by default.
+    assignments = {literal:True for literal in literals_table.values()}
+    unsatisfied_clauses = find_unsatisfied(parsed_clauses, assignments)
+    current_best = len(unsatisfied_clauses)
+    for _ in xrange(10000):
+        if current_best == 0:
+            return True
+        # TODO: Don't permute a random one, permute one that is unmet
+        # Permute a random assignment and see if it improves
+        swap = random.choice(xrange(1, len(literals)))
+        assignments[swap] = not assignments[swap]
+        # Find clauses that are not met by this assignment
+        now_unsatisfied = find_unsatisfied(parsed_clauses, assignments)
+        new_score = len(now_unsatisfied)
+        if new_score <= current_best:
+            current_best = new_score
+            unsatisfied_clauses = now_unsatisfied
+        else:
+            # Undo the swap since it did not improve
+            assignments[swap] = not assignments[swap]
+    return False
+
+def find_unsatisfied(clauses, assignments):
+    """Helper function for three_sat to check all clauses."""
+    return [x for x in clauses if not is_satisfied(x, assignments)]
+
+def is_satisfied(clause, assignments):
+    """Helper function for three_sat to check a single clause."""
+    outcome = False
+    for literal in clause:
+        positive = literal > 0
+        outcome |= (assignments[abs(literal)] and positive)
+    return outcome
+
+def parse_clauses(clauses, literals, literals_table):
     parsed_clauses = []
-    # Collect all unique literals
+    """Helper function for three_sat to parse input clauses."""
     for clause in clauses:
         parsed_clause = []
         clause = clause.split()
         if len(clause) > 3:
-            raise ValueError("clause {} contains >3 literals".format(clause))
+            raise ValueError("clause {} contains > 3 literals".format(clause))
         for literal in clause:
             # Don't treat negated literals as separate entities
-            negated = 1 if literal[0] == "!" else 0
+            negated = literal[0] == "!"
             literal = literal[negated:]
             if literal not in literals_table:
                 literals_table[literal] = len(literals)
@@ -45,40 +79,4 @@ def three_sat(clauses):
             else:
                 parsed_clause.append(literals_table[literal])
         parsed_clauses.append(parsed_clause)
-    # Track whether each literal is True or False. Set all to True by default.
-    assignments = {literal:True for literal in literals_table.values()}
-    unsatisfied = check_if_satisfied(parsed_clauses, assignments)
-    current_best = len(unsatisfied)
-    for _ in xrange(1000):
-        if current_best == 0:
-            return True
-        # Permute a random assignment and see if it improves
-        swap = random.choice(xrange(1, len(literals)))
-        assignments[swap] ^= True
-        new_score = len(check_if_satisfied(parsed_clauses, assignments))
-        if new_score <= current_best:
-            current_best = new_score
-            unsatisfied = check_if_satisfied(parsed_clauses, assignments)
-        else:
-            # Undo the swap since it did not improve
-            assignments[swap] ^= True
-    # Couldn't find a perfect match, so return the best we found
-    return False
-
-def check_if_satisfied(clauses, assignments):
-    """Helper function for three_sat to check all clauses."""
-    unsatisfied = []
-    for i in xrange(len(clauses)):
-        if not is_satisfied(clauses[i], assignments):
-            unsatisfied.append(i)
-    return unsatisfied
-
-def is_satisfied(clause, assignments):
-    """Helper function for three_sat to check a single clause."""
-    outcome = False
-    for literal in clause:
-        negated = False
-        if literal < 0:
-            negated = True
-        outcome |= (assignments[abs(literal)] ^ negated)
-    return outcome
+    return parsed_clauses
