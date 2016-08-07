@@ -27,7 +27,7 @@ def test_sat_satisfiable_3CNF():
     assert three_sat(formulas)
 
 def test_sat_large():
-    variables = xrange(1, 1001)
+    variables = xrange(1, 101)
     satisfied_by = {}
     for variable in variables:
         if random.random() >= 0.5:
@@ -35,7 +35,7 @@ def test_sat_large():
         else:
             satisfied_by[variable] = False
     formulas = []
-    while len(formulas) < 100:
+    while len(formulas) < 1000:
         # Choose three variables to include in clause
         pick_three = random.sample(variables, 3) 
         # Pick one of those variables to satisfy
