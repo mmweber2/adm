@@ -20,23 +20,23 @@ def three_sat(clauses):
     """
     if not clauses:
         return True
-    # Start with 0 so we can 1-index and not worry about -0
+    # Avoid -0
     literals = [0]
     # Literal itself ('a') to index (1)
     literals_table = {}
-    parsed_clauses = parse_clauses(clauses, literals, literals_table):
-    # Track whether each literal is True or False. Set all to True by default.
+    parsed_clauses = parse_clauses(clauses, literals, literals_table)
+    # Track whether each literal is True or False
     assignments = {literal:True for literal in literals_table.values()}
     unsatisfied_clauses = find_unsatisfied(parsed_clauses, assignments)
     current_best = len(unsatisfied_clauses)
     for _ in xrange(10000):
         if current_best == 0:
             return True
-        # TODO: Don't permute a random one, permute one that is unmet
-        # Permute a random assignment and see if it improves
-        swap = random.choice(xrange(1, len(literals)))
+        # Permute one of the variables in one of the unsatisfied clauses
+        clause = parsed_clauses[random.choice(unsatisfied_clauses)]
+        swap = random.choice([abs(x) for x in clause])
         assignments[swap] = not assignments[swap]
-        # Find clauses that are not met by this assignment
+        # Find clauses that are not met by the new assignment
         now_unsatisfied = find_unsatisfied(parsed_clauses, assignments)
         new_score = len(now_unsatisfied)
         if new_score <= current_best:
@@ -49,15 +49,20 @@ def three_sat(clauses):
 
 def find_unsatisfied(clauses, assignments):
     """Helper function for three_sat to check all clauses."""
-    return [x for x in clauses if not is_satisfied(x, assignments)]
+    clause_indices = []
+    for i in xrange(len(clauses)):
+        if not is_satisfied(clauses[i], assignments):
+            clause_indices.append(i)
+    return clause_indices
 
 def is_satisfied(clause, assignments):
     """Helper function for three_sat to check a single clause."""
-    outcome = False
     for literal in clause:
         positive = literal > 0
-        outcome |= (assignments[abs(literal)] and positive)
-    return outcome
+        if positive and assignments[abs(literal)]:
+            return True
+        if not positive and not assignments[abs(literal)]:
+            return True
 
 def parse_clauses(clauses, literals, literals_table):
     parsed_clauses = []
