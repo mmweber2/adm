@@ -42,11 +42,12 @@ def topol(edges):
         if end not in graph:
             graph[end] = []
     visited = set()
-    stack = []
     sorted_vertices = []
     for vertex in graph:
         visit_vertex(vertex, graph, visited, set(), sorted_vertices)
-    return sorted_vertices
+    # Instead of appending the newly visited vertices to the front of the
+    # list, append to the end and just return in opposite order
+    return sorted_vertices[::-1]
 
 def visit_vertex(vertex, graph, visited, seen, sorted_vertices):
     """Recursive helper method for topol to determine sort."""
@@ -59,4 +60,4 @@ def visit_vertex(vertex, graph, visited, seen, sorted_vertices):
         visit_vertex(end_vertex, graph, visited, seen, sorted_vertices)
     visited.add(vertex)
     seen.remove(vertex)
-    sorted_vertices.insert(0, vertex)
+    sorted_vertices.append(vertex)
