@@ -26,21 +26,11 @@ def max_flow(edges, source, sink):
     excess_nodes = [edge[1] for edge in outgoing_edges[source]]
     while len(excess_nodes) > 0:
         current = excess_nodes.pop()
-        pushed = False
-        for edge in outgoing_edges[current]:
-            v, w, capacity = edge
-            if labels[w] < labels[v]:
-                # Node is downhill; try to push flow to edge
-                v_excess = excess(flow, outgoing_edges[v], incoming_edges[v])
-                push_amount = min(v_excess, capacity - flow[edge])
-                if push_amount > 0:
-                    flow[edge] += push_amount
-                    pushed = True
-                    break
-        if not pushed:
-            if not relabel(current, outgoing_edges[current], labels):
-                # Stop if nothing could be pushed or relabeled
-                break
+        pushed = push(
+                outgoing_edges[current], incoming_edges[current], labels, flow)
+        if not (pushed or relabel(outgoing_edges[current], labels)):
+            # Try next node if nothing could be pushed or relabeled
+            continue
         # Only check nodes with outgoing edges; sink has none
         excess_nodes = [node for node in outgoing_edges if excess(
             flow, outgoing_edges[node], incoming_edges[node]) > 0]
@@ -71,11 +61,24 @@ def excess(flow, outgoing, incoming):
     in_flow = sum(flow[edge] for edge in incoming)
     return in_flow - out_flow
 
-def relabel(v, v_edges, labels):
+def relabel(v_edges, labels):
     """Helper function for max_flow to raise the label of a node."""
     for edge in v_edges:
         v, w, capacity = edge
         if labels[w] >= labels[v]:
             labels[v] += 1
+            print "Relabeled v {} to {}".format(v, labels[v])
             return True
+    return False
+
+def push(edges_out, edges_in, labels, flow):
+    for edge in edges_out:
+        v, w, capacity = edge
+        if labels[w] < labels[v]:
+            # Node is downhill; try to push flow to edge
+            v_excess = excess(flow, edges_out, edges_in)
+            push_amount = min(v_excess, capacity - flow[edge])
+            if push_amount > 0:
+                flow[edge] += push_amount
+                return True
     return False
