@@ -26,12 +26,6 @@ def topol(edges):
     if len(edges) == 0:
         return []
     # Collect the vertices reachable from each vertex.
-    # Use a dict instead of a defaultdict because a lookup on a vertex with
-    # no edges would cause the defaultdict graph to grow in size, which doesn't
-    # work if we are using graph to iterate through the vertices.
-    # It would also be possible to make a list/tuple of graph (since graph
-    # is effectively a set of unique vertex names) and iterate through the
-    # vertices that way.
     graph = dict()
     for edge in edges:
         start, end = edge
@@ -44,20 +38,25 @@ def topol(edges):
     visited = set()
     sorted_vertices = []
     for vertex in graph:
-        visit_vertex(vertex, graph, visited, set(), sorted_vertices)
-    # Instead of appending the newly visited vertices to the front of the
-    # list, append to the end and just return in opposite order
+        sorted_vertices.extend(visit_vertex(vertex, graph, visited, set()))
+    # Vertices were added in reverse order
     return sorted_vertices[::-1]
 
-def visit_vertex(vertex, graph, visited, seen, sorted_vertices):
+def visit_vertex(vertex, graph, visited, seen):
     """Recursive helper method for topol to determine sort."""
+    # If we have visited the vertex on a previous pass, it is already part
+    # of a vertex list
     if vertex in visited:
-        return
+        return []
+    # Encountered a vertex again while visiting its edges
     if vertex in seen:
         raise ValueError("edges contains a cycle at vertex {}".format(vertex))
     seen.add(vertex)
+    vertices = []
+    # Vertices with no out degrees will not recurse, so they will be added
+    # to the vertices list first, followed by the vertices that linked to them
     for end_vertex in graph[vertex]:
-        visit_vertex(end_vertex, graph, visited, seen, sorted_vertices)
+        vertices += visit_vertex(end_vertex, graph, visited, seen)
     visited.add(vertex)
-    seen.remove(vertex)
-    sorted_vertices.append(vertex)
+    return vertices + [vertex]
+
