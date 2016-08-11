@@ -26,10 +26,12 @@ def shortest_path(edges, start):
             Returns the dictionary {start:0} if edges is empty.
     """
     vertex_edges = defaultdict(list)
+    all_vertices = set()
     for edge in edges:
         vertex_edges[edge[0]].append(edge)
+        all_vertices.update((edge[0], edge[1]))
     # Minimum known distances for each vertex
-    distances = {vertex:float("inf") for vertex in vertex_edges}
+    distances = {vertex:float("inf") for vertex in all_vertices}
     distances[start] = 0
     # The set of vertices for which we know we have the minimum path
     visited = set()
@@ -52,12 +54,6 @@ def shortest_path(edges, start):
             break
         for edge in vertex_edges[current]:
             v1, v2, weight = edge
-            distances[v2] = min(distances[v2], distances[v] + weight)
+            distances[v2] = min(distances[v2], distances[v1] + weight)
         visited.add(current)
     return distances
-
-        
-
-    
-
-
