@@ -67,7 +67,6 @@ def relabel(v_edges, labels):
         v, w, capacity = edge
         if labels[w] >= labels[v]:
             labels[v] += 1
-            print "Relabeled v {} to {}".format(v, labels[v])
             return True
     return False
 
