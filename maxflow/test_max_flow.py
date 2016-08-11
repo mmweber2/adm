@@ -25,14 +25,17 @@ def test_negative_capacity():
 def test_zero_capacity():
     assert_equals(max_flow([(0, 1, 3), (1, 2, 0)], 0, 2), 0)
 
-def test_two_edges_bottleneck():
+def test_two_edges_bottleneck_end():
     assert_equals(max_flow([(0, 1, 10), (1, 2, 1)], 0, 2), 1.0)
 
-def test_three_edges_bottleneck():
+def test_two_edges_bottleneck_front():
+    assert_equals(max_flow([(0, 1, 1), (1, 2, 10)], 0, 2), 1.0)
+
+def test_four_edges_one_bottleneck():
     edges = [("a", "b", 10), ("b", "d", 1), ("a", "c", 10), ("c", "b", 3)]
     assert_equals(max_flow(edges, "a", "d"), 1.0)
 
-def test_four_edges_bottleneck():
+def test_four_edges_two_bottlenecks():
     edges = [("a", "b", 10), ("b", "d", 1), ("a", "c", 10), ("c", "d", 3)]
     assert_equals(max_flow(edges, "a", "d"), 4.0)
 
