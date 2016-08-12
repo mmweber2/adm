@@ -26,7 +26,7 @@ def max_flow(edges, source, sink):
             from source to sink through edges.
     """
     flow, labels, outgoing_edges, incoming_edges = _initialize(edges, source)
-    # Fill all nodes adjacent to source with the capacity of their shared edge
+    # Start with the nodes that are adjacent to source, since they can get flow
     excess_nodes = [edge[1] for edge in outgoing_edges[source]]
     while len(excess_nodes) > 0:
         current = excess_nodes.pop()
@@ -85,7 +85,7 @@ def _push(edges_out, edges_in, labels, flow):
         v, w, capacity = edge
         if labels[w] < labels[v]:
             # Node is downhill; try to push flow to edge
-            v_excess = excess(flow, edges_out, edges_in)
+            v_excess = _excess(flow, edges_out, edges_in)
             push_amount = min(v_excess, capacity - flow[edge])
             if push_amount > 0:
                 flow[edge] += push_amount
