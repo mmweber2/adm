@@ -18,3 +18,7 @@ def test_shorter_of_two_paths_split():
     paths = [(1, 2, 5), (2, 3, 4), (2, 4, 2), (4, 5, 4), (3, 5, 1)]
     assert_equals(shortest_path(paths, 1), {1:0, 2:5, 3:9, 4:7, 5:10})
 
+def test_has_cycle():
+    paths = [(1, 2, 1), (2, 3, 2), (3, 1, 4)]
+    assert_equals(shortest_path(paths, 1), {1:0, 2:1, 3:3})
+
