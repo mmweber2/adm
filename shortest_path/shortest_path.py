@@ -76,7 +76,8 @@ def a_star(vertices, edges, start, goal):
         edges: A list of edge tuples in the form (v1, v2), where
             v1 and v2 are vertex names, and may be numbers or strings.
             All edges are treated as directed, with the edge going from
-            v1 to v2.
+            v1 to v2. All vertex names must also be included in the vertices
+            parameter.
 
         start: The name of the vertex from which to find a path to goal.
             May be a string or number, but must be included in vertices.
@@ -93,25 +94,20 @@ def a_star(vertices, edges, start, goal):
             Returns the float value for infinity if there is no path from start
             to goal.
     """
-    # TODO: Seek to minimize distance sum of: to node + estimated distance to goal
-    # (even though it will always be bigger than that)
-
-    # TODO: Pick up here
     # The x,y coordinates of each vertex
     coords = {name:(x,y) for name, x, y in vertices}
-    # Track the outgoing edges from each vertex
-    outgoing_edges = collections.defaultdict(list)
-    # The set of all vertices, not just those with outgoing edges
-    all_vertices = set()
+    if start not in coords or goal not in coords:
+        raise ValueError("Start and goal vertices must be in vertex list")
+    # Track the connected vertices from each vertex
+    graph = {vertex:[] for vertex in coords}
     for edge in edges:
-        graph[edge[0]].append(edge)
-        all_vertices.update([edge[0], edge[1]])
+        graph[edge[0]].append(edge[1])
     # The best known path length for each vertex
-    distances = {vertex:float("inf") for vertex in all_vertices}
+    distances = {vertex:float("inf") for vertex in coords}
     distances[start] = 0.0
     # Estimated path length from start to goal if passing through each vertex
-    f_distances = {vertex:float("inf") for vertex in all_vertices}
-    f_distances[start] = _estimate_dist(start, goal)
+    f_distances = {vertex:float("inf") for vertex in coords}
+    f_distances[start] = _get_dist(coords[start], coords[goal])
     # The vertices for which we have confirmed the shortest path
     visited = set()
     # Track vertices in priority queue as (estimated distance, vertex) tuples
@@ -126,23 +122,23 @@ def a_star(vertices, edges, start, goal):
         if current in visited:
             continue
         visited.add(current)
-        for edge in graph[current]:
-            current, neighbor, weight = edge
+        for neighbor in graph[current]:
             if neighbor in visited:
                 continue
             # Distance from start to this neighboring node
-            new_score = distances[current] + weight
+            new_score = distances[current] + _get_dist(coords[current], coords[neighbor])
             if new_score >= distances[neighbor]:
                 # This path is not an improvement
                 continue
             # This path is an improvement, so add it
             distances[neighbor] = new_score
-            f_distances[neighbor] = new_score + _estimate_dist(neighbor, goal)
+            # Neighbor's minimum distance (if it had an edge directly to goal)
+            f_distances[neighbor] = new_score + _get_dist(coords[neighbor], coords[goal])
             # Estimated distance has been updated; re-add to heap
             heapq.heappush(queue, (f_distances[neighbor], neighbor))
     return f_distances[goal]
 
-def _estimate_dist(node, goal):
+def _get_dist(node, goal):
     """Returns the straight-line distance from node to goal."""
     x_dist = abs(node[0] - goal[0])
     y_dist = abs(node[1] - goal[1])
