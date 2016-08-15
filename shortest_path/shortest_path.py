@@ -42,7 +42,8 @@ def shortest_path(edges, start):
     # A shorter path could exist to these vertices, so don't mark them visited
     for edge in vertex_edges[start]:
         v1, v2, weight = edge
-        distances[v2] = weight
+        # Don't overwrite 0 for start if there is a self loop from start
+        distances[v2] = weight if v2 != start else 0
     # Reach all accessible vertices by traversing all outgoing edges
     while len(visited) < len(vertex_edges):
         current = None
@@ -125,15 +126,17 @@ def a_star(vertices, edges, start, goal):
         for neighbor in graph[current]:
             if neighbor in visited:
                 continue
+            edge_distance = _get_dist(coords[current], coords[neighbor])
             # Distance from start to this neighboring node
-            new_score = distances[current] + _get_dist(coords[current], coords[neighbor])
+            new_score = distances[current] + edge_distance
             if new_score >= distances[neighbor]:
                 # This path is not an improvement
                 continue
             # This path is an improvement, so add it
             distances[neighbor] = new_score
             # Neighbor's minimum distance (if it had an edge directly to goal)
-            f_distances[neighbor] = new_score + _get_dist(coords[neighbor], coords[goal])
+            remaining_dist = _get_dist(coords[neighbor], coords[goal])
+            f_distances[neighbor] = new_score + remaining_dist
             # Estimated distance has been updated; re-add to heap
             heapq.heappush(queue, (f_distances[neighbor], neighbor))
     return f_distances[goal]
