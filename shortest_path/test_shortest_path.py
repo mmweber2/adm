@@ -30,6 +30,20 @@ def test_shortest_path_self_loop():
     paths = [(1, 2, 2), (2, 3, 2), (1, 1, 1)]
     assert_equals(shortest_path(paths, 1), {1:0, 2:2, 3:4})
 
+def test_shortest_path_large():
+    paths = [("a", "b", 2), ("b", "e", 1), ("a", "d", 1), ("a", "c", 4),
+            ("b", "c", 3), ("c", "e", 2), ("d", "f", 5), ("d", "g", 4),
+            ("e", "h", 3), ("f", "h", 3), ("f", "i", 2), ("f", "j", 4),
+            ("f", "g", 3), ("c", "f", 2), ("g", "k", 2), ("h", "o", 8),
+            ("h", "l", 1), ("i", "l", 3), ("i", "m", 2), ("i", "j", 3),
+            ("j", "m", 6), ("j", "n", 3), ("j", "k", 6), ("k", "r", 2),
+            ("k", "n", 4), ("l", "o", 6), ("l", "m", 3), ("m", "o", 4),
+            ("m", "p", 2), ("m", "n", 5), ("n", "q", 2), ("n", "r", 1),
+            ("o", "s", 6), ("o", "p", 2), ("p", "s", 2), ("p", "t", 1),
+            ("p", "q", 1), ("q", "t", 3), ("q", "r", 8), ("r", "t", 5),
+            ("s", "z", 2), ("t", "z", 8)]
+    assert_equals(shortest_path(paths, "a")["z"], 16)
+
 # Parameters: vertices, edges, start, goal
 def test_a_star_no_vertex_list_no_edges():
     assert_raises(ValueError, a_star, [], [], 3, 2)
@@ -89,7 +103,3 @@ def test_a_star_large():
     assert_equals(_get_dist(vertices[4][1:], vertices[1][1:]), four_one_dist)
     expected = zero_three_dist + three_two_dist + two_four_dist + four_one_dist
     assert_equals(a_star(vertices, paths, 0, 1), expected)
-
-
-
-
