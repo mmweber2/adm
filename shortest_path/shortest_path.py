@@ -2,7 +2,7 @@ from collections import defaultdict
 import heapq
 
 def shortest_path(edges, start):
-    """Returns the lengths of the shortest paths from a given start point.
+    """Returns the shortest path length to each vertex from a start vertex.
 
     Finds the length of the shortest path from start to every other vertex
         in edges using Dijkstra's algorithm.
@@ -42,7 +42,7 @@ def shortest_path(edges, start):
     # A shorter path could exist to these vertices, so don't mark them visited
     for edge in vertex_edges[start]:
         v1, v2, weight = edge
-        # Don't overwrite 0 for start if there is a self loop from start
+        # Don't change the 0 from start if there is a self loop from start
         distances[v2] = weight if v2 != start else 0
     # Reach all accessible vertices by traversing all outgoing edges
     while len(visited) < len(vertex_edges):
@@ -59,14 +59,15 @@ def shortest_path(edges, start):
         for edge in vertex_edges[current]:
             v1, v2, weight = edge
             distances[v2] = min(distances[v2], distances[v1] + weight)
-        # Now have the minimum possible distance for current, so mark as visited
+        # Now have the minimum possible distance for current
         visited.add(current)
     return distances
 
 def a_star(vertices, edges, start, goal):
-    """Returns an estimated shortest path distance from start to goal.
+    """Returns the distance of the shortest path from start to goal.
 
-    Using the A* heuristic, estimates the shortest path from start to goal.
+    Using the A* heuristic, finds the length of the shortest path
+        from start to goal.
 
     Args:
         vertices: A list of vertex tuples in the following format:
@@ -90,7 +91,7 @@ def a_star(vertices, edges, start, goal):
             non-infinite result.
 
     Returns:
-        A floating point number that shows the estimated shortest path distance
+        A floating point number that shows the shortest path distance
             from start to goal using a subset of the edges in edges.
             Returns the float value for infinity if there is no path from start
             to goal.
@@ -106,13 +107,10 @@ def a_star(vertices, edges, start, goal):
     # The best known path length for each vertex
     distances = {vertex:float("inf") for vertex in coords}
     distances[start] = 0.0
-    # Estimated path length from start to goal if passing through each vertex
-    f_distances = {vertex:float("inf") for vertex in coords}
-    f_distances[start] = _get_dist(coords[start], coords[goal])
     # The vertices for which we have confirmed the shortest path
     visited = set()
     # Track vertices in priority queue as (estimated distance, vertex) tuples
-    queue = [(f_distances[start], start)]
+    queue = [(_get_dist(coords[start], coords[goal]), start)]
     while len(queue) > 0:
         # Get the vertex itself, no longer need to track its priority
         current = heapq.heappop(queue)[1]
@@ -136,13 +134,12 @@ def a_star(vertices, edges, start, goal):
             distances[neighbor] = new_score
             # Neighbor's minimum distance (if it had an edge directly to goal)
             remaining_dist = _get_dist(coords[neighbor], coords[goal])
-            f_distances[neighbor] = new_score + remaining_dist
             # Estimated distance has been updated; re-add to heap
-            heapq.heappush(queue, (f_distances[neighbor], neighbor))
-    return f_distances[goal]
+            heapq.heappush(queue, (new_score + remaining_dist, neighbor))
+    return distances[goal]
 
 def _get_dist(node, goal):
     """Returns the straight-line distance from node to goal."""
-    x_dist = abs(node[0] - goal[0])
-    y_dist = abs(node[1] - goal[1])
+    x_dist = node[0] - goal[0]
+    y_dist = node[1] - goal[1]
     return (x_dist**2 + y_dist**2)**0.5
