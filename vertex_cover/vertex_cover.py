@@ -24,8 +24,8 @@ def cover(edges):
     graph = defaultdict(list)
     for edge in edges:
         start, end = edge
-        graph[start].append(edge)
-        graph[end].append(edge)
+        graph[start].append(end)
+        graph[end].append(start)
     remaining_edges = edges[:]
     # Result vertex cover
     cover = set()
@@ -33,38 +33,36 @@ def cover(edges):
     covered = set()
     while len(remaining_edges) > 0:
         current = _find_best_edge(remaining_edges, graph, covered)
-        if _get_vertex_count(graph, current[0], covered) < 2:
+        if _get_vertex_count(graph[current[0]], covered) < 2:
             # Avoid adding vertices with 1 edge, unless both have only one edge
             cover.add(current[1])
-        elif _get_vertex_count(graph, current[1], covered) < 2:
+        elif _get_vertex_count(graph[current[1]], covered) < 2:
             cover.add(current[0])
         else:
             cover.update(current)
         # Both should now be covered, regardless of which were added to cover
         covered.update(current)
-        adj_edges = set(graph[current[0]] + graph[current[1]])
         # Filter out any edges that touch a vertex in current
-        remaining_edges = [x for x in remaining_edges if x not in adj_edges]
+        remaining_edges = _get_remaining_edges(edges, covered)
     return cover
 
+def _get_remaining_edges(edges, covered):
+    """Returns a list of edges where each has two uncovered vertices."""
+    return [x for x in edges if x[0] not in covered and x[1] not in covered]
+
 def _find_best_edge(edges, graph, covered):
-    """Returns the edge that touches the most remaining vertices."""
+    """Returns the edge affecting the most highly connected vertices."""
     max_edges = 0
     best_edge = edges[0]
     for edge in edges:
-        start, end = edge
-        affects = sum(_get_vertex_count(graph, v, covered) for v in edge)
+        # Get sum of active (not already covered) vertices
+        affects = sum(_get_vertex_count(graph[v], covered) for v in edge)
         if affects > max_edges:
             max_edges = affects
             best_edge = edge
     return best_edge
 
-def _get_vertex_count(graph, vertex, covered):
+def _get_vertex_count(vertex_list, covered):
     """Returns the number of vertices that are connected to this vertex."""
-    adj_vertices = []
-    for edge in graph[vertex]:
-        if edge[0] == vertex:
-            adj_vertices.append(edge[1])
-        else:
-            adj_vertices.append(edge[0])
-    return sum(1 for x in adj_vertices if x not in covered)
+    # Filter out vertices already covered
+    return sum(1 for v in vertex_list if v not in covered)
