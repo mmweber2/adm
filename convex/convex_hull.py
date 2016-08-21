@@ -46,16 +46,12 @@ def _get_turn(p1, p2, p3):
     # if negative, a "right turn", and if 0, a straight line.
     return (p2.x - p1.x)(p3.y - p1.y) - (p2.y - p1.y)(p3.x - p1.x)
 
-
-
-# TODO: Use namedtuples
 def get_angle(point1, point2):
     """Returns the angle between two two-dimensional points.
 
     Args:
-     # TODO: Namedtuple
-        point1, point2: Tuples of the format (x, y) representing the location of
-            two points in two dimensions.
+        point1, point2: Point namedtuples in the format (x, y) representing the
+            location of two points in two dimensions.
             point 1 is the start point (the point from which to find an angle),
             and point2 is the end point.
 
@@ -72,7 +68,7 @@ def get_angle(point1, point2):
         Returns 0.0 if point1 and point2 are identical.
     """
     # TODO: Error checking
-    y_dist = point2[1] - point1[1]
-    x_dist = point2[0] - point1[0]
+    y_dist = point2.y - point1.y
+    x_dist = point2.x - point1.x
     degrees = (math.atan2(y_dist, x_dist))/math.pi * 180
     return degrees if degrees > 0 else degrees + 360
