@@ -2,7 +2,7 @@ import math
 from collections import namedtuple
 
 def make_hull(points):
-    """Returns a list of points representing a convex hull.
+    """Returns a set of points representing a convex hull.
 
         Uses the Graham Scan technique:
 
@@ -21,14 +21,20 @@ def make_hull(points):
             points: A list of Point namedtuples of the format (x, y), where
                 x and y are numbers representing the coordinates of the point.
 
+        Raises:
+            TypeError: points consists of at least three points, but at least
+                one Point does not consist of two numbers.
+
         Returns:
-            A list of Point namedtuples representing the points from the points
+            A set of Point namedtuples representing the points from the points
                 argument that make up its convex hull.
-            If points contains fewer than 3 Points, returns points unchanged,
-                as a smaller convex hull cannot be formed.
+            If points contains fewer than 3 Points, simply returns points
+                converted to a set, as a smaller convex hull cannot be formed.
     """
+    # Don't check the types of these points, since we don't need to calculate
+    # anything from them
     if len(points) < 3:
-        return points
+        return set(points)
     # Find start point with lowest y coordinate (lowest x as tiebreaker)
     p = _get_start_point(points)
     # Sort non-p points in increasing order of angle from p
@@ -37,14 +43,16 @@ def make_hull(points):
     hull_points = [p]
     # We need a hull edge to compare to, so try including the first point
     hull_points.append(point_angles[0][1])
-    for angle, point in point_angles:
+    # Wrap back around to p at the end of the hull
+    for angle, point in point_angles[1:] + [(0, p)]:
         turn = _get_turn(hull_points[-2], hull_points[-1], point)
         if turn > 0:
             hull_points.append(point)
         elif turn < 0:
             # Number of interior points if we add this point
             num_interior = 0
-            while turn < 0:
+            # Keep going back until we find the last convex point
+            while turn <= 0:
                 num_interior += 1
                 # Get lookup of previous two points in the hull
                 two_back = hull_points[-2 - num_interior]
@@ -55,7 +63,7 @@ def make_hull(points):
         else:
             # On the same line as the previous point, so replace previous point
             hull_points[-1] = point
-    return hull_points
+    return set(hull_points)
 
 def _get_start_point(points):
     """Returns the point with the lowest y coordinate."""
@@ -87,6 +95,10 @@ def get_angle(point1, point2):
             point 1 is the start point (the point from which to find an angle),
             and point2 is the end point.
 
+    Raises:
+        TypeError: At least one of point1 and point2 does not consist of
+            numbers.
+
     Returns: 
         A floating point number indicating the angle of point2 from point1
             in degrees.
@@ -103,4 +115,4 @@ def get_angle(point1, point2):
     y_dist = point2.y - point1.y
     x_dist = point2.x - point1.x
     degrees = (math.atan2(y_dist, x_dist))/math.pi * 180
-    return degrees if degrees > 0 else degrees + 360
+    return degrees if degrees >= 0 else degrees + 360
