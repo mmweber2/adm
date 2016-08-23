@@ -22,8 +22,8 @@ def make_hull(points):
                 x and y are numbers representing the coordinates of the point.
 
         Raises:
-            TypeError: points consists of at least three points, but at least
-                one Point does not consist of two numbers.
+            TypeError: points contains at least three points, but at least
+                one Point contains non-number values.
 
         Returns:
             A set of Point namedtuples representing the points from the points
@@ -39,17 +39,18 @@ def make_hull(points):
     p = _get_start_point(points)
     # Sort non-p points in increasing order of angle from p
     point_angles = sorted((get_angle(p, x), x) for x in points if x != p)
+    # Wrap back around to p after checking all other points
+    point_angles.append((0, p))
     # Points that make up the convex hull; must include p
     hull_points = [p]
     # We need a hull edge to compare to, so try including the first point
     hull_points.append(point_angles[0][1])
-    # Wrap back around to p at the end of the hull
-    for angle, point in point_angles[1:] + [(0, p)]:
+    for angle, point in point_angles[1:]:
         turn = _get_turn(hull_points[-2], hull_points[-1], point)
         if turn > 0:
             hull_points.append(point)
         elif turn < 0:
-            # Number of interior points if we add this point
+            # Number of interior points there will be if we add this point
             num_interior = 0
             # Keep going back until we find the last convex point
             while turn <= 0:
@@ -87,21 +88,24 @@ def _get_turn(p1, p2, p3):
     return (p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x)
 
 def get_angle(point1, point2):
-    """Returns the angle between two two-dimensional points.
+    """Returns the angle between two two-dimensional Points.
 
     Args:
         point1, point2: Point namedtuples in the format (x, y) representing the
             location of two points in two dimensions.
+            x and y must be numbers for both Points.
             point 1 is the start point (the point from which to find an angle),
             and point2 is the end point.
 
     Raises:
-        TypeError: At least one of point1 and point2 does not consist of
-            numbers.
+        TypeError: At least one of the x, y values of point1 or point2 is not
+            a number.
+        AttributeError: At least one of point1 and point is not a
+            Point namedtuple.
 
     Returns: 
         A floating point number indicating the angle of point2 from point1
-            in degrees.
+            in degrees in the range [0, 360).
 
         For example:
             point2 is directly to the right of point1: returns 0.0
@@ -111,7 +115,6 @@ def get_angle(point1, point2):
 
         Returns 0.0 if point1 and point2 are identical.
     """
-    # TODO: Error checking
     y_dist = point2.y - point1.y
     x_dist = point2.x - point1.x
     degrees = (math.atan2(y_dist, x_dist))/math.pi * 180
