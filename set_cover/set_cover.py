@@ -43,19 +43,19 @@ def set_cover_exact(subsets):
     """
     # TODO: Write set cover; this just generates all subsets
     perms = _generate_subsets(subsets)
-    for x in perms:
-        print "Subset: ", x
 
-def _generate_subsets(subsets):
-    all_subsets = []
+def _generate_subsets(subsets, max_size=None):
+    """Given a set of subsets, generate all combinations of subsets."""
+    if max_size is None:
+        max_size = len(subsets)
+    all_subsets = [[set()]]
     for i in xrange(2**len(subsets)):
         current = []
-        for j in xrange(len(subsets)):
+        for j in xrange(max_size):
             if j > i:
                 break
             if i & (1 << j):
                 current.append(subsets[j])
-        all_subsets.append(current)
+        if current:
+            all_subsets.append(current)
     return all_subsets
-
-set_cover_exact([set((1, 2, 3)), set((4, 5)), set((2, 3))])
