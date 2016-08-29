@@ -44,14 +44,9 @@ def set_cover_exact(subsets):
     for i in xrange(1, 2**len(subsets)):
         # Start with covers of size 1 and increases size by 1 each time,
         # so the first cover found will be the smallest possible cover
-        #print "All subsets up to size {} are ".format(i)
-        #print _generate_subsets(subsets, i)
         for cover in _generate_subsets(subsets, i):
             if _is_valid_cover(subsets, cover):
-        #        print "Returning cover ", cover
                 return cover
-            #print "Invalid cover: ", cover
-        #print "Increasing i, didn't find anything"
 
 def _is_valid_cover(all_subsets, cover):
     """Returns True iff cover is a valid set cover for all_subsets."""
@@ -76,7 +71,5 @@ def _generate_subsets(subsets, max_size=None):
             if (i & (1 << j)):
                 current.append(subsets[j])
         if 0 < len(current) <= max_size:
-            if len(current) < max_size:
-                all_subsets.append(current + [set()])
             all_subsets.append(current)
     return all_subsets
