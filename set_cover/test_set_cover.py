@@ -1,4 +1,5 @@
 from set_cover import set_cover
+from set_cover import set_cover_exact
 from set_cover import _generate_subsets
 from set_cover import _is_valid_cover
 from nose.tools import assert_equals
@@ -23,7 +24,7 @@ def test_greedy_requires_two_sets():
     for subset in result:
         assert subset in sets
 
-def test_greedy_requires_best_of_four_sets():
+def test_greedy_best_of_four_sets():
     sets = [set([1, 3]), set([2, 3]), set([1, 3, 4]), set([1, 4])]
     result = set_cover(sets)
     expected = sets[1:3]
@@ -42,31 +43,55 @@ def test_generate_subsets_empty():
 def test_generate_subsets_single():
     sets = [set([1, 2])]
     result = _generate_subsets(sets)
+    expected = [sets, [set()]]
     assert_equals(len(result), 2)
     for subset in result:
-        assert subset in [sets, [set()]]
+        assert subset in expected
+    for subset in expected:
+        assert subset in result
 
 def test_generate_subsets_two():
     sets = [set([1, 2]), set([2, 3])]
     expected = [[set([1, 2])], [set([2, 3])], [set()], sets]
     result = _generate_subsets(sets)
-    assert_equals(len(result), 4)
+    assert_equals(len(result), len(expected))
     for subset in result:
         assert subset in expected
+    for subset in expected:
+        assert subset in result
+
+def test_generate_subsets_four():
+    sets = [set([1, 3]), set([2, 3]), set([1, 3, 4]), set([1, 4])]
+    result = _generate_subsets(sets)
+    assert_equals(len(result), 16)
 
 def test_generate_subsets_ten():
     sets = [set(range(i, 10)) for i in xrange(10)]
     assert_equals(len(_generate_subsets(sets)), 1024)
 
-def test_generate_subsets_size1():
-    sets = [set([1, 2]), set([2, 3])]
-    expected = [[set([1, 2])], [set([2, 3])], [set()]]
+def test_generate_subsets_size_one():
+    sets = [set([1, 2]), set([2, 3]), set([3, 4])]
+    expected = [[set([1, 2])], [set([2, 3])], [set([3, 4])], [set()]]
     result = _generate_subsets(sets, 1)
-    assert_equals(len(result), 3)
+    assert_equals(len(result), 4)
     for subset in result:
         assert subset in expected
+    for subset in expected:
+        assert subset in result
 
-def test_generate_subsets_size0():
+def test_generate_subsets_size_two():
+    sets = [set([1, 2]), set([2, 3]), set([3, 4])]
+    expected = [[set([1, 2])], [set([2, 3])], [set([3, 4])], [set()], 
+            [set([1, 2]), set([2, 3])], [set([1, 2]), set([3, 4])],
+            [set([2, 3]), set([3, 4])]]
+    result = _generate_subsets(sets, 2)
+    assert_equals(len(result), len(expected))
+    for subset in result:
+        assert subset in expected
+    for subset in expected:
+        assert subset in result
+
+def test_generate_subsets_size_0():
     sets = [set([1, 2]), set([2, 3])]
     result = _generate_subsets(sets, 0)
     assert_equals(result, [])
@@ -96,3 +121,34 @@ def test_is_valid_cover_not_all_sets():
     sets = [set([1, 3]), set([2, 3]), set([1, 3, 4]), set([1, 4])]
     assert _is_valid_cover(sets, set_cover(sets))
     assert _is_valid_cover(sets, sets)
+
+def test_exact_empty():
+    assert_equals(set_cover_exact([]), [])
+
+def test_exact_single_set():
+    sets = [set([0, 2])]
+    assert_equals(set_cover_exact(sets), sets)
+
+def test_exact_best_of_two_sets():
+    sets = [set([0, 3]), set([3])]
+    assert_equals(set_cover_exact(sets), [sets[0]])
+
+def test_exact_requires_two_sets():
+    sets = [set([1, 3]), set([2, 3])]
+    result = set_cover_exact(sets)
+    assert_equals(len(result), 2)
+    for subset in result:
+        assert subset in sets
+
+def test_exact_best_of_four_sets():
+    sets = [set([1, 3]), set([2, 3]), set([1, 3, 4]), set([1, 4])]
+    result = set_cover_exact(sets)
+    expected = sets[1:3]
+    assert_equals(len(result), 2)
+    for subset in result:
+        assert subset in expected
+
+def test_exact_large():
+    sets = [set(range(i, 10)) for i in xrange(10)]
+    #result = set_cover_exact(sets)
+    #assert _is_valid_cover(sets, result)
