@@ -1,3 +1,4 @@
+from itertools import combinations
 def set_cover(subsets):
     """Estimates the smallest set cover for the elements in subsets.
 
@@ -41,7 +42,7 @@ def set_cover_exact(subsets):
     """
     if len(subsets) == 0:
         return []
-    for i in xrange(1, 2**len(subsets)):
+    for i in xrange(1, len(subsets) + 1):
         # Start with covers of size 1 and increases size by 1 each time,
         # so the first cover found will be the smallest possible cover
         for cover in _generate_subsets(subsets, i):
@@ -55,21 +56,13 @@ def _is_valid_cover(all_subsets, cover):
     union = set(item for subset in all_subsets for item in subset)
     return covered == union
 
-def _generate_subsets(subsets, max_size=None):
+def _generate_subsets(subsets, size=None):
     """Given a set of subsets, generate all combinations of subsets."""
-    if max_size == 0:
+    if size is None or size > len(subsets):
+        size = len(subsets)
+    if size == 0:
         return []
-    if max_size is None or max_size > len(subsets):
-        max_size = len(subsets)
-    if max_size < 0:
-        raise ValueError("max_size cannot be negative")
+    if size < 0:
+        raise ValueError("size cannot be negative")
     # Empty set is included in all subsets of size 1 or greater
-    all_subsets = [[set()]]
-    for i in xrange(1, 2**len(subsets)):
-        current = []
-        for j in xrange(len(subsets)):
-            if (i & (1 << j)):
-                current.append(subsets[j])
-        if 0 < len(current) <= max_size:
-            all_subsets.append(current)
-    return all_subsets
+    return list(combinations(subsets, size))
