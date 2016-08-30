@@ -25,9 +25,6 @@ def test_zero_capacity():
 def test_non_number_capacity():
     assert_raises(TypeError, bin_pack, [1, 2], "3")
 
-def test_non_number_item_and_capacity():
-    assert_raises(TypeError, bin_pack, ["1", "2"], "3")
-
 def test_fill_single_box_one_item():
     assert_equals(bin_pack([2], 2), 1)
 
@@ -45,5 +42,5 @@ def test_irregular_capacity():
 
 def test_large():
     for _ in xrange(100):
-        sizes = [random.random() for _ in xrange(1000)]
-        assert bin_pack(sizes, 50) <= 15
+        sizes = range(1, 51)
+        assert_equals(bin_pack(sizes, 50), 26)
