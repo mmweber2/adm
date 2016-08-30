@@ -37,11 +37,11 @@ def set_cover_exact(subsets):
             or other hashable objects.
 
     Returns:
-        A minimum-size list of sets from subsets that cover the union of all
-            elements in subsets. Returns an empty list if subsets is empty.
+        A minimum-size tuple of sets from subsets that cover the union of all
+            elements in subsets. Returns an empty tuple if subsets is empty.
     """
     if len(subsets) == 0:
-        return []
+        return ()
     for i in xrange(1, len(subsets) + 1):
         # Start with covers of size 1 and increases size by 1 each time,
         # so the first cover found will be the smallest possible cover

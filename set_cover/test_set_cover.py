@@ -103,7 +103,7 @@ def test_is_valid_cover_not_all_sets():
     assert _is_valid_cover(sets, sets)
 
 def test_exact_empty():
-    assert_equals(set_cover_exact([]), [])
+    assert_equals(set_cover_exact([]), ())
 
 def test_exact_single_set():
     sets = [set([0, 2])]
