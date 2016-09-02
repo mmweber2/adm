@@ -15,9 +15,26 @@ def test_match_multiple_matches():
     text = "aaaaaaab"
     pattern = "aa"
     expected = []
-    for i in xrange(len(text)):
-        loc = text[i:].find(pattern)
-        if loc > -1:
-            expected.append(loc + i)
+    pos = 0
+    while pos < len(text):
+        loc = text[pos:].find(pattern)
+        if loc == -1:
+            break
+        expected.append(loc + pos)
+        pos += loc + 1
+    assert_equals(len(expected), 6)
     assert_equals(string_match("aaaaaaab", "aa"), expected)
 
+def test_match_case_sensitive():
+    text = "I never thought I'd talk to him again"
+    pattern = "I"
+    expected = []
+    pos = 0
+    while pos < len(text):
+        loc = text[pos:].find(pattern)
+        if loc == -1:
+            break
+        expected.append(loc + pos)
+        pos += loc + 1
+    assert_equals(len(expected), 2)
+    assert_equals(string_match(text, pattern), expected)
