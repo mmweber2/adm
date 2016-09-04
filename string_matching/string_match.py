@@ -21,8 +21,11 @@ def string_match(text, pattern):
         
     Returns:
         A list of all indices of text at which pattern can be found.
-            Returns an empty list if pattern is not a substring of text.
+            Returns an empty list if pattern is not a substring of text
+            or if pattern is an empty string.
     """
+    if pattern == "":
+        return []
     bad_chars = _bad_character_table(pattern)
     general_table, special_table = _good_suffix_tables(pattern)
     # Indices where a match of pattern begins in text
