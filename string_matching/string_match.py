@@ -1,3 +1,4 @@
+from time import sleep
 from collections import defaultdict
 
 def string_match(text, pattern):
@@ -42,6 +43,8 @@ def string_match(text, pattern):
                 text[end_pos] == pattern[pattern_pos]):
             pattern_pos -= 1
             end_pos -= 1
+        # How many extra characters to move forward
+        skip = 0
         if pattern_pos == -1 or end_pos == previous_pos:
             # Found a full match of pattern or a position we know matches
             matches.append(start_pos)
@@ -50,23 +53,23 @@ def string_match(text, pattern):
         else:
             # Bad character rule result
             text_char = text[end_pos]
-            if pattern_pos not in bad_chars[text_char]:
+            if text_char not in bad_chars:
                 bc_result = -1
             else:
                 bc_result = pattern_pos - bad_chars[text_char][pattern_pos]
             if pattern_pos + 1 == len(pattern):
                 # Mismatch at first character checked
                 suffix_result = 0
-            elif general_table[pattern_pos + 1] == -1:
-                # Suffix is not part of pattern; must use special table
-                suffix_result = len(pattern) - special_table[pattern_pos + 1]
-            else:
+            elif general_table[pattern_pos + 1] != -1:
                 # Suffix appears elsewhere in pattern
                 suffix_result = len(pattern) - general_table[pattern_pos + 1]
+            else:
+                # Suffix is not part of rest of pattern; must use special table
+                suffix_result = len(pattern) - special_table[pattern_pos + 1]
             skip = max(bc_result, suffix_result)
             previous_pos = end_pos if skip >= pattern_pos + 1 else previous_pos
-            start_pos += skip
-        start_pos += 1
+        # Always move forward at least 1
+        start_pos += max(1, skip)
         end_pos = start_pos + len(pattern) - 1
     return matches
 
@@ -93,20 +96,23 @@ def _bad_character_table(pattern):
 def _good_suffix_tables(pattern):
     """Creates 'good suffix rule' tables for Boyer-Moore string searches."""
     # L table; for the general case
-    # Mapping: [index in pattern]: furthest location of that suffix in pattern
+    # Mapping: [index in pattern]: previous location of that suffix in pattern
     general_table = [-1 for _ in xrange(len(pattern))]
     for i in xrange(1, len(pattern)):
-        pattern_loc = pattern.rfind(pattern[i+1:])
+        # Look for pattern[i+1:] because the match stopped at [i]
+        pattern_loc = pattern[:i].rfind(pattern[i+1:])
         # Don't include other substrings where the previous letter is the same,
         # because those will never match when this substring doesn't
         if pattern[pattern_loc - 1] != pattern[i - 1]:
+            # value remains -1 if there is no match, due to rfind's default
             general_table[i] = pattern_loc
-    # H table; for when there is a match or when the L table returns 0
-    # Mapping: [index in pattern]: length of longest suffix from that index
-    special_table = [-1 for _ in xrange(len(pattern))]
-    for i in xrange(len(pattern)):
-        for j in xrange(len(pattern) - 1, i, -1):
+    # H table; for when there is a match or when the L table returns -1
+    # Mapping: [index in pattern]: length of the longest suffix starting at 
+    # that index which is also a prefix of pattern
+    special_table = [0 for _ in xrange(len(pattern))]
+    for i in xrange(1, len(pattern)):
+        for j in xrange(len(pattern), i, -1):
             if pattern.startswith(pattern[i:j]):
-                special_table[i] = 1 - j - i
+                special_table[i] = j - i
                 break
     return general_table, special_table
