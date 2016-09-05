@@ -72,15 +72,22 @@ def string_match(text, pattern):
 
 def _bad_character_table(pattern):
     """Creates a 'bad character rule' table for Boyer-Moore string searches."""
-    table = defaultdict(dict)
-    # Mapping: [Char][index in pattern]: first index of character in pattern 
-    for i, c in enumerate(pattern):
-        # Set lookup to the highest index below i that matches the character,
-        # or -1 if it doesn't match (which is also rfind's default behavior)
-        table[c][i] = pattern.rfind(c, 0, i)
-        # We'd like to return -1 for any character not in the table, but
-        # even if we initialize that for alphabet characters, we'd still get
-        # errors when checking for spaces, punctuation, etc.
+    table = dict()
+    for char in pattern:
+        # We'd like to return -1 for any character not in pattern, but even if
+        # we initialize the table to -1 for all alphabet characters, we'd still
+        # get errors when checking for spaces, punctuation, etc.
+        table[char] = [-1 for _ in xrange(len(pattern))]
+    # Mapping: [Char][current index]: previous index of character in pattern 
+    for i in xrange(1, len(pattern)):
+        # Set lookup to the highest index below i that matches each character,
+        # which is either the previous index or the table value for the previous
+        # index
+        for char in table:
+            if pattern[i-1] == char:
+                table[char][i] = i-1
+            else:
+                table[char][i] = table[char][i-1]
     return table
     
 def _good_suffix_tables(pattern):
