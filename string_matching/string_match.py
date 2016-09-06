@@ -1,4 +1,3 @@
-from time import sleep
 from collections import defaultdict
 
 def string_match(text, pattern):
@@ -51,7 +50,6 @@ def string_match(text, pattern):
             if len(pattern) > 1:
                 end_pos += len(pattern) - special_table[1]
         else:
-            # Bad character rule result
             text_char = text[end_pos]
             if text_char not in bad_chars:
                 bc_result = -1
