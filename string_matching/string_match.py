@@ -63,7 +63,7 @@ def string_match(text, pattern):
                 # Suffix is not part of rest of pattern; must use special table
                 suffix_result = len(pattern) - special_table[pattern_pos + 1]
             skip = max(bc_result, suffix_result)
-            previous_pos = end_pos if skip >= pattern_pos + 1 else previous_pos
+            previous_pos = end_pos if skip >= pattern_pos else previous_pos
         # Always move forward at least 1
         start_pos += max(1, skip)
         end_pos = start_pos + len(pattern) - 1
