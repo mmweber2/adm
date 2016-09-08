@@ -24,10 +24,10 @@ def string_match(text, pattern):
             Returns an empty list if pattern is not a substring of text
             or if pattern is an empty string.
     """
-    if pattern == "":
+    if pattern == "" or len(pattern) > len(text):
         return []
-    bad_chars = _bad_character_table(pattern)
-    general_table, special_table = _good_suffix_tables(pattern)
+    bad_chars = _build_bad_character_table(pattern)
+    general_table, special_table = _build_good_suffix_tables(pattern)
     # Indices where a match of pattern begins in text
     matches = []
     start_pos = 0
@@ -51,10 +51,8 @@ def string_match(text, pattern):
                 end_pos += len(pattern) - special_table[1]
         else:
             text_char = text[end_pos]
-            if text_char not in bad_chars:
-                bc_result = -1
-            else:
-                bc_result = pattern_pos - bad_chars[text_char][pattern_pos]
+            bc_value = bad_chars[text_char][pattern_pos]
+            bc_result = pattern_pos - bc_value if bc_value != -1 else -1
             if pattern_pos + 1 == len(pattern):
                 # Mismatch at first character checked
                 suffix_result = 0
@@ -71,43 +69,39 @@ def string_match(text, pattern):
         end_pos = start_pos + len(pattern) - 1
     return matches
 
-def _bad_character_table(pattern):
+def _build_bad_character_table(pattern):
     """Creates a 'bad character rule' table for Boyer-Moore string searches."""
-    table = dict()
-    for char in pattern:
-        # We'd like to return -1 for any character not in pattern, but even if
-        # we initialize the table to -1 for all alphabet characters, we'd still
-        # get errors when checking for spaces, punctuation, etc.
-        table[char] = [-1 for _ in xrange(len(pattern))]
+    # Return -1 for any character not in pattern
+    table = defaultdict(lambda: defaultdict(lambda: -1))
     # Mapping: [Char][current index]: previous index of character in pattern 
     for i in xrange(1, len(pattern)):
         # Set lookup to the highest index below i that matches each character,
         # which is either the previous index or the table value for the previous
         # index
-        for char in table:
+        for char in pattern:
             if pattern[i-1] == char:
                 table[char][i] = i-1
-            else:
+            # Avoid adding -1 to the table for all the indices not present
+            elif i-1 in table[char]:
                 table[char][i] = table[char][i-1]
     return table
     
-def _good_suffix_tables(pattern):
+def _build_good_suffix_tables(pattern):
     """Creates 'good suffix rule' tables for Boyer-Moore string searches."""
     # L table; for the general case
     # Mapping: [index in pattern]: previous location of that suffix in pattern
-    general_table = [-1 for _ in xrange(len(pattern))]
+    general_table = defaultdict(lambda: -1)
     for i in xrange(1, len(pattern)):
         # Look for pattern[i+1:] because the match stopped at [i]
         pattern_loc = pattern[:i].rfind(pattern[i+1:])
         # Don't include other substrings where the previous letter is the same,
         # because those will never match when this substring doesn't
-        if pattern[pattern_loc - 1] != pattern[i - 1]:
-            # value remains -1 if there is no match, due to rfind's default
+        if pattern_loc != -1 and pattern[pattern_loc - 1] != pattern[i - 1]:
             general_table[i] = pattern_loc
     # H table; for when there is a match or when the L table returns -1
     # Mapping: [index in pattern]: length of the longest suffix starting at 
     # that index which is also a prefix of pattern
-    special_table = [0 for _ in xrange(len(pattern))]
+    special_table = defaultdict(int)
     for i in xrange(1, len(pattern)):
         for j in xrange(len(pattern), i, -1):
             if pattern.startswith(pattern[i:j]):
