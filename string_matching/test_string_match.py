@@ -1,7 +1,8 @@
 from string_match import string_match
-from string_match import _bad_character_table
-from string_match import _good_suffix_tables
+from string_match import _build_bad_character_table
+from string_match import _build_good_suffix_tables
 from nose.tools import assert_equals
+from collections import defaultdict
 
 def test_match_not_substring():
     assert_equals(string_match("a", "b"), [])
@@ -54,17 +55,27 @@ def test_match_case_sensitive():
 
 def test_bad_char_table():
     pattern = "ccttttgc"
-    table = _bad_character_table(pattern)
-    assert_equals(table['c'], [-1, 0, 1, 1, 1, 1, 1, 1])
-    assert_equals(table['t'], [-1, -1, -1, 2, 3, 4, 5, 5])
-    assert_equals(table['g'], [-1, -1, -1, -1, -1, -1, -1, 6])
+    table = _build_bad_character_table(pattern)
+    c_table = defaultdict(lambda: -1)
+    c_table.update(((1, 0), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1)))
+    assert_equals(table['c'], c_table)
+    t_table = defaultdict(lambda: -1)
+    t_table.update(((3, 2), (4, 3), (5, 4), (6, 5), (7, 5)))
+    assert_equals(table['t'], t_table)
+    g_table = defaultdict(lambda: -1)
+    g_table[7] = 6
+    assert_equals(table['g'], g_table)
 
 def test_good_suffix_table_L():
     pattern = "anpanman"
-    general, special = _good_suffix_tables(pattern)
-    assert_equals(general, [-1, -1, -1, -1, -1, 3, 4, -1])
+    general, special = _build_good_suffix_tables(pattern)
+    expected = defaultdict(lambda: -1)
+    expected.update(((5, 3), (6, 4)))
+    assert_equals(general, expected)
 
 def test_good_suffix_table_H():
     pattern = "man to man"
-    general, special = _good_suffix_tables(pattern)
-    assert_equals(special, [0, 0, 0, 0, 0, 0, 0, 3, 0, 0])
+    general, special = _build_good_suffix_tables(pattern)
+    expected = defaultdict(int)
+    expected[7] = 3
+    assert_equals(special, expected)
