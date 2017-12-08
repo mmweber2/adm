@@ -1,5 +1,6 @@
 from collections import namedtuple
 from collections import defaultdict
+from collections import deque
 from operator import attrgetter
 
 # Namedtuple format: Edge, vertices, weight
@@ -51,18 +52,6 @@ class SpanningTree(object):
         new_vertex = SpanningTree(child, edge.value)
         self.vertices[parent].children.append(new_vertex)
 
-    # TODO: Complete
-    def __str__(self):
-        """Returns a string representation of this SpanningTree.
-
-        Represents the tree in level order as follows:
-        Root: (root name)
-        Level 1: [((name of child), weight = <weight>) for child in children]
-        Level 2: [((name of child), weight = <weight>) for child in children of each Level 1 child]
-        .....
-        """ 
-
-# TODO: What to do if the list of edges contains non-minimum edges?
 def build_mst(edges):
     """Builds a Minimum Spanning Tree using the provided edges.
     
@@ -71,8 +60,11 @@ def build_mst(edges):
             all vertices, as from get_min_edges_kruskal or get_min_edges_prim.
 
     Returns:
-        A SpanningTree connected by the edges in edges.
+        A SpanningTree connected by the edges in edges, or None if edges
+            is empty.
     """
+    if not edges:
+        return None
     # 0 distance to get from root to root
     root = SpanningTree(edges[0][0], 0)
     # Logic for handling edges and error checking is in add_child()
@@ -92,12 +84,11 @@ def _is_connected(edges):
     seen = set()
     # Arbitrary start vertex
     seen.add(edges[0].vertex1)
-    queue = [edges[0].vertex1]
-    while len(queue) > 0:
-        current = queue.pop(0)
-        new_edges = [x for x in connections[current] if x not in seen]
-        seen.update(new_edges)
-        queue.extend(new_edges)
+    queue = deque([edges[0].vertex1])
+    while queue:
+        current = queue.popleft()
+        queue.extend(x for x in connections[current] if x not in seen)
+        seen.update(connections[current])
     return len(seen) == len(connections)
     
 def get_min_edges_kruskal(edges):
@@ -125,23 +116,17 @@ def get_min_edges_kruskal(edges):
     forest = defaultdict(set)
     mst_edges = []
     for edge in edges:
-        # TODO: Instead of attaching every vertex to every vertex it's connected
-        # to, get rid of the individual vertices in the defaultdict and add new
-        # vertices that merge them (ex. AB when merging A and B).
-        # This will mean that we need to go through all forests to find the
-        # vertices we are looking to merge.
         v1, v2 = edge.vertex1, edge.vertex2
         # Can check these in either order, we will add both
         if v1 in forest[v2]:
-            # Discard edge, points already connected
+            # Disregard edge, points already connected
             continue
         # Merge connections of both vertices
         forest[v1].add(v2)
-        for vertex in forest[v1]:
-            forest[vertex].update(forest[v1])
         forest[v2].add(v1)
-        for vertex in forest[v2]:
-            forest[vertex].update(forest[v2])
+        for endpoint in (v1, v2):
+            for vertex in forest[endpoint]:
+                forest[vertex].update(forest[endpoint])
         mst_edges.append(edge)
     return mst_edges
 
@@ -165,7 +150,7 @@ def get_min_edges_prim(edges):
     """
     if not _is_connected(edges):
         raise ValueError("Graph must be a single connected component")
-    if len(edges) == 0:
+    if not edges: # Avoid index error when indexing first edge
         return []
     # Map of vertices to list of edges that involve them
     graph = defaultdict(list)
@@ -186,7 +171,7 @@ def get_min_edges_prim(edges):
             for edge in graph[vertex]:
                 # We don't know which end of the edge is connected in
                 # forest, but one of them must be.
-                #If both are connected, discard it.
+                # If both are connected, discard it.
                 if edge.vertex1 in forest and edge.vertex2 in forest:
                     continue
                 # Edge connects a new vertex to the forest; keep it
